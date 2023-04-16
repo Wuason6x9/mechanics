@@ -1,0 +1,8 @@
+name: Mechanics
+version: '${version}'
+main: dev.wuason.mechanics.Mechanics
+api-version: 1.18
+load: STARTUP
+authors: [ Wuason ]
+description: Add mechanics to your server!
+website: plugins.techmc.es

@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = 'dev.wuason'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven { url = "https://repo.codemc.org/repository/maven-public/" }
+
+    maven {
+        name = "sonatype-oss-snapshots1"
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven { url 'https://jitpack.io' }
+    // for releases
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+    implementation "dev.jorel:commandapi-shade:8.8.0"
+    implementation "net.kyori:adventure-text-minimessage:4.13.0"
+    implementation "net.kyori:adventure-platform-bukkit:4.3.0"
+    implementation "net.kyori:adventure-api:4.13.0"
+    compileOnly 'com.github.oraxen:oraxen:1.155.0'
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.4.1-r4'
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+shadowJar {
+    dependencies {
+        include dependency("dev.jorel:commandapi-shade:8.8.0")
+        include dependency("net.kyori:adventure-text-minimessage:4.13.0")
+        include dependency("net.kyori:adventure-platform-bukkit:4.3.0")
+        include dependency("net.kyori:adventure-api:4.13.0")
+    }
+
+    // TODO: Change this to my own package name
+    relocate("dev.jorel.commandapi", "dev.wuason.commandapi")
+}
+
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+
+}
