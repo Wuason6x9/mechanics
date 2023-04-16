@@ -7,11 +7,15 @@ public class Mechanic {
     private File addonMechanicFile;
 
     private String addonMechanicName;
+    private String version;
+    private String apiMcVersion;
 
-    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName) {
+    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version) {
         this.addonMechanicId = addonMechanicId;
         this.addonMechanicFile = addonMechanicFile;
         this.addonMechanicName = addonMechanicName;
+        this.apiMcVersion = apiMcVersion;
+        this.version = version;
     }
 
     public File getAddonMechanicFile() {
@@ -24,5 +28,13 @@ public class Mechanic {
 
     public String getAddonMechanicName() {
         return addonMechanicName;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getApiMcVersion() {
+        return apiMcVersion;
     }
 }
