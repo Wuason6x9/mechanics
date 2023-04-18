@@ -6,3 +6,8 @@ load: STARTUP
 authors: [ Wuason ]
 description: Add mechanics to your server!
 website: plugins.techmc.es
+softdepend:
+  - PlaceholderAPI
+  - ItemsAdder
+  - Oraxen
+  - WorldGuard

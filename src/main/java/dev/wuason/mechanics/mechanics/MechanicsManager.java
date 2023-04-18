@@ -1,18 +1,22 @@
 package dev.wuason.mechanics.mechanics;
 
 import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MechanicsManager {
 
     private Mechanics core;
 
-    private ArrayList<Mechanic> mechanics;
+    private ArrayList<Mechanic> mechanics = new ArrayList<>();
+
+    File dir;
     public MechanicsManager(Mechanics core) {
         this.core = core;
 
@@ -21,9 +25,11 @@ public class MechanicsManager {
 
     public void loadMechanics(){
 
+        AdventureUtils.sendMessagePluginConsole("Loading mechanics!");
+
         mechanics = new ArrayList<>();
 
-        File dir = core.getConfigManager().createDir("mechanics");
+        dir = core.getConfigManager().createDir("mechanics");
 
         for(File file : dir.listFiles()){
 
@@ -38,12 +44,22 @@ public class MechanicsManager {
                     continue;
                 }
 
-                if(plugin.getDescription().getDescription().contains("wuason.mechanic")){
+                if(!plugin.getDescription().getDescription().contains("wuason.mechanic")){
 
                     core.getLogger().severe("Failed to load mechanic check jar: " + file.getName());
+                    core.getPluginLoader().disablePlugin(plugin);
                     continue;
                 }
-                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split(".")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion());
+
+                if(plugin.getDescription().getDescription().split("\\.").length != 3){
+
+                    core.getLogger().severe("Failed to load mechanic check jar: " + file.getName());
+                    core.getPluginLoader().disablePlugin(plugin);
+                    continue;
+
+                }
+
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion());
                 mechanics.add(mechanic);
 
             }
@@ -51,8 +67,10 @@ public class MechanicsManager {
         }
 
         for(Mechanic mechanic : mechanics){
-            Bukkit.getConsoleSender().sendMessage("MECHANIC LOADED: " + mechanic.getAddonMechanicName());
+            AdventureUtils.sendMessagePluginConsole("Mechanic loaded: " + mechanic.getAddonMechanicName());
         }
+
+        core.getCommandManager().registerCommand();
 
     }
 
@@ -81,8 +99,12 @@ public class MechanicsManager {
         return m;
     }
 
-    public Mechanic[] getMechanics(){
-        return (Mechanic[]) mechanics.toArray();
+    public File getDir() {
+        return dir;
+    }
+
+    public ArrayList<Mechanic> getMechanics(){
+        return mechanics;
     }
 
 

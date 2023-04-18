@@ -4,7 +4,9 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import dev.wuason.mechanics.config.ConfigManager;
 import dev.wuason.mechanics.mechanics.MechanicsManager;
+import dev.wuason.mechanics.utils.AdventureUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mechanics extends JavaPlugin {
@@ -15,12 +17,16 @@ public final class Mechanics extends JavaPlugin {
     private CommandManager commandManager;
     private ConfigManager configManager;
 
-    public Mechanics(){
+
+    @Override
+    public void onLoad() {
         if(core==null) core = this;
     }
 
     @Override
     public void onEnable() {
+
+        AdventureUtils.sendMessagePluginConsole("Starting mechanics plugin!");
 
         adventure = BukkitAudiences.create(this);
 
@@ -32,12 +38,16 @@ public final class Mechanics extends JavaPlugin {
         mechanicsManager = new MechanicsManager(core);
 
 
+
+
+
     }
 
     @Override
     public void onDisable() {
 
         this.adventure.close();
+
 
     }
 

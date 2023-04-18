@@ -1,15 +1,19 @@
 package dev.wuason.mechanics.utils;
 
 import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.mechanics.Mechanic;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdventureUtils {
+
+    public static String PREFIX = "<dark_gray>[<gold>$NAME<dark_gray>][<gold>$MECHANIC<dark_gray>] -> <white>";
 
     public static void consoleMessage(String text){
         MiniMessage mm = MiniMessage.miniMessage();
@@ -44,6 +48,17 @@ public class AdventureUtils {
         }
 
         return deserialized;
+
+    }
+
+    public static void sendMessagePluginConsole(Plugin plugin, String message){
+
+        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC",plugin.getDescription().getName()) + message);
+
+    }
+    public static void sendMessagePluginConsole(String message){
+
+        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC","CORE") + message);
 
     }
 }

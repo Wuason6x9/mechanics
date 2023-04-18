@@ -10,7 +10,7 @@ public class MechanicsUtils {
 
         for(Mechanic mechanic : Mechanics.getInstance().getMechanicsManager().getMechanics()){
 
-            if(mechanic.getAddonMechanicId().equals(plugin.getDescription().getDescription().split(".")[2])) return true;
+            if(mechanic.getAddonMechanicId().equals(plugin.getDescription().getDescription().split("\\.")[2])) return true;
 
         }
 
