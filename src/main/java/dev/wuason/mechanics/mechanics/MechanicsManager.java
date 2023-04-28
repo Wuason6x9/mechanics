@@ -60,6 +60,7 @@ public class MechanicsManager {
                 }
 
                 Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion());
+                core.getConfigManager().createConfigMechanic(mechanic);
                 mechanics.add(mechanic);
 
             }
@@ -78,6 +79,21 @@ public class MechanicsManager {
 
         for(Mechanic mechanic : mechanics){
             if(mechanic.getAddonMechanicId().equals(id)) return mechanic;
+        }
+
+        return null;
+    }
+
+    public Mechanic getMechanic(Plugin plugin){
+
+        if(plugin.getDescription().getDescription().contains("wuason.mechanic")){
+
+            String id = plugin.getDescription().getName();
+
+            for(Mechanic mechanic : mechanics){
+                if(mechanic.getAddonMechanicId().equals(id)) return mechanic;
+            }
+
         }
 
         return null;

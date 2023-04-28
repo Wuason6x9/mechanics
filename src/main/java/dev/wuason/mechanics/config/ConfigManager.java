@@ -1,9 +1,10 @@
 package dev.wuason.mechanics.config;
 
 import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.mechanics.Mechanic;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 
@@ -12,12 +13,14 @@ public class ConfigManager {
     private Mechanics core;
     private File fileMainConfig;
     private FileConfiguration configMain;
+    private File dirConfigMechanics;
+
 
     public ConfigManager(Mechanics core) {
         this.core = core;
     }
 
-    public void load(){
+    public void loadMainConfig(){
 
         fileMainConfig = new File(core.getDataFolder().getPath() + "/config.yml");
 
@@ -34,6 +37,21 @@ public class ConfigManager {
 
             core.saveConfig();
         }
+
+    }
+
+    public void loadConfigMechanics(){
+
+        dirConfigMechanics = new File(core.getDataFolder().getPath() + "/configs/");
+        dirConfigMechanics.mkdirs();
+
+    }
+
+    public void createConfigMechanic(Mechanic mechanic){
+
+        File mechanicConfigDir = new File(core.getDataFolder().getPath() + "/configs/" + mechanic.getAddonMechanicId());
+        mechanicConfigDir.mkdirs();
+        mechanic.setDirConfig(mechanicConfigDir);
 
     }
 
@@ -69,4 +87,15 @@ public class ConfigManager {
 
     }
 
+    public File getFileMainConfig() {
+        return fileMainConfig;
+    }
+
+    public FileConfiguration getConfigMain() {
+        return configMain;
+    }
+
+    public File getDirConfigMechanics() {
+        return dirConfigMechanics;
+    }
 }
