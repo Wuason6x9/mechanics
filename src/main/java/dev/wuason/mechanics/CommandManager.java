@@ -17,8 +17,8 @@ public class CommandManager {
         command.withPermission("mechanics.command.main");
 
     }
-    public void addCommandPlugin(CommandAPICommand command){
-        this.command.withSubcommands(command);
+    public void addCommandPlugin(Object command){
+        this.command.withSubcommands((CommandAPICommand)command);
     }
 
     public void registerCommand(){
