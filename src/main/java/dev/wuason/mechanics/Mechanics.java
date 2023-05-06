@@ -26,9 +26,9 @@ public final class Mechanics extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        AdventureUtils.sendMessagePluginConsole("Starting mechanics plugin!");
-
         adventure = BukkitAudiences.create(this);
+
+        AdventureUtils.sendMessagePluginConsole("Starting mechanics plugin!");
 
         CommandAPI.onLoad(new CommandAPIConfig().silentLogs(true));
         CommandAPI.onEnable(this);

@@ -12,13 +12,12 @@ public class Mechanic {
     private File dirConfig;
     private Class<?> managersClass;
 
-    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version,Class<?> managersClass) {
+    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version) {
         this.addonMechanicId = addonMechanicId;
         this.addonMechanicFile = addonMechanicFile;
         this.addonMechanicName = addonMechanicName;
         this.apiMcVersion = apiMcVersion;
         this.version = version;
-        this.managersClass = managersClass;
     }
 
     public File getAddonMechanicFile() {
@@ -53,4 +52,7 @@ public class Mechanic {
         return managersClass;
     }
 
+    public void setManagersClass(Class<?> managersClass) {
+        this.managersClass = managersClass;
+    }
 }
