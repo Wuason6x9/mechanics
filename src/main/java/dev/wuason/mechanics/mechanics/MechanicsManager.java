@@ -58,8 +58,14 @@ public class MechanicsManager {
                     continue;
 
                 }
+                Class<?> managersClass = null;
+                try {
+                    managersClass = plugin.getClass().getMethod("getManagers").getDefaultValue().getClass();
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
 
-                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion());
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),managersClass);
                 core.getConfigManager().createConfigMechanic(mechanic);
                 mechanics.add(mechanic);
 

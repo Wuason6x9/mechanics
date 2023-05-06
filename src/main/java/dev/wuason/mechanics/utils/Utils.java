@@ -14,6 +14,25 @@ import java.util.UUID;
 
 public class Utils {
 
+    public static Boolean isNumber(String number){
+        try {
+            int n = Integer.parseInt(number);
+        }
+        catch (NumberFormatException e){
+            return false;
+        }
+        return true;
+    }
+    public static Boolean isBool(String bool){
+        try {
+            boolean k = Boolean.parseBoolean(bool.toLowerCase());
+        }
+        catch (IllegalArgumentException e){
+            return false;
+        }
+        return true;
+    }
+
     public static String serializeObject(Object ob) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);

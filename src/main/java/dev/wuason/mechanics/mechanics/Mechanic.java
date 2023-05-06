@@ -9,15 +9,16 @@ public class Mechanic {
     private String addonMechanicName;
     private String version;
     private String apiMcVersion;
-
     private File dirConfig;
+    private Class<?> managersClass;
 
-    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version) {
+    public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version,Class<?> managersClass) {
         this.addonMechanicId = addonMechanicId;
         this.addonMechanicFile = addonMechanicFile;
         this.addonMechanicName = addonMechanicName;
         this.apiMcVersion = apiMcVersion;
         this.version = version;
+        this.managersClass = managersClass;
     }
 
     public File getAddonMechanicFile() {
@@ -47,4 +48,9 @@ public class Mechanic {
     public void setDirConfig(File dirConfig) {
         this.dirConfig = dirConfig;
     }
+
+    public Class<?> getManagersClass() {
+        return managersClass;
+    }
+
 }
