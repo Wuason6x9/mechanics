@@ -19,8 +19,6 @@ public class MechanicsManager {
     File dir;
     public MechanicsManager(Mechanics core) {
         this.core = core;
-
-        loadMechanics();
     }
 
     public void loadMechanics(){
@@ -59,15 +57,21 @@ public class MechanicsManager {
 
                 }
 
-                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion());
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
                 core.getConfigManager().createConfigMechanic(mechanic);
                 mechanics.add(mechanic);
+
+                core.getPluginLoader().enablePlugin(plugin);
 
             }
 
         }
 
         for(Mechanic mechanic : mechanics){
+            if(!mechanic.getPlugin().isEnabled()){
+                AdventureUtils.sendMessagePluginConsole("Mechanic Error: " + mechanic.getAddonMechanicName());
+                continue;
+            }
             AdventureUtils.sendMessagePluginConsole("Mechanic loaded: " + mechanic.getAddonMechanicName());
         }
 

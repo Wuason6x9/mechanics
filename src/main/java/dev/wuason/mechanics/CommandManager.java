@@ -14,9 +14,11 @@ public class CommandManager {
     public void loadCommands(){
 
         command = new CommandAPICommand("mechanics");
+        command.withPermission("mechanics.command.main");
 
-        command.withPermission("mechanics.command");
-
+    }
+    public void addCommandPlugin(CommandAPICommand command){
+        this.command.withSubcommands(command);
     }
 
     public void registerCommand(){

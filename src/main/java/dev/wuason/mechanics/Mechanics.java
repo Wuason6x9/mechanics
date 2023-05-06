@@ -3,6 +3,7 @@ package dev.wuason.mechanics;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import dev.wuason.mechanics.config.ConfigManager;
+import dev.wuason.mechanics.mechanics.Mechanic;
 import dev.wuason.mechanics.mechanics.MechanicsManager;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -18,8 +19,7 @@ public final class Mechanics extends JavaPlugin {
     private ConfigManager configManager;
 
 
-    @Override
-    public void onLoad() {
+    public Mechanics(){
         if(core==null) core = this;
     }
 
@@ -36,6 +36,7 @@ public final class Mechanics extends JavaPlugin {
         configManager = new ConfigManager(core);
         commandManager = new CommandManager(core);
         mechanicsManager = new MechanicsManager(core);
+        mechanicsManager.loadMechanics();
 
 
 
