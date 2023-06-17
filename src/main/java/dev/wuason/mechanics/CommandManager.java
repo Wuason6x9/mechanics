@@ -8,21 +8,21 @@ public class CommandManager {
 
     public CommandManager(Mechanics core) {
         this.core = core;
-        loadCommands();
+        loadCommand();
     }
 
-    public void loadCommands(){
+    public void loadCommand(){
 
         command = new CommandAPICommand("mechanics");
         command.withPermission("mechanics.command.main");
-
-    }
-    public void addCommandPlugin(Object command){
-        this.command.withSubcommands((CommandAPICommand)command);
-    }
-
-    public void registerCommand(){
+        command.withSubcommands(new CommandAPICommand("reload")
+                .executes((sender, args) -> {
+                    sender.sendMessage("reloading mechanics!");
+                    core.getMechanicsManager().loadMechanics();
+                })
+        );
         command.register();
+
     }
 
     public CommandAPICommand getCommand() {

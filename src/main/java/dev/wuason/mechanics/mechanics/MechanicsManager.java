@@ -23,6 +23,10 @@ public class MechanicsManager {
 
     public void loadMechanics(){
 
+        for(Mechanic m : mechanics){
+            core.getPluginLoader().disablePlugin(m.getPlugin());
+        }
+
         AdventureUtils.sendMessagePluginConsole("Loading mechanics!");
 
         mechanics = new ArrayList<>();
@@ -74,8 +78,6 @@ public class MechanicsManager {
             }
             AdventureUtils.sendMessagePluginConsole("Mechanic loaded: " + mechanic.getAddonMechanicName());
         }
-
-        core.getCommandManager().registerCommand();
 
     }
 
