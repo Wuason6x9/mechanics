@@ -6,12 +6,14 @@ import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.mechanics.Mechanic;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,11 +94,15 @@ public class Adapter {
 
     public static String getAdapterID(ItemStack itemStack){
         String id = "mc:" + itemStack.getType().toString().toLowerCase();
-        if(OraxenItems.exists(itemStack)){
-            id = "or:" + OraxenItems.getIdByItem(itemStack);
+        if(isOraxenEnabled()){
+            if(OraxenItems.exists(itemStack)){
+                id = "or:" + OraxenItems.getIdByItem(itemStack);
+            }
         }
-        if(CustomStack.byItemStack(itemStack) != null){
-            id = "ia:" + CustomStack.byItemStack(itemStack).getNamespacedID();
+        if(isItemsAdderEnabled()){
+            if(CustomStack.byItemStack(itemStack) != null){
+                id = "ia:" + CustomStack.byItemStack(itemStack).getNamespacedID();
+            }
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
@@ -116,17 +122,23 @@ public class Adapter {
 
     public static String getAdapterID(Block block){
         String id = "mc:" + block.getType().toString().toLowerCase();
-        if(OraxenBlocks.isOraxenBlock(block)){
-            id = "or:" + OraxenBlocks.getBlockMechanic(block).getItemID();
+        if(isOraxenEnabled()){
+            if(OraxenBlocks.isOraxenBlock(block)){
+                id = "or:" + OraxenBlocks.getBlockMechanic(block).getItemID();
+            }
         }
-        if(CustomBlock.byAlreadyPlaced(block) != null){
-            id = "ia:" + CustomBlock.byAlreadyPlaced(block).getNamespacedID();
+        if(isItemsAdderEnabled()){
+            if(CustomBlock.byAlreadyPlaced(block) != null){
+                id = "ia:" + CustomBlock.byAlreadyPlaced(block).getNamespacedID();
+            }
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
             Object obj;
             try {
-                obj = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic").getManagersClass().getMethod("getCustomBlockManager").getDefaultValue().getClass().getMethod("getCustomBlockIdFromBlock").invoke(block);
+                Class<?> managersClass = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic").getManagersClass();
+
+                obj = customBlockManager.invoke().getClass().getMethod("getCustomBlockIdFromBlock").invoke(block);
                 if(obj != null){
                     id = "sm:" + ((String) obj).toLowerCase();
                 }
@@ -143,5 +155,12 @@ public class Adapter {
         OR,
         MC,
         SM
+    }
+
+    public static boolean isItemsAdderEnabled(){
+        return Bukkit.getPluginManager().isPluginEnabled("ItemsAdder");
+    }
+    public static boolean isOraxenEnabled(){
+        return Bukkit.getPluginManager().isPluginEnabled("Oraxen");
     }
 }

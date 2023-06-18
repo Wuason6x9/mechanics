@@ -12,7 +12,7 @@ public class Mechanic {
     private String version;
     private String apiMcVersion;
     private File dirConfig;
-    private Class<?> managersClass;
+    private Object managersClass;
     private Plugin plugin;
 
     public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version,Plugin plugin) {
@@ -56,11 +56,11 @@ public class Mechanic {
         this.dirConfig = dirConfig;
     }
 
-    public Class<?> getManagersClass() {
+    public Object getManagersClass() {
         return managersClass;
     }
 
-    public void setManagersClass(Class<?> managersClass) {
+    public void setManagersClass(Object managersClass) {
         this.managersClass = managersClass;
     }
 }
