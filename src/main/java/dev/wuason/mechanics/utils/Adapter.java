@@ -129,4 +129,5 @@ public class Adapter {
     public static boolean isOraxenEnabled(){
         return Bukkit.getPluginManager().isPluginEnabled("Oraxen");
     }
+
 }
