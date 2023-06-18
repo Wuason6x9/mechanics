@@ -27,21 +27,7 @@ public class Adapter {
 
         switch (itemType){
             case SM:
-                Object obj = null;
-                ItemStack itemStackStorageMechanic = null;
-                try {
-                    obj = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic").getManagersClass().getMethod("getCustomBlockManager").getDefaultValue().getClass().getMethod("getCustomBlockById").invoke(itemID);
-                } catch (NoSuchMethodException e) {
-                } catch (InvocationTargetException e) {
-                } catch (IllegalAccessException e) {
-                }
-                if(obj != null){
-                    try {
-                        itemStackStorageMechanic = (ItemStack) obj.getClass().getMethod("getItemStack").getDefaultValue();
-                    } catch (NoSuchMethodException e) {
-                    }
-                }
-                return itemStackStorageMechanic;
+
             case MC:
                 Material material = null;
                 try {
@@ -106,16 +92,7 @@ public class Adapter {
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
-            Object obj;
-            try {
-                obj = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic").getManagersClass().getMethod("getCustomBlockManager").getDefaultValue().getClass().getMethod("getCustomBlockIdFromItemStack").invoke(itemStack);
-                if(obj != null){
-                    id = "sm:" + ((String) obj).toLowerCase();
-                }
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            } catch (NoSuchMethodException e) {
-            }
+
         }
         return id;
     }
@@ -134,18 +111,7 @@ public class Adapter {
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
-            Object obj;
-            try {
-                Class<?> managersClass = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic").getManagersClass();
 
-                obj = customBlockManager.invoke().getClass().getMethod("getCustomBlockIdFromBlock").invoke(block);
-                if(obj != null){
-                    id = "sm:" + ((String) obj).toLowerCase();
-                }
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            } catch (NoSuchMethodException e) {
-            }
         }
         return id;
     }
