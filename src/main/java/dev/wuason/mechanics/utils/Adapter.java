@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Adapter {
@@ -27,7 +28,25 @@ public class Adapter {
 
         switch (itemType){
             case SM:
-
+                Object obj;
+                Object obj2;
+                Object obj3;
+                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+                try {
+                    obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
+                    obj2 = obj.getClass().getMethod("getCustomBlockById",java.lang.String.class).invoke(obj,itemID);
+                    if(obj2 != null){
+                        obj3 = obj2.getClass().getMethod("getItemStack").invoke(obj2);
+                        ItemStack itemStack = (ItemStack) obj3;
+                        ItemMeta itemMeta = itemStack.getItemMeta();
+                        itemMeta.setDisplayName(" ");
+                        itemStack.setItemMeta(itemMeta);
+                        return itemStack;
+                    }
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                } catch (NoSuchMethodException e) {
+                }
             case MC:
                 Material material = null;
                 try {
@@ -58,6 +77,55 @@ public class Adapter {
 
     }
 
+    public static ItemStack getItemStackOriginal(String itemID){
+
+        String type = itemID.substring(0,itemID.indexOf(":"));
+        ItemType itemType = ItemType.valueOf(type.toUpperCase());
+
+        itemID = itemID.substring(itemID.indexOf(":") + 1);
+
+        switch (itemType){
+            case SM:
+                Object obj;
+                Object obj2;
+                Object obj3;
+                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+                try {
+                    obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
+                    obj2 = obj.getClass().getMethod("getCustomBlockById",java.lang.String.class).invoke(obj,itemID);
+                    if(obj2 != null){
+                        obj3 = obj2.getClass().getMethod("getItemStack").invoke(obj2);
+                        return (ItemStack) obj3;
+                    }
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                } catch (NoSuchMethodException e) {
+                }
+            case MC:
+                Material material = null;
+                try {
+                    material = Material.valueOf(itemID.toUpperCase());
+                }catch (IllegalArgumentException argumentException){
+                    return null;
+                }
+                return new ItemStack(material);
+            case IA:
+                return CustomStack.getInstance(itemID).getItemStack();
+            case OR:
+                return OraxenItems.getItemById(itemID).build();
+        }
+
+        return null;
+
+    }
+
+    public static List<ItemStack> getItemsStackOriginal(List<String> i){
+        List<ItemStack> itemStacks = new ArrayList<>();
+        for(String str : i){
+            itemStacks.add(getItemStackOriginal(str));
+        }
+        return itemStacks;
+    }
     public static List<ItemStack> getItemsStack(List<String> i){
         List<ItemStack> itemStacks = new ArrayList<>();
         for(String str : i){
@@ -92,7 +160,18 @@ public class Adapter {
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
-
+            Object obj;
+            Object obj2;
+            try {
+                obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
+                obj2 = obj.getClass().getMethod("getCustomBlockIdFromItemStack",org.bukkit.inventory.ItemStack.class).invoke(obj,itemStack);
+                if(obj2 != null){
+                    id = "sm:" + ((String) obj2);
+                }
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            } catch (NoSuchMethodException e) {
+            }
         }
         return id;
     }
@@ -111,7 +190,21 @@ public class Adapter {
         }
         Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
         if(storageMechanic != null){
-
+            Object obj;
+            Object obj2;
+            try {
+                obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
+                obj2 = obj.getClass().getMethod("getCustomBlockIdFromBlock",org.bukkit.block.Block.class).invoke(obj,block);
+                if(obj2 != null){
+                    id = "sm:" + ((String) obj2);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         }
         return id;
     }
