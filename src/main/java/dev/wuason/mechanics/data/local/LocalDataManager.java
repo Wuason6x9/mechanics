@@ -126,5 +126,7 @@ public class LocalDataManager {
         }
     }
 
-
+    public HashMap<String, Data> getDataMap() {
+        return dataMap;
+    }
 }

@@ -5,9 +5,11 @@ api-version: 1.18
 load: STARTUP
 authors: [ Wuason ]
 description: Add mechanics to your server!
-website: plugins.techmc.es
+website: techmc.es
 softdepend:
   - PlaceholderAPI
   - ItemsAdder
   - Oraxen
   - WorldGuard
+  - MythicMobs
+  - MMOItems

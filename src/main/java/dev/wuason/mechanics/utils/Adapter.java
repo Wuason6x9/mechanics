@@ -214,7 +214,11 @@ public class Adapter {
         IA,
         OR,
         MC,
-        SM
+        SM,
+        MMOITEMS,
+        MYTHICMOBS,
+        CB
+
     }
 
     public static boolean isItemsAdderEnabled(){
