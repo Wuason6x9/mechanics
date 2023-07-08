@@ -3,15 +3,11 @@ package dev.wuason.mechanics;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import dev.wuason.mechanics.config.ConfigManager;
-import dev.wuason.mechanics.mechanics.Mechanic;
 import dev.wuason.mechanics.mechanics.MechanicsManager;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
 
 public final class Mechanics extends JavaPlugin {
 
@@ -20,6 +16,7 @@ public final class Mechanics extends JavaPlugin {
     private MechanicsManager mechanicsManager;
     private CommandManager commandManager;
     private ConfigManager configManager;
+
 
 
     public Mechanics(){

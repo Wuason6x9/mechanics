@@ -3,8 +3,10 @@ package dev.wuason.mechanics.mechanics;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,8 +15,10 @@ import java.util.Arrays;
 public class MechanicsManager {
 
     private Mechanics core;
+    private boolean itemsAdderLoaded = false;
 
     private ArrayList<Mechanic> mechanics = new ArrayList<>();
+
 
     File dir;
     public MechanicsManager(Mechanics core) {
@@ -22,10 +26,6 @@ public class MechanicsManager {
     }
 
     public void loadMechanics(){
-
-        for(Mechanic m : mechanics){
-            core.getPluginLoader().disablePlugin(m.getPlugin());
-        }
 
         AdventureUtils.sendMessagePluginConsole("Loading mechanics!");
 
@@ -61,10 +61,9 @@ public class MechanicsManager {
 
                 }
 
-                Mechanic mechanic = new Mechanic(plugin.getDescription().getName(), file, plugin.getDescription().getDescription().split("\\.")[2], plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getDescription().split("\\.")[2], file,plugin.getDescription().getName(), plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
                 core.getConfigManager().createConfigMechanic(mechanic);
                 mechanics.add(mechanic);
-
                 core.getPluginLoader().enablePlugin(plugin);
 
             }
@@ -81,6 +80,27 @@ public class MechanicsManager {
 
     }
 
+    public boolean waitDependencies(){
+        boolean a = true;
+        ArrayList<Plugin> plugins = new ArrayList<>();
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        for(String p : core.getDescription().getSoftDepend()){
+            Plugin pl = pluginManager.getPlugin(p);
+            if(pl != null){
+                plugins.add(pl);
+            }
+        }
+
+        for(Plugin plugin : plugins){
+            if(!plugin.isEnabled()){
+                a = false;
+            }
+        }
+
+        return a;
+    }
+
     public Mechanic getMechanic(String id){
 
         for(Mechanic mechanic : mechanics){
@@ -90,11 +110,60 @@ public class MechanicsManager {
         return null;
     }
 
+    public void reloadMechanics(){
+        AdventureUtils.sendMessagePluginConsole(core,"<gold>Disabling the mechanics!");
+        for(Mechanic m : mechanics){
+            core.getPluginLoader().disablePlugin(m.getPlugin());
+        }
+        while (!waitDisableMechanics()){}
+        AdventureUtils.sendMessagePluginConsole(core,"<gold>Disabled mechanics!");
+        loadMechanics();
+
+    }
+
+    public boolean waitDisableMechanics() {
+        boolean a = true;
+        for (Mechanic m : mechanics) {
+            if (m.getPlugin().isEnabled()) {
+                return false;
+            }
+        }
+        return a;
+    }
+
+    public boolean stopMechanic(Mechanic mechanic){
+        core.getPluginLoader().disablePlugin(mechanic.getPlugin());
+        mechanics.remove(mechanic);
+        return true;
+    }
+    public Mechanic startMechanic(String mName){
+        File file = new File(dir.getPath() + "/" + mName.toLowerCase() + ".jar");
+        if(file.exists()){
+            try {
+                Plugin plugin = core.getPluginLoader().loadPlugin(file);
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getDescription().split("\\.")[2], file,plugin.getDescription().getName(), plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
+                core.getConfigManager().createConfigMechanic(mechanic);
+                mechanics.add(mechanic);
+                core.getPluginLoader().enablePlugin(mechanic.getPlugin());
+                return mechanic;
+            } catch (InvalidPluginException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        AdventureUtils.sendMessagePluginConsole("<gold>Mechanic " + mName + " doesn't exist!");
+        return null;
+    }
+    public void reloadMechanic(Mechanic mechanic){
+        stopMechanic(mechanic);
+        while (mechanic.getPlugin().isEnabled()){}
+        startMechanic(mechanic.getAddonMechanicName());
+    }
+
     public Mechanic getMechanic(Plugin plugin){
 
         if(plugin.getDescription().getDescription().contains("wuason.mechanic")){
 
-            String id = plugin.getDescription().getName();
+            String id = plugin.getDescription().getDescription().split("\\.")[2];
 
             for(Mechanic mechanic : mechanics){
                 if(mechanic.getAddonMechanicId().equals(id)) return mechanic;
@@ -129,5 +198,7 @@ public class MechanicsManager {
         return mechanics;
     }
 
-
+    public void setItemsAdderLoaded(boolean itemsAdderLoaded) {
+        this.itemsAdderLoaded = itemsAdderLoaded;
+    }
 }

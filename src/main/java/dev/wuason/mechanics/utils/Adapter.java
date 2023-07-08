@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Adapter {
+    //AÑADIR METODO PARA COLOCAR BLOQUES
     public static ItemStack getItemStack(String itemID){
 
         String type = itemID.substring(0,itemID.indexOf(":"));
@@ -31,7 +32,7 @@ public class Adapter {
                 Object obj;
                 Object obj2;
                 Object obj3;
-                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("storagemechanic");
                 try {
                     obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
                     obj2 = obj.getClass().getMethod("getCustomBlockById",java.lang.String.class).invoke(obj,itemID);
@@ -89,7 +90,7 @@ public class Adapter {
                 Object obj;
                 Object obj2;
                 Object obj3;
-                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+                Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("storagemechanic");
                 try {
                     obj = storageMechanic.getManagersClass().getClass().getMethod("getCustomBlockManager").invoke(storageMechanic.getManagersClass());
                     obj2 = obj.getClass().getMethod("getCustomBlockById",java.lang.String.class).invoke(obj,itemID);
@@ -158,7 +159,7 @@ public class Adapter {
                 id = "ia:" + CustomStack.byItemStack(itemStack).getNamespacedID();
             }
         }
-        Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+        Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("storagemechanic");
         if(storageMechanic != null){
             Object obj;
             Object obj2;
@@ -180,7 +181,7 @@ public class Adapter {
         String id = "mc:" + block.getType().toString().toLowerCase();
         if(isOraxenEnabled()){
             if(OraxenBlocks.isOraxenBlock(block)){
-                id = "or:" + OraxenBlocks.getBlockMechanic(block).getItemID();
+                id = "or:" + OraxenBlocks.getOraxenBlock(block.getLocation()).getItemID();
             }
         }
         if(isItemsAdderEnabled()){
@@ -188,7 +189,7 @@ public class Adapter {
                 id = "ia:" + CustomBlock.byAlreadyPlaced(block).getNamespacedID();
             }
         }
-        Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("StorageMechanic");
+        Mechanic storageMechanic = Mechanics.getInstance().getMechanicsManager().getMechanic("storagemechanic");
         if(storageMechanic != null){
             Object obj;
             Object obj2;
