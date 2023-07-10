@@ -38,9 +38,6 @@ public final class Mechanics extends JavaPlugin {
         mechanicsManager = new MechanicsManager(core);
         mechanicsManager.loadMechanics();
 
-
-
-
     }
 
     @Override

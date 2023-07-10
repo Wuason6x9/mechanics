@@ -19,10 +19,10 @@ public class LocalDataManager {
 
     private static ArrayList<LocalDataManager> localDataManagerList = new ArrayList<>();
 
-    public LocalDataManager(Mechanics core, Plugin addon) {
+    public LocalDataManager(Plugin addon) {
         localDataManagerList.add(this);
         this.addon = addon;
-        this.core = core;
+        this.core = Mechanics.getInstance();
     }
 
     public void createDataFolder(){
@@ -48,6 +48,12 @@ public class LocalDataManager {
         return core;
     }
 
+    public Data getData(String dataFileName, String dataType){
+        if(!existData(dataType,dataFileName)) return null;
+        if(dataMap.containsKey(dataFileName)) return dataMap.get(dataFileName);
+        return loadData(dataType,dataFileName);
+    }
+
     public void saveData(Data data){
 
         if(dataMap.containsKey(data.getId())) dataMap.remove(data.getId());
@@ -56,7 +62,6 @@ public class LocalDataManager {
         try {
             dataStr = Utils.serializeObjectBukkit(data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         saveDataStr(dataStr, data.getDataType(), data.getId());
@@ -69,7 +74,6 @@ public class LocalDataManager {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
         Writer writer;
@@ -79,9 +83,17 @@ public class LocalDataManager {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
+    }
+    public boolean existData(String dataType, String dataFileName){
+        File file = new File(dir.getPath() + "/" + dataType + "/" + dataFileName + ".mechanic");
+        if(dataMap.containsKey(dataFileName)){
+            return true;
+        }
+        if(file.exists()){
+            if(loadData(dataType,dataFileName) != null) return true;
+        }
+        return false;
     }
 
     public Data loadData(String dataType, String dataFileName){
@@ -89,13 +101,11 @@ public class LocalDataManager {
         Data data;
         try {
             data = (Data) Utils.deserializeObjectBukkit(dataStr);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            dataMap.put(data.getId(),data);
+            return data;
+        } catch (IOException | ClassNotFoundException e) {
         }
-        dataMap.put(data.getId(),data);
-        return data;
+        return null;
     }
 
     public String loadDataStr(String dataType, String dataFileName) {
@@ -108,22 +118,21 @@ public class LocalDataManager {
         Reader reader;
         try {
             reader = new FileReader(file);
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            char[] buffer = new char[(int) file.length()];
-            reader.read(buffer);
-            return new String(buffer);
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        } finally {
             try {
-                reader.close();
+                char[] buffer = new char[(int) file.length()];
+                reader.read(buffer);
+                return new String(buffer);
             } catch(IOException e) {
             }
+            finally {
+                try {
+                    reader.close();
+                } catch(IOException e) {
+                }
+            }
+        } catch(IOException e) {
         }
+        return null;
     }
 
     public HashMap<String, Data> getDataMap() {
