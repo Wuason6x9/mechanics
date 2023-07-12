@@ -1,10 +1,12 @@
 package dev.wuason.mechanics.data.mysql;
 
+import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.data.Data;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.IOException;
 import java.sql.*;
@@ -26,6 +28,7 @@ public class SqlManager {
     private String driver;
     final public String DATA_NAME_COLUMN = "data";
     final public String DATA_ID_NAME_COLUMN = "data_id";
+    public BukkitTask bukkitTask;
 
     public SqlManager(Plugin plugin, String host, int port, String database, String user, String password, String driver) {
         this.plugin = plugin;
@@ -36,6 +39,15 @@ public class SqlManager {
         this.password = password;
         this.driver = driver;
         connectToMySQL();
+        bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,() ->{
+
+            if(!isDatabaseConnected()){
+                handleDisconnection();
+                bukkitTask.cancel();
+            }
+
+        },20L,20L * 5L);
+
         dataManagers.add(this);
         if (!isDatabaseConnected()) {
             handleDisconnection();
@@ -390,4 +402,13 @@ public class SqlManager {
         saveDataStr(data.getDataType(),data.getId(),dataStr);
     }
 
+    public void stop(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        bukkitTask.cancel();
+    }
 }
