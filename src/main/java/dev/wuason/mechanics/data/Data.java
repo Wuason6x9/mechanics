@@ -20,7 +20,7 @@ public class Data implements Serializable {
     public void setDataObject(Object data){
         this.dataType = data.getClass().getSimpleName();
         try {
-            String dataSerialized = Utils.serializeObjectBukkit(data);
+            this.data = Utils.serializeObjectBukkit(data);
             lastDataSaveDate = new Date();
         } catch (IOException e) {
             throw new RuntimeException(e);

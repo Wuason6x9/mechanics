@@ -26,8 +26,8 @@ public class LocalDataManager {
     }
 
     public void createDataFolder(){
-        File file = new File(core.getDataFolder() + "/data/" + addon.getDescription().getName());
-        file.mkdirs();
+        dir = new File(core.getDataFolder() + "/data/" + addon.getDescription().getName());
+        dir.mkdirs();
     }
 
 
@@ -53,7 +53,14 @@ public class LocalDataManager {
         if(dataMap.containsKey(dataFileName)) return dataMap.get(dataFileName);
         return loadData(dataType,dataFileName);
     }
-
+    public void removeData(String dataType, String dataFileName){
+        if(dataMap.containsKey(dataFileName)) {
+            dataMap.remove(dataFileName);
+            return;
+        }
+        File file = new File(dir.getPath() + "/" + dataType + "/" + dataFileName + ".mechanic");
+        if(file.exists()) file.delete();
+    }
     public void saveData(Data data){
 
         if(dataMap.containsKey(data.getId())) dataMap.remove(data.getId());

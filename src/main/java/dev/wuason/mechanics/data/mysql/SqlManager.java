@@ -24,8 +24,8 @@ public class SqlManager {
     private String user;
     private String password;
     private String driver;
-    final private String DATA_NAME_COLUMN = "data";
-    final private String DATA_ID_NAME_COLUMN = "data_id";
+    final public String DATA_NAME_COLUMN = "data";
+    final public String DATA_ID_NAME_COLUMN = "data_id";
 
     public SqlManager(Plugin plugin, String host, int port, String database, String user, String password, String driver) {
         this.plugin = plugin;
@@ -100,7 +100,6 @@ public class SqlManager {
         }
         createTableSQL.append(");");
 
-        Connection connection = null;
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createTableSQL.toString());
         } catch (SQLException e) {
@@ -200,7 +199,7 @@ public class SqlManager {
     }
 
     public void dropTable(String tableName) {
-        try (Connection connection = getConnection()) {
+        try {
             // Preparamos la sentencia SQL
             String sql = "DROP TABLE IF EXISTS " + tableName;
 
