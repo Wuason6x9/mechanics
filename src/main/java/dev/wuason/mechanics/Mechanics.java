@@ -71,4 +71,9 @@ public final class Mechanics extends JavaPlugin {
     public ConfigManager getConfigManager() {
         return configManager;
     }
+
+    public TaskMechanicManager getTaskMechanicManager() {
+        return taskMechanicManager;
+    }
+
 }
