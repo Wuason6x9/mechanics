@@ -70,7 +70,7 @@ public class LocalDataManager {
             dataStr = Utils.serializeObjectBukkit(data);
         } catch (IOException e) {
         }
-
+        if(dataMap.containsKey(data.getId())) dataMap.remove(data.getId());
         saveDataStr(dataStr, data.getDataType(), data.getId());
     }
     public void saveDataStr(String data, String dataType, String dataFileName){

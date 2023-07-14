@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.wuason'
-version = '0.1.4.6-beta'
+version = '0.1.4.7-beta'
 
 repositories {
     mavenCentral()

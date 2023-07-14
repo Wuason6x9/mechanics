@@ -4,6 +4,7 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import dev.wuason.mechanics.config.ConfigManager;
 import dev.wuason.mechanics.mechanics.MechanicsManager;
+import dev.wuason.mechanics.taks.TaskMechanicManager;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ public final class Mechanics extends JavaPlugin {
     private MechanicsManager mechanicsManager;
     private CommandManager commandManager;
     private ConfigManager configManager;
+    private TaskMechanicManager taskMechanicManager;
 
 
 
@@ -33,6 +35,7 @@ public final class Mechanics extends JavaPlugin {
         CommandAPI.onLoad(new CommandAPIConfig().silentLogs(true));
         CommandAPI.onEnable(this);
 
+        taskMechanicManager = new TaskMechanicManager();
         configManager = new ConfigManager(core);
         commandManager = new CommandManager(core);
         mechanicsManager = new MechanicsManager(core);
@@ -44,6 +47,7 @@ public final class Mechanics extends JavaPlugin {
     public void onDisable() {
 
         this.adventure.close();
+        taskMechanicManager.shutdown();
 
 
     }
