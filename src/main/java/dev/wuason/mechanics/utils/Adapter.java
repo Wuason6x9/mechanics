@@ -78,6 +78,12 @@ public class Adapter {
 
     }
 
+    public static ItemStack getItemStackOriginal(String[] data){
+        ItemStack itemStack = getItemStackOriginal(data[0]);
+        itemStack.setAmount(Integer.parseInt(data[1]));
+        return itemStack;
+    }
+
     public static ItemStack getItemStackOriginal(String itemID){
 
         String type = itemID.substring(0,itemID.indexOf(":"));

@@ -3,6 +3,7 @@ package dev.wuason.mechanics.mechanics;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
@@ -113,7 +114,11 @@ public class MechanicsManager {
     public void reloadMechanics(){
         AdventureUtils.sendMessagePluginConsole(core,"<gold>Disabling the mechanics!");
         for(Mechanic m : mechanics){
+            if(m.getAddonMechanicName().equalsIgnoreCase("storagemechanic")) continue;
             core.getPluginLoader().disablePlugin(m.getPlugin());
+            Bukkit.getScheduler().cancelTasks(m.getPlugin());
+            HandlerList.unregisterAll(m.getPlugin());
+            System.gc();
         }
         while (!waitDisableMechanics()){}
         AdventureUtils.sendMessagePluginConsole(core,"<gold>Disabled mechanics!");
@@ -133,6 +138,9 @@ public class MechanicsManager {
 
     public boolean stopMechanic(Mechanic mechanic){
         core.getPluginLoader().disablePlugin(mechanic.getPlugin());
+        Bukkit.getScheduler().cancelTasks(mechanic.getPlugin());
+        HandlerList.unregisterAll(mechanic.getPlugin());
+        System.gc();
         mechanics.remove(mechanic);
         return true;
     }
@@ -154,6 +162,7 @@ public class MechanicsManager {
         return null;
     }
     public void reloadMechanic(Mechanic mechanic){
+        if(mechanic.getAddonMechanicName().equalsIgnoreCase("storagemechanic")) return;
         stopMechanic(mechanic);
         while (mechanic.getPlugin().isEnabled()){}
         startMechanic(mechanic.getAddonMechanicName());
@@ -200,5 +209,14 @@ public class MechanicsManager {
 
     public void setItemsAdderLoaded(boolean itemsAdderLoaded) {
         this.itemsAdderLoaded = itemsAdderLoaded;
+    }
+
+
+    public void stop(){
+        AdventureUtils.sendMessagePluginConsole("<red> Stopping Mechanics...");
+        while(!mechanics.isEmpty()){
+            stopMechanic(mechanics.get(0));
+        }
+
     }
 }
