@@ -13,3 +13,6 @@ softdepend:
   - WorldGuard
   - MythicMobs
   - MMOItems
+  - CustomItems
+  - ExecutableBlocks
+  - ExecutableItems

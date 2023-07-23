@@ -22,7 +22,7 @@ public class CommandManager {
         command.withSubcommands(new CommandAPICommand("reload")
                 .executes((sender, args) -> {
                     sender.sendMessage("reloading mechanics!");
-                    core.getMechanicsManager().reloadMechanics();
+                    core.getManager().getMechanicsManager().reloadMechanics();
                 })
         );
         command.withSubcommands(new CommandAPICommand("manager")
@@ -34,7 +34,7 @@ public class CommandManager {
 
                             String mechanicName = (String) args[0];
                             sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Starting mechanic!"));
-                            core.getMechanicsManager().startMechanic(mechanicName);
+                            core.getManager().getMechanicsManager().startMechanic(mechanicName);
 
                         })
 
@@ -46,8 +46,8 @@ public class CommandManager {
 
                             String mechanicName = (String) args[0];
                             sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Stopping mechanic!"));
-                            Mechanic mechanic = core.getMechanicsManager().getMechanic(mechanicName);
-                            Boolean started = mechanic != null ? core.getMechanicsManager().stopMechanic(mechanic) : false;
+                            Mechanic mechanic = core.getManager().getMechanicsManager().getMechanic(mechanicName);
+                            Boolean started = mechanic != null ? core.getManager().getMechanicsManager().stopMechanic(mechanic) : false;
                             if(!started){
                                 sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Error stopping mechanic!"));
                             }

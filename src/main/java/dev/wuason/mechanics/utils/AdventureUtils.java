@@ -1,7 +1,6 @@
 package dev.wuason.mechanics.utils;
 
 import dev.wuason.mechanics.Mechanics;
-import dev.wuason.mechanics.mechanics.Mechanic;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -16,10 +15,12 @@ public class AdventureUtils {
     public static String PREFIX = "<dark_gray>[<gold>$NAME<dark_gray>][<gold>$MECHANIC<dark_gray>] -> <white>";
 
     public static void consoleMessage(String text){
+        if(text == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
         Mechanics.getAdventureAudiences().console().sendMessage(mm.deserialize(text));
     }
     public static void playerMessage(String text, Player player){
+        if(text == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
         Mechanics.getAdventureAudiences().player(player).sendMessage(mm.deserialize(text));
     }

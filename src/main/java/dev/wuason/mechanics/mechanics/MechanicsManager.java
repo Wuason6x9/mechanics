@@ -5,20 +5,20 @@ import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class MechanicsManager {
 
     private Mechanics core;
     private boolean itemsAdderLoaded = false;
 
-    private ArrayList<Mechanic> mechanics = new ArrayList<>();
+    private HashMap<String, Mechanic> mechanics = new HashMap<>();
 
 
     File dir;
@@ -30,9 +30,9 @@ public class MechanicsManager {
 
         AdventureUtils.sendMessagePluginConsole("Loading mechanics!");
 
-        mechanics = new ArrayList<>();
+        mechanics = new HashMap<>();
 
-        dir = core.getConfigManager().createDir("mechanics");
+        dir = core.getManager().getConfigManager().createDir("mechanics");
 
         for(File file : dir.listFiles()){
 
@@ -41,37 +41,39 @@ public class MechanicsManager {
                 Plugin plugin = null;
 
                 try {
-                    plugin = core.getPluginLoader().loadPlugin(file);
+                    plugin = Bukkit.getPluginManager().loadPlugin(file);
                 } catch (InvalidPluginException e) {
                     core.getLogger().severe("Failed to load mechanic check jar: " + file.getName());
                     continue;
+                } catch (InvalidDescriptionException e) {
+                    throw new RuntimeException(e);
                 }
 
                 if(!plugin.getDescription().getDescription().contains("wuason.mechanic")){
 
                     core.getLogger().severe("Failed to load mechanic check jar: " + file.getName());
-                    core.getPluginLoader().disablePlugin(plugin);
+                    Bukkit.getPluginManager().disablePlugin(plugin);
                     continue;
                 }
 
                 if(plugin.getDescription().getDescription().split("\\.").length != 3){
 
                     core.getLogger().severe("Failed to load mechanic check jar: " + file.getName());
-                    core.getPluginLoader().disablePlugin(plugin);
+                    Bukkit.getPluginManager().disablePlugin(plugin);
                     continue;
 
                 }
 
-                Mechanic mechanic = new Mechanic(plugin.getDescription().getDescription().split("\\.")[2], file,plugin.getDescription().getName(), plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
-                core.getConfigManager().createConfigMechanic(mechanic);
-                mechanics.add(mechanic);
-                core.getPluginLoader().enablePlugin(plugin);
+                Mechanic mechanic = new Mechanic(plugin.getDescription().getDescription().split("\\.")[2].toLowerCase(Locale.ENGLISH), file,plugin.getDescription().getName(), plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
+                core.getManager().getConfigManager().createConfigMechanic(mechanic);
+                mechanics.put(mechanic.getAddonMechanicId(),mechanic);
+                Bukkit.getPluginManager().enablePlugin(plugin);
 
             }
 
         }
 
-        for(Mechanic mechanic : mechanics){
+        for(Mechanic mechanic : mechanics.values()){
             if(!mechanic.getPlugin().isEnabled()){
                 AdventureUtils.sendMessagePluginConsole("Mechanic Error: " + mechanic.getAddonMechanicName());
                 continue;
@@ -103,19 +105,15 @@ public class MechanicsManager {
     }
 
     public Mechanic getMechanic(String id){
-
-        for(Mechanic mechanic : mechanics){
-            if(mechanic.getAddonMechanicId().equals(id)) return mechanic;
-        }
-
-        return null;
+        Mechanic mechanic = mechanics.get(id);
+        return mechanic == null ? null : mechanic;
     }
 
     public void reloadMechanics(){
         AdventureUtils.sendMessagePluginConsole(core,"<gold>Disabling the mechanics!");
-        for(Mechanic m : mechanics){
+        for(Mechanic m : mechanics.values()){
             if(m.getAddonMechanicName().equalsIgnoreCase("storagemechanic")) continue;
-            core.getPluginLoader().disablePlugin(m.getPlugin());
+            Bukkit.getPluginManager().disablePlugin(m.getPlugin());
             Bukkit.getScheduler().cancelTasks(m.getPlugin());
             HandlerList.unregisterAll(m.getPlugin());
             System.gc();
@@ -128,7 +126,7 @@ public class MechanicsManager {
 
     public boolean waitDisableMechanics() {
         boolean a = true;
-        for (Mechanic m : mechanics) {
+        for (Mechanic m : mechanics.values()) {
             if (m.getPlugin().isEnabled()) {
                 return false;
             }
@@ -137,7 +135,7 @@ public class MechanicsManager {
     }
 
     public boolean stopMechanic(Mechanic mechanic){
-        core.getPluginLoader().disablePlugin(mechanic.getPlugin());
+        Bukkit.getPluginManager().disablePlugin(mechanic.getPlugin());
         Bukkit.getScheduler().cancelTasks(mechanic.getPlugin());
         HandlerList.unregisterAll(mechanic.getPlugin());
         System.gc();
@@ -148,11 +146,16 @@ public class MechanicsManager {
         File file = new File(dir.getPath() + "/" + mName.toLowerCase() + ".jar");
         if(file.exists()){
             try {
-                Plugin plugin = core.getPluginLoader().loadPlugin(file);
+                Plugin plugin = null;
+                try {
+                    plugin = Bukkit.getPluginManager().loadPlugin(file);
+                } catch (InvalidDescriptionException e) {
+                    throw new RuntimeException(e);
+                }
                 Mechanic mechanic = new Mechanic(plugin.getDescription().getDescription().split("\\.")[2], file,plugin.getDescription().getName(), plugin.getDescription().getAPIVersion(), plugin.getDescription().getVersion(),plugin);
-                core.getConfigManager().createConfigMechanic(mechanic);
-                mechanics.add(mechanic);
-                core.getPluginLoader().enablePlugin(mechanic.getPlugin());
+                core.getManager().getConfigManager().createConfigMechanic(mechanic);
+                mechanics.put(mechanic.getAddonMechanicId(), mechanic);
+                Bukkit.getPluginManager().enablePlugin(mechanic.getPlugin());
                 return mechanic;
             } catch (InvalidPluginException e) {
                 throw new RuntimeException(e);
@@ -174,7 +177,7 @@ public class MechanicsManager {
 
             String id = plugin.getDescription().getDescription().split("\\.")[2];
 
-            for(Mechanic mechanic : mechanics){
+            for(Mechanic mechanic : mechanics.values()){
                 if(mechanic.getAddonMechanicId().equals(id)) return mechanic;
             }
 
@@ -184,17 +187,12 @@ public class MechanicsManager {
     }
 
     public boolean existMechanic(String id){
-
-        for(Mechanic mechanic : mechanics){
-            if(mechanic.getAddonMechanicId().equals(id)) return true;
-        }
-
-        return false;
+        return mechanics.containsKey(id);
     }
 
     public Mechanic[] getMechanics(String apiMcVersion){
 
-        Mechanic[] m = (Mechanic[]) mechanics.stream().filter(mechanic -> mechanic.getApiMcVersion().equals(apiMcVersion)).toArray();
+        Mechanic[] m = (Mechanic[]) mechanics.values().stream().filter(mechanic -> mechanic.getApiMcVersion().equals(apiMcVersion)).toArray();
 
         return m;
     }
@@ -203,8 +201,8 @@ public class MechanicsManager {
         return dir;
     }
 
-    public ArrayList<Mechanic> getMechanics(){
-        return mechanics;
+    public Collection<Mechanic> getMechanics(){
+        return mechanics.values();
     }
 
     public void setItemsAdderLoaded(boolean itemsAdderLoaded) {

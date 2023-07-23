@@ -1,7 +1,6 @@
 package dev.wuason.mechanics.items;
 
 import org.bukkit.*;
-import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -13,74 +12,74 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemBuilder {
+public class ItemBuilderMechanic {
 
     private ItemStack item;
     private ItemMeta meta;
 
-    public ItemBuilder(Material material) {
+    public ItemBuilderMechanic(Material material) {
         this(material, 1);
     }
 
-    public ItemBuilder(Material material, int amount) {
+    public ItemBuilderMechanic(Material material, int amount) {
         this.item = new ItemStack(material, amount);
         this.meta = this.item.getItemMeta();
     }
 
-    public ItemBuilder(ItemStack item) {
+    public ItemBuilderMechanic(ItemStack item) {
         this.item = item;
         this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder(ItemStack item, int amount) {
+    public ItemBuilderMechanic(ItemStack item, int amount) {
         this.item = item;
         this.meta = item.getItemMeta();
         this.item.setAmount(amount);
     }
 
-    public ItemBuilder setName(String name) {
+    public ItemBuilderMechanic setName(String name) {
         this.meta.setDisplayName(name);
         return this;
     }
 
-    public ItemBuilder setAmount(int amount) {
+    public ItemBuilderMechanic setAmount(int amount) {
         this.item.setAmount(amount);
         return this;
     }
 
-    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
+    public ItemBuilderMechanic addEnchantment(Enchantment enchantment, int level) {
         this.meta.addEnchant(enchantment, level, true);
         return this;
     }
 
-    public ItemBuilder removeEnchantment(Enchantment enchantment) {
+    public ItemBuilderMechanic removeEnchantment(Enchantment enchantment) {
         this.meta.removeEnchant(enchantment);
         return this;
     }
 
-    public ItemBuilder addFlag(ItemFlag flag) {
+    public ItemBuilderMechanic addFlag(ItemFlag flag) {
         this.meta.addItemFlags(flag);
         return this;
     }
 
-    public ItemBuilder removeFlag(ItemFlag flag) {
+    public ItemBuilderMechanic removeFlag(ItemFlag flag) {
         this.meta.removeItemFlags(flag);
         return this;
     }
 
-    public ItemBuilder setLore(List<String> lore) {
+    public ItemBuilderMechanic setLore(List<String> lore) {
         this.meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder addLoreLine(String line) {
+    public ItemBuilderMechanic addLoreLine(String line) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         lore.add(line);
         this.meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder removeLoreLine(int index) {
+    public ItemBuilderMechanic removeLoreLine(int index) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         if (index >= 0 && index < lore.size()) {
             lore.remove(index);
@@ -89,50 +88,50 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean unbreakable) {
+    public ItemBuilderMechanic setUnbreakable(boolean unbreakable) {
         this.meta.setUnbreakable(unbreakable);
         return this;
     }
 
-    public ItemBuilder setColor(Color color) {
+    public ItemBuilderMechanic setColor(Color color) {
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
         }
         return this;
     }
 
-    public ItemBuilder setPotionEffect(PotionEffectType effectType, int duration, int amplifier) {
+    public ItemBuilderMechanic setPotionEffect(PotionEffectType effectType, int duration, int amplifier) {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).addCustomEffect(new PotionEffect(effectType, duration, amplifier), true);
         }
         return this;
     }
 
-    public ItemBuilder setPotionColor(Color color) {
+    public ItemBuilderMechanic setPotionColor(Color color) {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).setColor(color);
         }
         return this;
     }
 
-    public ItemBuilder clearPotionEffects() {
+    public ItemBuilderMechanic clearPotionEffects() {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).clearCustomEffects();
         }
         return this;
     }
 
-    public ItemBuilder setMaterial(Material material) {
+    public ItemBuilderMechanic setMaterial(Material material) {
         this.item.setType(material);
         return this;
     }
 
-    public ItemBuilder setDurability(short durability) {
-        this.item.setDurability(durability);
+    public ItemBuilderMechanic setDurability(short durability) {
+        ((Damageable) this.meta).setDamage(durability);
         return this;
     }
 
-    public ItemBuilder setGlowing(boolean glowing) {
+    public ItemBuilderMechanic setGlowing(boolean glowing) {
         if (glowing) {
             this.meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
             this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -143,7 +142,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setInvisible(boolean invisible) {
+    public ItemBuilderMechanic setInvisible(boolean invisible) {
         if (invisible) {
             this.meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         } else {
@@ -152,39 +151,39 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setCustomModelData(int data) {
+    public ItemBuilderMechanic setCustomModelData(int data) {
         this.meta.setCustomModelData(data);
         return this;
     }
 
-    public ItemBuilder setLocalizedName(String name) {
+    public ItemBuilderMechanic setLocalizedName(String name) {
         this.meta.setLocalizedName(name);
         return this;
     }
 
-    public ItemBuilder setLeatherArmorColor(Color color) {
+    public ItemBuilderMechanic setLeatherArmorColor(Color color) {
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
         }
         return this;
     }
 
-    public ItemBuilder clearMeta() {
+    public ItemBuilderMechanic clearMeta() {
         this.meta = this.item.getItemMeta();
         return this;
     }
 
-    public ItemBuilder removeLore() {
+    public ItemBuilderMechanic removeLore() {
         this.meta.setLore(new ArrayList<>());
         return this;
     }
 
-    public ItemBuilder setDamage(int damage) {
+    public ItemBuilderMechanic setDamage(int damage) {
         this.item.setDurability((short) damage);
         return this;
     }
 
-    public ItemBuilder replaceLoreLine(int index, String newLine) {
+    public ItemBuilderMechanic replaceLoreLine(int index, String newLine) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         if (index >= 0 && index < lore.size()) {
             lore.set(index, newLine);
@@ -193,21 +192,21 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLoreLine(int index, String line) {
+    public ItemBuilderMechanic setLoreLine(int index, String line) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         lore.set(index, line);
         this.meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder setFireworkEffect(FireworkEffect effect) {
+    public ItemBuilderMechanic setFireworkEffect(FireworkEffect effect) {
         if (meta instanceof FireworkEffectMeta) {
             ((FireworkEffectMeta) meta).setEffect(effect);
         }
         return this;
     }
 
-    public ItemBuilder addPage(String page) {
+    public ItemBuilderMechanic addPage(String page) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.addPage(page);
@@ -216,7 +215,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setAuthor(String author) {
+    public ItemBuilderMechanic setAuthor(String author) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setAuthor(author);
@@ -225,7 +224,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setTitle(String title) {
+    public ItemBuilderMechanic setTitle(String title) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setTitle(title);
@@ -234,7 +233,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setGeneration(BookMeta.Generation generation) {
+    public ItemBuilderMechanic setGeneration(BookMeta.Generation generation) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setGeneration(generation);
@@ -243,7 +242,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setPower(int power) {
+    public ItemBuilderMechanic setPower(int power) {
         if (item.getType() == Material.FIREWORK_ROCKET) {
             FireworkMeta fireworkMeta = (FireworkMeta) this.meta;
             fireworkMeta.setPower(power);
@@ -252,54 +251,47 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBaseColor(Color color) {
-        if (meta instanceof BannerMeta) {
-            ((BannerMeta) meta).setBaseColor(DyeColor.getByColor(color));
-        }
-        return this;
-    }
-
-    public ItemBuilder addPersistentData(NamespacedKey key, String value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, String value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, int value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, int value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, double value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, double value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, float value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, float value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.FLOAT, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, long value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, long value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, byte[] value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, byte[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE_ARRAY, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, int[] value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, int[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER_ARRAY, value);
         return this;
     }
 
-    public ItemBuilder addPersistentData(NamespacedKey key, long[] value) {
+    public ItemBuilderMechanic addPersistentData(NamespacedKey key, long[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG_ARRAY, value);
         return this;
     }
 
-    public ItemBuilder removePersistentData(NamespacedKey key) {
+    public ItemBuilderMechanic removePersistentData(NamespacedKey key) {
         this.meta.getPersistentDataContainer().remove(key);
         return this;
     }

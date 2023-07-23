@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.worldguard;
+package dev.wuason.mechanics.compatibilities.plugins.worldguard;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class WorldGuardUtils {
-    public static boolean isWorldEditEnabled(){
+    public static boolean isWorldGuardEnabled(){
         Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldGuard");
         if(plugin == null) return false;
         return plugin.isEnabled();
@@ -24,7 +24,6 @@ public class WorldGuardUtils {
 
     }
     public static RegionManager getRegionManager(World world){
-
         RegionManager regionManager = getContainerManager().get(BukkitAdapter.adapt(world));
         return regionManager;
     }

@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class LocalDataManager {
@@ -33,7 +34,21 @@ public class LocalDataManager {
         dir.mkdirs();
     }
 
+    public Data[] getAllData(String dataType){
 
+        File file = new File(dir.getPath() + "/" + dataType + "/");
+        if(!file.exists()) return null;
+        File[] files = Arrays.stream(file.listFiles()).filter(f -> f.getName().endsWith(".mechanic")).toArray(File[]::new);
+        if(files.length == 0) return null;
+        ArrayList<Data> datas = new ArrayList<>();
+
+        for(File f : files){
+            String id = f.getName().replace(".mechanic","");
+            Data localData = getData(id,dataType);
+            datas.add(localData);
+        }
+        return datas.toArray(Data[]::new);
+    }
 
     public static ArrayList<LocalDataManager> getLocalDataManagerList() {
         return localDataManagerList;

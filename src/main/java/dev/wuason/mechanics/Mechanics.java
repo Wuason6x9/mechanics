@@ -6,17 +6,13 @@ import dev.wuason.mechanics.config.ConfigManager;
 import dev.wuason.mechanics.mechanics.MechanicsManager;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mechanics extends JavaPlugin {
 
     private static BukkitAudiences adventure;
     private static Mechanics core = null;
-    private MechanicsManager mechanicsManager;
-    private CommandManager commandManager;
-    private ConfigManager configManager;
-
+    private Manager manager;
 
 
     public Mechanics(){
@@ -33,17 +29,15 @@ public final class Mechanics extends JavaPlugin {
         CommandAPI.onLoad(new CommandAPIConfig().silentLogs(true));
         CommandAPI.onEnable(this);
 
-        configManager = new ConfigManager(core);
-        commandManager = new CommandManager(core);
-        mechanicsManager = new MechanicsManager(core);
-        mechanicsManager.loadMechanics();
+        this.manager = new Manager(this);
+        this.manager.load();
 
     }
 
     @Override
     public void onDisable() {
 
-        mechanicsManager.stop();
+        manager.stop();
         this.adventure.close();
 
     }
@@ -56,18 +50,7 @@ public final class Mechanics extends JavaPlugin {
         return core;
     }
 
-    public MechanicsManager getMechanicsManager() {
-        return mechanicsManager;
+    public Manager getManager() {
+        return manager;
     }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-
-
-
 }

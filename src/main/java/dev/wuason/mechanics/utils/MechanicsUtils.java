@@ -8,7 +8,7 @@ public class MechanicsUtils {
 
     public static boolean isMechanicLoaded(Plugin plugin){
 
-        for(Mechanic mechanic : Mechanics.getInstance().getMechanicsManager().getMechanics()){
+        for(Mechanic mechanic : Mechanics.getInstance().getManager().getMechanicsManager().getMechanics()){
 
             if(mechanic.getAddonMechanicId().equals(plugin.getDescription().getDescription().split("\\.")[2])) return true;
 

@@ -12,7 +12,6 @@ public class Mechanic {
     private String version;
     private String apiMcVersion;
     private File dirConfig;
-    private Object managersClass;
     private Plugin plugin;
 
     public Mechanic(String addonMechanicId, File addonMechanicFile,String addonMechanicName, String apiMcVersion, String version,Plugin plugin) {
@@ -54,13 +53,5 @@ public class Mechanic {
 
     public void setDirConfig(File dirConfig) {
         this.dirConfig = dirConfig;
-    }
-
-    public Object getManagersClass() {
-        return managersClass;
-    }
-
-    public void setManagersClass(Object managersClass) {
-        this.managersClass = managersClass;
     }
 }

@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.utils;
 
+import dev.wuason.mechanics.compatibilities.AdapterManager;
 import dev.wuason.mechanics.Mechanics;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -76,7 +77,7 @@ public class Utils {
 
     public static ItemStack createItemStackByAdapter(String item, String displayName, List<String> lore, int quantity){
 
-        ItemStack itemStack = Adapter.getItemStack(item);
+        ItemStack itemStack = Mechanics.getInstance().getManager().getAdapterManager().getItemStack(item);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemStack.setAmount(quantity);
         if(displayName != null){

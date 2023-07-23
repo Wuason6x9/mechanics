@@ -40,13 +40,6 @@ public class ConfigManager {
 
     }
 
-    public void loadConfigMechanics(){
-
-        dirConfigMechanics = new File(core.getDataFolder().getPath() + "/configs/");
-        dirConfigMechanics.mkdirs();
-
-    }
-
     public void createConfigMechanic(Mechanic mechanic){
 
         File mechanicConfigDir = new File(core.getDataFolder().getPath() + "/configs/" + mechanic.getAddonMechanicId());

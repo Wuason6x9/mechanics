@@ -50,9 +50,11 @@ dependencies {
     compileOnly 'com.github.oraxen:oraxen:1.155.0'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.5.0b'
     compileOnly 'me.clip:placeholderapi:2.11.3'
-    compileOnly 'io.lumine:Mythic-Dist:5.2.1'
-    compileOnly 'net.Indyuce:MMOItems-API:6.9.2-SNAPSHOT'
+    compileOnly 'io.lumine:Mythic-Dist:5.3.5'
+    compileOnly 'io.lumine:MythicLib-dist:1.6.2-SNAPSHOT'
+    compileOnly 'net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 def targetJavaVersion = 17
