@@ -3,9 +3,11 @@ package dev.wuason.mechanics.compatibilities.plugins.executableblocks;
 import com.ssomar.executableblocks.api.ExecutableBlocksAPI;
 import com.ssomar.executableblocks.executableblocks.ExecutableBlock;
 import com.ssomar.executableblocks.executableblocks.ExecutableBlocksManager;
+import com.ssomar.executableblocks.executableblocks.internal.InternalData;
 import com.ssomar.executableblocks.executableblocks.placedblocks.ExecutableBlockPlaced;
 import dev.wuason.mechanics.compatibilities.Implementation;
 import org.bukkit.block.Block;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
@@ -19,11 +21,12 @@ public class ExecutableBlocksImpl extends Implementation {
     @Override
     public ItemStack getAdapterItem(String id) {
         if(!isEnabled()) return null;
+
         ExecutableBlocksManager executableBlocksManager = ExecutableBlocksAPI.getExecutableBlocksManager();
         if(!executableBlocksManager.isValidID(id)) return null;
         ExecutableBlock executableBlock = executableBlocksManager.getExecutableBlock(id).orElse(null);
         if(executableBlock == null) return null;
-        return executableBlock.buildItem(1, Optional.of(null));
+        return executableBlock.buildItem(1,null,null);
     }
 
     @Override

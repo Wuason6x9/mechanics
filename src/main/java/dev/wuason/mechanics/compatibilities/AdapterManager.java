@@ -7,6 +7,7 @@ import dev.wuason.mechanics.compatibilities.plugins.executableitems.ExecutableIt
 import dev.wuason.mechanics.compatibilities.plugins.itemsadder.ItemsAdderImpl;
 import dev.wuason.mechanics.compatibilities.plugins.mmoitems.MMOItemsImpl;
 import dev.wuason.mechanics.compatibilities.plugins.mythic.MythicImpl;
+import dev.wuason.mechanics.compatibilities.plugins.mythiccucible.MythicCrucibleImpl;
 import dev.wuason.mechanics.compatibilities.plugins.oraxen.OraxenImpl;
 import dev.wuason.mechanics.compatibilities.plugins.storagemechanic.StorageMechanicImpl;
 import dev.wuason.mechanics.utils.AdventureUtils;
@@ -30,7 +31,7 @@ public class AdapterManager {
         load();
     }
     public void load(){
-        Implementation[] implementations = {new VanillaImpl(), new StorageMechanicImpl(), new OraxenImpl(), new MythicImpl(), new MMOItemsImpl(), new ItemsAdderImpl(), new ExecutableItemsImpl(), new ExecutableBlocksImpl(), new CustomItemsImpl()};
+        Implementation[] implementations = {new VanillaImpl(), new StorageMechanicImpl(), new OraxenImpl(), new MythicImpl(), new MMOItemsImpl(), new ItemsAdderImpl(), new ExecutableItemsImpl(), new ExecutableBlocksImpl(), new CustomItemsImpl(), new MythicCrucibleImpl()};
         AdventureUtils.sendMessagePluginConsole(" <aqua>Implementations:");
         AdventureUtils.sendMessagePluginConsole(" <yellow>" + types.keySet().stream().toList());
     }
@@ -62,9 +63,11 @@ public class AdapterManager {
         }
         return id;
     }
-    public boolean existAdapterID(String id){
+    public boolean existAdapterID(String itemID){
+        String type = itemID.substring(0,itemID.indexOf(":"));
+        itemID = itemID.substring(itemID.indexOf(":") + 1);
         for(Implementation impl : types.values()){
-            if(impl.existItemAdapter(id)) return true;
+            if(impl.existItemAdapter(itemID)) return true;
         }
         return false;
     }
@@ -79,18 +82,9 @@ public class AdapterManager {
 
     public boolean isItemsValid(List<String> i){
         for(String str : i){
-            if(!isItemValid(str)) return false;
+            if(!existAdapterID(str)) return false;
         }
         return true;
-    }
-
-    public boolean isItemValid(String itemID){
-
-        String type = itemID.substring(0,itemID.indexOf(":"));
-        itemID = itemID.substring(itemID.indexOf(":") + 1);
-
-
-        return false;
     }
 
     public static HashMap<String, Implementation> getTypes() {

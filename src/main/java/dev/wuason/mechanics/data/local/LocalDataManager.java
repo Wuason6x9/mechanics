@@ -74,7 +74,6 @@ public class LocalDataManager {
     public void removeData(String dataType, String dataFileName){
         if(dataMap.containsKey(dataFileName)) {
             dataMap.remove(dataFileName);
-            return;
         }
         File file = new File(dir.getPath() + "/" + dataType + "/" + dataFileName + ".mechanic");
         if(file.exists()) file.delete();
@@ -112,13 +111,11 @@ public class LocalDataManager {
     }
     public boolean existData(String dataType, String dataFileName){
         File file = new File(dir.getPath() + "/" + dataType + "/" + dataFileName + ".mechanic");
-        if(dataMap.containsKey(dataFileName)){
+        if (this.dataMap.containsKey(dataFileName)) {
             return true;
+        } else {
+            return file.exists() && this.loadData(dataType, dataFileName) != null;
         }
-        if(file.exists()){
-            if(loadData(dataType,dataFileName) != null) return true;
-        }
-        return false;
     }
 
     public Data loadData(String dataType, String dataFileName){

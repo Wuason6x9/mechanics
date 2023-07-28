@@ -139,7 +139,7 @@ public class MechanicsManager {
         Bukkit.getScheduler().cancelTasks(mechanic.getPlugin());
         HandlerList.unregisterAll(mechanic.getPlugin());
         System.gc();
-        mechanics.remove(mechanic);
+        mechanics.remove(mechanic.getAddonMechanicId());
         return true;
     }
     public Mechanic startMechanic(String mName){
@@ -213,7 +213,7 @@ public class MechanicsManager {
     public void stop(){
         AdventureUtils.sendMessagePluginConsole("<red> Stopping Mechanics...");
         while(!mechanics.isEmpty()){
-            stopMechanic(mechanics.get(0));
+            stopMechanic(mechanics.values().stream().toList().get(0));
         }
 
     }

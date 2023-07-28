@@ -22,7 +22,7 @@ public class ExecutableItemsImpl extends Implementation {
         if(!executableItemsManager.isValidID(id)) return null;
         ExecutableItemInterface executableItem = executableItemsManager.getExecutableItem(id).orElse(null);
         if(executableItem == null) return null;
-        return executableItem.buildItem(1, Optional.of(null));
+        return executableItem.buildItem(1, Optional.empty());
     }
 
     @Override
