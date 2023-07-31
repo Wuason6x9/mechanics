@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.compatibilities;
 
+import de.tr7zw.nbtapi.NBT;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.compatibilities.plugins.customitems.CustomItemsImpl;
 import dev.wuason.mechanics.compatibilities.plugins.executableblocks.ExecutableBlocksImpl;
@@ -44,9 +45,11 @@ public class AdapterManager {
         return impl.getAdapterItem(itemID);
     }
 
-    public String getAdapterID(ItemStack itemStack){
+    public String getAdapterID(ItemStack i){
+        ItemStack itemStack = i.clone();
         if(itemStack == null) return null;
-        String id = "mc:" + itemStack.getType().toString().toLowerCase();
+        itemStack.setAmount(1);
+        String id = "mc:" + NBT.itemStackToNBT(itemStack);
         for(Implementation impl : types.values()){
             String itemId = impl.getAdapterID(itemStack);
             if(itemId != null) id = itemId;
@@ -56,7 +59,7 @@ public class AdapterManager {
 
     public String getAdapterID(Block block){
         if(block == null) return null;
-        String id = "mc:" + block.getType().toString().toLowerCase();
+        String id = "mc:" + NBT.itemStackToNBT(new ItemStack(block.getType()));
         for(Implementation impl : types.values()){
             String itemId = impl.getAdapterID(block);
             if(itemId != null) id = itemId;

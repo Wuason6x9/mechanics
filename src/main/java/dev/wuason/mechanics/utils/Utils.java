@@ -63,7 +63,7 @@ public class Utils {
         BukkitObjectInputStream objectInputStream = new BukkitObjectInputStream(byteArrayInputStream);
         return objectInputStream.readObject();
     }
-
+    @Deprecated
     public static ItemStack createBasicItemStack(String customName, int customModelData, Material material){
 
         ItemStack itemStack = new ItemStack(material);
@@ -74,7 +74,7 @@ public class Utils {
         return itemStack;
 
     }
-
+    @Deprecated
     public static ItemStack createItemStackByAdapter(String item, String displayName, List<String> lore, int quantity){
 
         ItemStack itemStack = Mechanics.getInstance().getManager().getAdapterManager().getItemStack(item);

@@ -1,5 +1,12 @@
 package dev.wuason.mechanics.items;
 
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.NBTBlock;
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.plugin.NBTAPI;
+import dev.wuason.mechanics.Mechanics;
+import io.th0rgal.oraxen.shaded.triumphteam.gui.components.util.ItemNbt;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -23,6 +30,15 @@ public class ItemBuilderMechanic {
 
     public ItemBuilderMechanic(Material material, int amount) {
         this.item = new ItemStack(material, amount);
+        this.meta = this.item.getItemMeta();
+    }
+    public ItemBuilderMechanic(String adapterId, int amount){
+        this.item = Mechanics.getInstance().getManager().getAdapterManager().getItemStack(adapterId);
+        this.item.setAmount(amount);
+        this.meta = this.item.getItemMeta();
+    }
+    public ItemBuilderMechanic(String nbtJson){
+        this.item = NBT.itemStackFromNBT(NBT.parseNBT(nbtJson));
         this.meta = this.item.getItemMeta();
     }
 

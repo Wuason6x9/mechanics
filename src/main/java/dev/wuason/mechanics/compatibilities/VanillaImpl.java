@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.compatibilities;
 
+import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +14,7 @@ public class VanillaImpl extends Implementation{
 
     @Override
     public ItemStack getAdapterItem(String id) {
+        if(id.contains("{") && id.contains("}")) return NBT.itemStackFromNBT(NBT.parseNBT(id));
         if(Material.getMaterial(id.toUpperCase(Locale.ENGLISH),false) == null) return null;
         return new ItemStack(Material.valueOf(id.toUpperCase(Locale.ENGLISH)));
     }

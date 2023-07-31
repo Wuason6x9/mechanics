@@ -10,9 +10,14 @@ softdepend:
   - PlaceholderAPI
   - ItemsAdder
   - Oraxen
-  - WorldGuard
   - MythicMobs
   - MMOItems
   - CustomItems
   - ExecutableBlocks
   - ExecutableItems
+  - Towny
+  - WorldGuard
+  - Factions
+  - Lands
+  - PlotSquared
+  - CrashClaim
