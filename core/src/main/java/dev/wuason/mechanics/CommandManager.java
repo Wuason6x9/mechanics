@@ -116,6 +116,14 @@ public class CommandManager {
                         })
                 )
         );
+        command.withSubcommands(new CommandAPICommand("test")
+                .executes((sender, args) -> {
+                    Player player = (Player) sender;
+                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.GOAL);
+                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.CHALLENGE);
+                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.TASK);
+                })
+        );
         command.register();
 
     }

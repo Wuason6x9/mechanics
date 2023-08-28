@@ -1,10 +1,14 @@
 package dev.wuason.nms.nms_1_18_R2;
 
 import dev.wuason.nms.wrappers.VersionWrapper;
+import net.minecraft.advancements.*;
+import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
+import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -17,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
 
 
 public class VersionWrapper_1_18_R2 implements VersionWrapper {
@@ -143,5 +149,25 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
         public void setRepairItem(ItemStack repairItem) {
             this.repairItem = repairItem;
         }
+    }
+    @Override
+    public void sendToast(Player player, ItemStack icon, String title, String description, ToastType toastType){
+        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.nullToEmpty(title),Component.nullToEmpty(description),null, FrameType.valueOf(toastType.toString()),true,false,true);
+        AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
+        ResourceLocation id = new ResourceLocation("custom","custom");
+        Criterion criterion = new Criterion(new ImpossibleTrigger.TriggerInstance());
+        HashMap<String, Criterion> criteria = new HashMap<>(){{put("impossible", criterion);}};
+        String[][] requirements = {{"impossible"}};
+        Advancement advancement = new Advancement(id,null,displayInfo,advancementRewards,criteria,requirements);
+        Map<ResourceLocation, AdvancementProgress> advancementsToGrant = new HashMap<>();
+        AdvancementProgress advancementProgress = new AdvancementProgress();
+        advancementProgress.update(criteria,requirements);
+        advancementProgress.getCriterion("impossible").grant();
+        advancementsToGrant.put(id, advancementProgress);
+        ClientboundUpdateAdvancementsPacket packet = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(){{add(advancement);}},new HashSet<>(),advancementsToGrant);
+        serverPlayer.connection.send(packet);
+        ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(),new HashSet<>(){{add(id);}},new HashMap<>());
+        serverPlayer.connection.send(packet2);
     }
 }
