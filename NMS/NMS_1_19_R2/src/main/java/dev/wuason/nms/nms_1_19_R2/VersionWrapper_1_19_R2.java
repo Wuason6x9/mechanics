@@ -8,21 +8,27 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.Recipe;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R2.block.data.type.CraftHopper;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_19_R2.inventory.util.CraftTileInventoryConverter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -153,10 +159,11 @@ public class VersionWrapper_1_19_R2 implements VersionWrapper {
         }
     }
 
+
     @Override
-    public void sendToast(Player player, ItemStack icon, String title, String description, ToastType toastType){
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType){
         ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
-        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.literal(title),Component.literal(description),null, FrameType.valueOf(toastType.toString()),true,false,true);
+        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.Serializer.fromJson(titleJson),Component.literal("."),null, FrameType.valueOf(toastType.toString()),true,false,true);
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
         ResourceLocation id = new ResourceLocation("custom","custom");
         Criterion criterion = new Criterion(new ImpossibleTrigger.TriggerInstance());
@@ -172,6 +179,15 @@ public class VersionWrapper_1_19_R2 implements VersionWrapper {
         serverPlayer.connection.send(packet);
         ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(),new HashSet<>(){{add(id);}},new HashMap<>());
         serverPlayer.connection.send(packet2);
+    }
+    @Override
+    public void updateCurrentInventoryTitle(String jsonTitle, Player player){
+        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+        MenuType<?> menuType = serverPlayer.containerMenu.getType();
+        int invId = serverPlayer.containerMenu.containerId;
+        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId,menuType,Component.Serializer.fromJson(jsonTitle));
+        serverPlayer.connection.send(packetOpen);
+        serverPlayer.initMenu(serverPlayer.containerMenu);
     }
 
 }

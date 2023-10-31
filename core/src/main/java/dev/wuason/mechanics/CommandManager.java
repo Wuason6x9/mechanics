@@ -1,18 +1,17 @@
 package dev.wuason.mechanics;
 
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.EntitySelectorArgument;
-import dev.jorel.commandapi.arguments.IntegerArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
-import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.arguments.*;
 import dev.wuason.mechanics.compatibilities.AdapterManager;
 import dev.wuason.mechanics.items.ItemBuilderMechanic;
 import dev.wuason.mechanics.mechanics.Mechanic;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
 import dev.wuason.nms.wrappers.VersionWrapper;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -68,9 +67,28 @@ public class CommandManager {
                 )
 
         );
+        command.withSubcommands(new CommandAPICommand("debug")
+                .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")
+                        .withArguments(new GreedyStringArgument("format"))
+                        .executes((sender, args) -> {
+                            String format = (String) args.get(0);
+                            sender.sendMessage( "(" + AdventureUtils.deserializeJson(format,null) + ")");
+                        })
+                )
+                .withSubcommands(new CommandAPICommand("openInventoryTestMiniMessage")
+                        .withArguments(new GreedyStringArgument("format"))
+                        .executes((sender, args) -> {
+                            Player player = (Player) sender;
+                            String format = (String) args.get(0);
+                            System.out.println(AdventureUtils.deserializeLegacy(format,player));
+                            Inventory inventory = Bukkit.createInventory(player,54,AdventureUtils.deserializeLegacy(format,player));
+                            player.openInventory(inventory);
+                        })
+                )
+        );
         command.withSubcommands(new CommandAPICommand("adapter")
                 .withSubcommands(new CommandAPICommand("get")
-                        .withArguments(new StringArgument("id"))
+                        .withArguments(new TextArgument("id"))
                         .withArguments(new IntegerArgument("amount"))
                         .executes((sender, args) -> {
                             AdapterManager adapterManager = core.getManager().getAdapterManager();
@@ -86,7 +104,7 @@ public class CommandManager {
                 )
                 .withSubcommands(new CommandAPICommand("give")
                         .withArguments(new EntitySelectorArgument.ManyPlayers("player"))
-                        .withArguments(new StringArgument("id"))
+                        .withArguments(new TextArgument("id"))
                         .withArguments(new IntegerArgument("amount"))
                         .executes((sender, args) -> {
                             Collection<Player> players = (Collection<Player>) args.get(0);
@@ -115,14 +133,6 @@ public class CommandManager {
                             AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
                         })
                 )
-        );
-        command.withSubcommands(new CommandAPICommand("test")
-                .executes((sender, args) -> {
-                    Player player = (Player) sender;
-                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.GOAL);
-                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.CHALLENGE);
-                    core.getServerNmsVersion().getVersionWrapper().sendToast(player,new ItemStack(Material.STONE),"test", "test", VersionWrapper.ToastType.TASK);
-                })
         );
         command.register();
 

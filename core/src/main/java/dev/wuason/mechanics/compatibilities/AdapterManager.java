@@ -44,6 +44,13 @@ public class AdapterManager {
         if(impl == null) return null;
         return impl.getAdapterItem(itemID);
     }
+    public String computeAdapterId(String itemId){
+        String type = itemId.substring(0,itemId.indexOf(":")).toUpperCase(Locale.ENGLISH);
+        if(type.equals("MC")){
+            return getAdapterID(getItemStack(itemId));
+        }
+        return itemId;
+    }
 
     public String getAdapterID(ItemStack i){
         ItemStack itemStack = i.clone();

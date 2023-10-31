@@ -4,6 +4,8 @@ import dev.wuason.mechanics.Mechanics;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -29,6 +31,11 @@ public class AdventureUtils {
         if(player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
         Mechanics.getAdventureAudiences().player(player).sendMessage(mm.deserialize(text));
     }
+    public static String deserializeJson(String text, Player player){
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
+        if(text != null) return GsonComponentSerializer.gson().serialize(AdventureUtils.deserialize(text));
+        return null;
+    }
     public static void sendMessage(CommandSender sender, String text){
         if(text == null || sender == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
@@ -44,7 +51,7 @@ public class AdventureUtils {
     }
     public static String deserializeLegacy(String text, Player player){
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
-        if(text != null) return LegacyComponentSerializer.legacySection().serialize(AdventureUtils.deserialize(text));
+        if(text != null) return LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(text));
 
         return null;
 
@@ -55,7 +62,7 @@ public class AdventureUtils {
 
         for(String s : listText){
 
-            deserialized.add(LegacyComponentSerializer.legacySection().serialize(AdventureUtils.deserialize(s)));
+            deserialized.add(LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(s)));
 
         }
 

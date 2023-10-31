@@ -4,6 +4,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -52,6 +53,13 @@ public class ItemBuilderMechanic {
 
     public ItemBuilderMechanic setName(String name) {
         this.meta.setDisplayName(name);
+        return this;
+    }
+    public ItemBuilderMechanic setNameWithMiniMessage(String name) {
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.addCompound("display").setString("Name", AdventureUtils.deserializeJson(name,null));
+        item = nbtItem.getItem();
+        meta = item.getItemMeta();
         return this;
     }
     public ItemStack buildWithVoidName() {

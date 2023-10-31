@@ -28,6 +28,7 @@ public interface VersionWrapper {
         public ItemStack getRepairItem();
         public void setRepairItem(ItemStack repairItem);
     }
+    public void updateCurrentInventoryTitle(String jsonTitle, Player player);
     public enum ToastType{
         TASK,
         CHALLENGE,
@@ -35,5 +36,5 @@ public interface VersionWrapper {
 
     }
 
-    public void sendToast(Player player, ItemStack icon, String title, String description, ToastType toastType);
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType);
 }

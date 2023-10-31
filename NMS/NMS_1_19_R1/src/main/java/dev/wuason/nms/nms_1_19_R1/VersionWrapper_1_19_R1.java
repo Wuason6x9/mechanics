@@ -150,9 +150,9 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
         }
     }
     @Override
-    public void sendToast(Player player, ItemStack icon, String title, String description, ToastType toastType){
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType){
         ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
-        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.literal(title),Component.literal(description),null, FrameType.valueOf(toastType.toString()),true,false,true);
+        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.Serializer.fromJson(titleJson),Component.literal("."),null, FrameType.valueOf(toastType.toString()),true,false,true);
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
         ResourceLocation id = new ResourceLocation("custom","custom");
         Criterion criterion = new Criterion(new ImpossibleTrigger.TriggerInstance());
@@ -168,5 +168,14 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
         serverPlayer.connection.send(packet);
         ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(),new HashSet<>(){{add(id);}},new HashMap<>());
         serverPlayer.connection.send(packet2);
+    }
+    @Override
+    public void updateCurrentInventoryTitle(String jsonTitle, Player player){
+        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+        MenuType<?> menuType = serverPlayer.containerMenu.getType();
+        int invId = serverPlayer.containerMenu.containerId;
+        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId,menuType,Component.Serializer.fromJson(jsonTitle));
+        serverPlayer.connection.send(packetOpen);
+        serverPlayer.initMenu(serverPlayer.containerMenu);
     }
 }

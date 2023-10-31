@@ -28,7 +28,7 @@ public final class Mechanics extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        checkVersion();
+        if(checkVersion()) return;
         serverNmsVersion = new ServerNmsVersion();
         adventure = BukkitAudiences.create(this);
         AdventureUtils.sendMessagePluginConsole("Starting mechanics plugin!");
@@ -38,6 +38,8 @@ public final class Mechanics extends JavaPlugin {
         ProtectionLib.init(this);
         this.manager = new Manager(this);
         this.manager.load();
+
+
 
     }
 
@@ -62,7 +64,7 @@ public final class Mechanics extends JavaPlugin {
         return manager;
     }
 
-    public void checkVersion(){
+    public boolean checkVersion(){
         if(VersionNmsDetector.getServerVersion().equals(VersionNmsDetector.ServerVersion.UNSUPPORTED)){
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
@@ -71,8 +73,9 @@ public final class Mechanics extends JavaPlugin {
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(core);
-            return;
+            return true;
         }
+        return false;
     }
 
     public ServerNmsVersion getServerNmsVersion() {

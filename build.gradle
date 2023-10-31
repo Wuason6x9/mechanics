@@ -6,7 +6,7 @@ plugins {
 allprojects{
 
     group = 'dev.wuason'
-    version = '1.0.1.7'
+    version = '1.0.1.9'
 
     repositories {
         mavenCentral()
@@ -53,7 +53,9 @@ shadowJar {
     relocate("net.kyori", "dev.wuason.kyori")
     relocate("de.tr7zw.changeme.nbtapi","dev.wuason.nbtapi")
     relocate("io.th0rgal.protectionlib", "dev.wuason.protectionlib")
-    relocate 'fr.mrmicky.fastinv', 'dev.wuason.fastinv'
+    relocate("fr.mrmicky.fastinv", "dev.wuason.fastinv")
+    relocate("bsh", "dev.wuason.bsh")
+    relocate("dev.dejvokep.boostedyaml", "dev.wuason.boostedyaml")
     destinationDirectory.set(file("$rootDir/plugin"))
     archiveClassifier.set("")
     archiveFileName.set("Mechanics-" + project.version + ".jar")
