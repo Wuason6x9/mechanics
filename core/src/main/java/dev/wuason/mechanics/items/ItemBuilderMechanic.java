@@ -1,12 +1,12 @@
 package dev.wuason.mechanics.items;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -16,11 +16,15 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemBuilderMechanic {
 
     private ItemStack item;
     private ItemMeta meta;
+    public static ItemBuilderMechanic copyOf(ItemStack item) {
+        return new ItemBuilderMechanic(item.clone());
+    }
 
     public ItemBuilderMechanic(Material material) {
         this(material, 1);
@@ -31,7 +35,7 @@ public class ItemBuilderMechanic {
         this.meta = this.item.getItemMeta();
     }
     public ItemBuilderMechanic(String adapterId, int amount){
-        this.item = Mechanics.getInstance().getManager().getAdapterManager().getItemStack(adapterId);
+        this.item = Adapter.getInstance().getItemStack(adapterId);
         this.item.setAmount(amount);
         this.meta = this.item.getItemMeta();
     }
@@ -52,14 +56,21 @@ public class ItemBuilderMechanic {
     }
 
     public ItemBuilderMechanic setName(String name) {
+        if(name == null) return this;
         this.meta.setDisplayName(name);
         return this;
     }
     public ItemBuilderMechanic setNameWithMiniMessage(String name) {
+        if(name == null) return this;
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.addCompound("display").setString("Name", AdventureUtils.deserializeJson(name,null));
         item = nbtItem.getItem();
         meta = item.getItemMeta();
+        return this;
+    }
+    public ItemBuilderMechanic setSkullOwner(Player player){
+        SkullMeta skullMeta = (SkullMeta) meta;
+        skullMeta.setOwningPlayer(player);
         return this;
     }
     public ItemStack buildWithVoidName() {
@@ -95,6 +106,9 @@ public class ItemBuilderMechanic {
     }
 
     public ItemBuilderMechanic setLore(List<String> lore) {
+        if(lore == null){
+            lore = new ArrayList<>();
+        }
         this.meta.setLore(lore);
         return this;
     }
@@ -328,6 +342,17 @@ public class ItemBuilderMechanic {
 
     public boolean hasPersistentData(NamespacedKey key) {
         return this.meta.getPersistentDataContainer().has(key, PersistentDataType.STRING);
+    }
+
+    public ItemBuilderMechanic meta(Consumer<ItemMeta> consumer) {
+        consumer.accept(this.meta);
+        return this;
+    }
+
+    public ItemBuilderMechanic edit(Consumer<ItemStack> consumer) {
+        consumer.accept(this.item);
+        this.meta = this.item.getItemMeta();
+        return this;
     }
 
     // Para los próximos 10 métodos, necesitamos especificar el tipo de dato con el que estamos trabajando.

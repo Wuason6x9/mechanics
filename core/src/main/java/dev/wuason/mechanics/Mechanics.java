@@ -2,17 +2,18 @@ package dev.wuason.mechanics;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.wuason.mechanics.mechanics.MechanicAddon;
+import dev.wuason.mechanics.utils.AsciiUtils;
 import dev.wuason.nms.utils.VersionNmsDetector;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.nms.wrappers.ServerNmsVersion;
 import io.th0rgal.protectionlib.ProtectionLib;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.awt.*;
+import java.util.Arrays;
 
 public final class Mechanics extends JavaPlugin {
 
@@ -27,27 +28,36 @@ public final class Mechanics extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
+    }
+
+    @Override
     public void onEnable() {
         if(checkVersion()) return;
         serverNmsVersion = new ServerNmsVersion();
         adventure = BukkitAudiences.create(this);
-        AdventureUtils.sendMessagePluginConsole("Starting mechanics plugin!");
-        AdventureUtils.sendMessagePluginConsole("NMS: <aqua>" + VersionNmsDetector.getServerVersion());
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
+
+        printMechanics();
+        AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
+        AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
+        AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");
+        AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNmsDetector.getServerVersion());
+        AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon).map(plugin -> plugin.getName()).toList());
         CommandAPI.onEnable();
         ProtectionLib.init(this);
         this.manager = new Manager(this);
         this.manager.load();
-
-
-
+        AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
+        AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
+        System.out.println();
     }
 
     @Override
     public void onDisable() {
 
         manager.stop();
-        this.adventure.close();
+        adventure.close();
         CommandAPI.onDisable();
 
     }
@@ -62,6 +72,10 @@ public final class Mechanics extends JavaPlugin {
 
     public Manager getManager() {
         return manager;
+    }
+
+    public void printMechanics(){
+        AdventureUtils.sendMessagePluginConsole("<gold>" + AsciiUtils.convertToAscii(AsciiUtils.createTextImage("Mechanics", new Font("Arial", Font.BOLD, 25), Color.BLACK)));
     }
 
     public boolean checkVersion(){

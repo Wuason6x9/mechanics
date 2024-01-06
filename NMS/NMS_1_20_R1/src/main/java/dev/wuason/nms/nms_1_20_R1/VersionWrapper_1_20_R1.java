@@ -1,6 +1,10 @@
 package dev.wuason.nms.nms_1_20_R1;
 
+import dev.wuason.nms.wrappers.DataInfo;
 import dev.wuason.nms.wrappers.VersionWrapper;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPipeline;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.BlockPos;
@@ -11,22 +15,160 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryAnvil;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 
 public class VersionWrapper_1_20_R1 implements VersionWrapper {
     public String getVersion(){
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
         return craftServer.getServer().getServerVersion();
+    }
+    @Override
+    public VersionWrapper.AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
+        return new AnvilInventoryCustom(player, title, holder);
+    }
+
+    public class AnvilInventoryCustom implements VersionWrapper.AnvilInventoryCustom {
+        private final AnvilInventory inventory;
+        private final AnvilMenu anvilMenu;
+        private final ServerPlayer serverPlayer;
+        private final InventoryHolder holder;
+        private final InventoryView inventoryView;
+
+        public AnvilInventoryCustom(Player player, String title, InventoryHolder holder){
+            //DEF VARS
+            serverPlayer = ((CraftPlayer)player).getHandle();
+            this.holder = holder;
+
+            //CREATE INVENTORY
+            int invId = serverPlayer.nextContainerCounter();
+            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()){
+
+                private CraftInventoryView bukkitEntity;
+
+                @Override
+                public CraftInventoryView getBukkitView() {
+                    if (this.bukkitEntity != null) {
+                        return this.bukkitEntity;
+                    }
+
+                    CraftInventory inventory = new CraftInventoryAnvil(access.getLocation(), this.inputSlots, this.resultSlots, this){
+                        @Override
+                        public InventoryHolder getHolder() {
+                            return holder;
+                        }
+
+                    };
+                    this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+                    return this.bukkitEntity;
+                }
+
+            };
+
+            anvilMenu.setTitle(Component.literal(title));
+
+            this.anvilMenu = anvilMenu;
+            this.inventory = (AnvilInventory) anvilMenu.getBukkitView().getTopInventory();
+            this.inventoryView = anvilMenu.getBukkitView();
+
+
+
+        }
+
+        @Override
+        public void open(String title){
+            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL,Component.literal(title));
+            serverPlayer.connection.send(packet);
+            serverPlayer.containerMenu = anvilMenu;
+            serverPlayer.initMenu(anvilMenu);
+        }
+        @Override
+        public void open(){
+            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL,anvilMenu.getTitle());
+            serverPlayer.connection.send(packet);
+            serverPlayer.containerMenu = anvilMenu;
+            serverPlayer.initMenu(anvilMenu);
+        }
+        @Override
+        public void open(Player player){
+            ServerPlayer srvPlayer = ((CraftPlayer)player).getHandle();
+            if(player.equals(anvilMenu.getBukkitView().getPlayer())) open();
+            int invId = srvPlayer.nextContainerCounter();
+            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()){
+                private CraftInventoryView bukkitEntity;
+                @Override
+                public CraftInventoryView getBukkitView() {
+                    if (this.bukkitEntity != null) {
+                        return this.bukkitEntity;
+                    }
+                    this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+                    return this.bukkitEntity;
+                }
+            };
+            anvilMenu.setTitle(this.anvilMenu.getTitle());
+            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(invId, MenuType.ANVIL, anvilMenu.getTitle());
+            srvPlayer.connection.send(packet);
+            srvPlayer.containerMenu = anvilMenu;
+            srvPlayer.initMenu(anvilMenu);
+        }
+
+        @Override
+        public void setCheckReachable(boolean r){
+            anvilMenu.checkReachable = r;
+        }
+        @Override
+        public Object getAnvilMenuNMS(){
+            return anvilMenu;
+        }
+        @Override
+        public InventoryHolder getHolder() {
+            return holder;
+        }
+        @Override
+        public @NotNull AnvilInventory getInventory() {
+            return inventory;
+        }
+
+        @Override
+        public InventoryView getInventoryView() {
+            return inventoryView;
+        }
+
+        @Override
+        public void setMaxRepairCost(int cost){
+            anvilMenu.maximumRepairCost = cost;
+        }
+
+        @Override
+        public void setRepairItemCountCost(int cost){
+            anvilMenu.repairItemCountCost = cost;
+        }
+
+        @Override
+        public void setRenameText(String renameText){
+            anvilMenu.itemName = renameText;
+        }
+
+        @Override
+        public void setTitle(String title){
+            anvilMenu.setTitle(Component.nullToEmpty(title));
+        }
     }
     @Override
     public VersionWrapper.AnvilGui createAnvilGui(Player player, String title, ItemStack repairItem){
@@ -175,5 +317,43 @@ public class VersionWrapper_1_20_R1 implements VersionWrapper {
         ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId,menuType,Component.Serializer.fromJson(jsonTitle));
         serverPlayer.connection.send(packetOpen);
         serverPlayer.initMenu(serverPlayer.containerMenu);
+    }
+
+    @Override
+    public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
+        if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
+        ServerPlayer serverPlayer = (ServerPlayer)((CraftPlayer)player).getHandle();
+        Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getWorld().getMinHeight(), player.getLocation().getBlockZ());
+        while (!loc.getBlock().getType().isAir() && !loc.getBlock().getType().equals(Material.BEDROCK)) loc.add(0,1,0);
+        BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
+        SignText signText = new SignText();
+        for(int i = 0; i < defLines.length; i++){
+            if(defLines[i] == null) continue;
+            signText.setMessage(i,Component.literal(defLines[i]));
+        }
+        signBlock.setText(signText, true);
+        player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
+        serverPlayer.connection.send(signBlock.getUpdatePacket());
+        serverPlayer.connection.send(new ClientboundOpenSignEditorPacket(blockPos, true));
+        ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
+        pipeline.addBefore("packet_handler", DataInfo.NAMESPACE_SIGN, new ChannelInboundHandlerAdapter()
+                {
+                    @Override
+                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                        if(msg instanceof ServerboundSignUpdatePacket){
+                            ServerboundSignUpdatePacket packet = (ServerboundSignUpdatePacket) msg;
+                            onSend.accept(packet.getLines());
+                            player.sendBlockChange(loc, loc.getBlock().getBlockData());
+                            pipeline.remove(DataInfo.NAMESPACE_SIGN);
+                        }
+                        super.channelRead(ctx, msg);
+                    }
+                }
+        );
+    }
+    @Override
+    public void openSing(Player player, Consumer<String[]> onSend){
+        openSing(player, new String[4], onSend);
     }
 }

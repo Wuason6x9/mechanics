@@ -2,20 +2,25 @@ package dev.wuason.mechanics;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
-import dev.wuason.mechanics.compatibilities.AdapterManager;
+import dev.lone.itemsadder.api.CustomStack;
+import dev.lone.itemsadder.api.ItemsAdder;
+import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import dev.wuason.mechanics.items.ItemBuilderMechanic;
-import dev.wuason.mechanics.mechanics.Mechanic;
+import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
-import dev.wuason.nms.wrappers.VersionWrapper;
+import dev.wuason.nms.wrappers.ServerNmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
+import java.util.stream.IntStream;
 
 public class CommandManager {
     private Mechanics core;
@@ -30,49 +35,37 @@ public class CommandManager {
 
         command = new CommandAPICommand("mechanics");
         command.withPermission("mechanics.command.main");
-        command.withSubcommands(new CommandAPICommand("reload")
-                .executes((sender, args) -> {
-                    sender.sendMessage("reloading mechanics!");
-                    core.getManager().getMechanicsManager().reloadMechanics();
-                })
-        );
         command.withSubcommands(new CommandAPICommand("manager")
 
-                .withSubcommands(new CommandAPICommand("start")
-
-                        .withArguments(new StringArgument("mechanic_name_jar"))
+                .withSubcommands(new CommandAPICommand("getAll")
                         .executes((sender, args) -> {
-
-                            String mechanicName = (String) args.get(0);
-                            sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Starting mechanic!",null));
-                            core.getManager().getMechanicsManager().startMechanic(mechanicName);
-
+                            sender.sendMessage(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon).map(plugin -> plugin.getName()).toList().toString());
                         })
-
                 )
-                .withSubcommands(new CommandAPICommand("stop")
-
-                        .withArguments(new StringArgument("mechanic_id"))
-                        .executes((sender, args) -> {
-                            String mechanicName = (String) args.get(0);;
-                            sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Stopping mechanic!",null));
-                            Mechanic mechanic = core.getManager().getMechanicsManager().getMechanic(mechanicName);
-                            Boolean started = mechanic != null ? core.getManager().getMechanicsManager().stopMechanic(mechanic) : false;
-                            if(!started){
-                                sender.sendMessage(AdventureUtils.deserializeLegacy("<gold>Error stopping mechanic!",null));
-                            }
-
-                        })
-
-                )
-
         );
         command.withSubcommands(new CommandAPICommand("debug")
+                .withPermission("mechanics.command.debug")
+                .withSubcommands(new CommandAPICommand("test")
+                        .executes((sender, args) -> {
+                            Player player = (Player) sender;
+
+                            ServerNmsVersion.getVersionWrapper().openSing(player, (lines) -> {
+                                StringBuilder str = new StringBuilder();
+                                for(int i=0;i<lines.length;i++){
+                                    if(lines[i] == null) return;
+                                    str.append(lines[i].toString());
+                                }
+                                player.sendMessage(">" + str.toString() + "<");
+                            });
+
+                        })
+                )
                 .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")
                         .withArguments(new GreedyStringArgument("format"))
                         .executes((sender, args) -> {
                             String format = (String) args.get(0);
                             sender.sendMessage( "(" + AdventureUtils.deserializeJson(format,null) + ")");
+                            System.out.println(AdventureUtils.deserializeJson(format,null));
                         })
                 )
                 .withSubcommands(new CommandAPICommand("openInventoryTestMiniMessage")
@@ -91,7 +84,7 @@ public class CommandManager {
                         .withArguments(new TextArgument("id"))
                         .withArguments(new IntegerArgument("amount"))
                         .executes((sender, args) -> {
-                            AdapterManager adapterManager = core.getManager().getAdapterManager();
+                            Adapter adapterManager = Adapter.getInstance();
                             String id = (String) args.get(0);
                             if(!adapterManager.existAdapterID(id)) return;
                             ItemStack itemStack = adapterManager.getItemStack(id);
@@ -109,7 +102,7 @@ public class CommandManager {
                         .executes((sender, args) -> {
                             Collection<Player> players = (Collection<Player>) args.get(0);
                             if(players.isEmpty()) return;
-                            AdapterManager adapterManager = core.getManager().getAdapterManager();
+                            Adapter adapterManager = Adapter.getInstance();
                             String id = (String) args.get(1);
                             if(!adapterManager.existAdapterID(id)) return;
                             ItemStack itemStack = adapterManager.getItemStack(id);
@@ -127,7 +120,7 @@ public class CommandManager {
                             Player player = (Player) sender;
                             if(player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) return;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            AdapterManager adapterManager = core.getManager().getAdapterManager();
+                            Adapter adapterManager = Adapter.getInstance();
                             String adapterId = adapterManager.getAdapterID(itemStack);
                             player.sendMessage(adapterId);
                             AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
@@ -136,9 +129,5 @@ public class CommandManager {
         );
         command.register();
 
-    }
-
-    public CommandAPICommand getCommand() {
-        return command;
     }
 }

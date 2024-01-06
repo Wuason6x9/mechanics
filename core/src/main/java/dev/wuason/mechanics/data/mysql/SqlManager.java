@@ -26,8 +26,8 @@ public class SqlManager {
     private String user;
     private String password;
     private String driver;
-    final public String DATA_NAME_COLUMN = "data";
-    final public String DATA_ID_NAME_COLUMN = "data_id";
+    final public static String DATA_NAME_COLUMN = "data";
+    final public static String DATA_ID_NAME_COLUMN = "data_id";
     public BukkitTask bukkitTask;
 
     public SqlManager(Plugin plugin, String host, int port, String database, String user, String password, String driver) {
@@ -182,6 +182,10 @@ public class SqlManager {
         }
 
         return results;
+    }
+
+    public Data[] getAllData(String dataType){
+        return getAllData(dataType,DATA_ID_NAME_COLUMN).stream().map(s -> getData(dataType, s)).toArray(Data[]::new);
     }
 
     public List<String> searchData(String tableName, String columnName, List<Condition> conditions) {

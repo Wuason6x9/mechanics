@@ -10,11 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StorageUtils {
-
-    private final int MAX_STACK = 64;
-    private final int MIN_STACK = 1;
-
-
     public static void addItemToInventoryOrDrop(Player player, ItemStack itemStack) {
         HashMap<Integer, ItemStack> remainingItems = player.getInventory().addItem(itemStack);
         if (!remainingItems.isEmpty()) {

@@ -6,7 +6,7 @@ plugins {
 allprojects{
 
     group = 'dev.wuason'
-    version = '1.0.1.9'
+    version = '1.0.1.11'
 
     repositories {
         mavenCentral()
@@ -49,13 +49,13 @@ subprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
 }
 shadowJar {
-    relocate("dev.jorel.commandapi", "dev.wuason.commandapi")
-    relocate("net.kyori", "dev.wuason.kyori")
-    relocate("de.tr7zw.changeme.nbtapi","dev.wuason.nbtapi")
-    relocate("io.th0rgal.protectionlib", "dev.wuason.protectionlib")
-    relocate("fr.mrmicky.fastinv", "dev.wuason.fastinv")
-    relocate("bsh", "dev.wuason.bsh")
-    relocate("dev.dejvokep.boostedyaml", "dev.wuason.boostedyaml")
+    relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
+    relocate("net.kyori", "dev.wuason.libs.kyori")
+    relocate("de.tr7zw.changeme.nbtapi","dev.wuason.libs.nbtapi")
+    relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
+    relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
+    relocate("bsh", "dev.wuason.libs.bsh")
+    relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
     destinationDirectory.set(file("$rootDir/plugin"))
     archiveClassifier.set("")
     archiveFileName.set("Mechanics-" + project.version + ".jar")

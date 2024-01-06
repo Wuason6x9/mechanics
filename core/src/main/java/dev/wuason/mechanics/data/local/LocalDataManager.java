@@ -34,8 +34,13 @@ public class LocalDataManager {
         dir.mkdirs();
     }
 
-    public Data[] getAllData(String dataType){
+    public String[] getAllDataIds(String dataType){
+        File file = new File(dir.getPath() + "/" + dataType + "/");
+        if(!file.exists()) return null;
+        return Arrays.stream(file.listFiles()).filter(f -> f.getName().endsWith(".mechanic")).map(file1 -> file1.getName().replace(".mechanic", "")).toArray(String[]::new);
+    }
 
+    public Data[] getAllData(String dataType){
         File file = new File(dir.getPath() + "/" + dataType + "/");
         if(!file.exists()) return null;
         File[] files = Arrays.stream(file.listFiles()).filter(f -> f.getName().endsWith(".mechanic")).toArray(File[]::new);

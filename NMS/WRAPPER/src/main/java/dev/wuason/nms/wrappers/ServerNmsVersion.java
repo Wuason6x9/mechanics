@@ -5,7 +5,7 @@ import dev.wuason.nms.utils.VersionNmsDetector;
 import java.lang.reflect.InvocationTargetException;
 
 public class ServerNmsVersion {
-    private VersionWrapper versionWrapper = null;
+    private static VersionWrapper versionWrapper = null;
 
     public ServerNmsVersion(){
         VersionNmsDetector.ServerVersion version = VersionNmsDetector.getServerVersion();
@@ -18,7 +18,7 @@ public class ServerNmsVersion {
 
     }
 
-    public VersionWrapper getVersionWrapper() {
+    public static VersionWrapper getVersionWrapper() {
         return versionWrapper;
     }
 }
