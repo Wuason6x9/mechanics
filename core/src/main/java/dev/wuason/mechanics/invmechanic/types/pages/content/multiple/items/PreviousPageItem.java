@@ -19,7 +19,7 @@ public class PreviousPageItem extends ItemInterface {
     public void onClick(InventoryClickEvent event, InvCustom inventoryCustom) {
         if(!(inventoryCustom instanceof InvCustomPagesContentMultiple) || getData().size() != 1) return;
         InvCustomPagesContentMultiple invCustom = (InvCustomPagesContentMultiple) inventoryCustom;
-        UUID id = UUID.fromString(getData().get(0));
+        UUID id = UUID.fromString(getData().get(0).toString());
         if(!invCustom.getCustomPagesInfo().containsKey(id)) return;
         PageCustomInfo<?> pageCustomInfo = invCustom.getCustomPagesInfo().get(id);
         if(!pageCustomInfo.isPossiblePreviousPage()) return;

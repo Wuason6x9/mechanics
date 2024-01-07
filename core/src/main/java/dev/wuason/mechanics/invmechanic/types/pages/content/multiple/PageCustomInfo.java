@@ -46,8 +46,8 @@ public class PageCustomInfo<T> {
     }
 
     public void registerItems(InvCustomPagesContentMultiple inventoryCustomPages){
-        if(getItemBack() != null) inventoryCustomPages.addItemInterface(getItemBack());
-        if(getItemNext() != null) inventoryCustomPages.addItemInterface(getItemNext());
+        if(getItemBack() != null) inventoryCustomPages.registerItemInterface(getItemBack());
+        if(getItemNext() != null) inventoryCustomPages.registerItemInterface(getItemNext());
     }
 
     public int getActualPage() {

@@ -41,25 +41,17 @@ public class InvCustomPagesContentManager<T> {
     private List<Consumer<OpenPageEvent>> openPageListeners = new ArrayList<>();
 
     public InvCustomPagesContentManager(List<Integer> dataSlots, PreviousPageItem itemBack, NextPageItem itemNext, BiFunction<InvCustomPagesContentManager<T>, Integer, InvCustomPagesContent> defaultInventory, List<T> contentList) {
-        this.dataSlots = dataSlots;
-        this.itemBack = itemBack;
-        this.itemNext = itemNext;
+        this(dataSlots, itemBack, itemNext);
         setContentList(contentList);
         setDefaultInventory(defaultInventory);
-        addInventoryCustomPagesListenerCreate(inv -> {
-            inv.addItemInterface(itemBack);
-            inv.addItemInterface(itemNext);
-            inv.addClickEventsListeners(this::handleClick);
-            inv.addCloseEventsListeners(this::handleClose);
-        });
     }
     public InvCustomPagesContentManager(List<Integer> dataSlots, PreviousPageItem itemBack, NextPageItem itemNext) {
         this.dataSlots = dataSlots;
         this.itemBack = itemBack;
         this.itemNext = itemNext;
         addInventoryCustomPagesListenerCreate(inv -> {
-            inv.addItemInterface(itemBack);
-            inv.addItemInterface(itemNext);
+            inv.registerItemInterface(itemBack);
+            inv.registerItemInterface(itemNext);
             inv.addClickEventsListeners(this::handleClick);
             inv.addCloseEventsListeners(this::handleClose);
         });

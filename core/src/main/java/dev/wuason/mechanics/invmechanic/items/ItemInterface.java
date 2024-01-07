@@ -16,33 +16,21 @@ public class ItemInterface {
     private final ItemStack itemStack;
     private final String id;
     private String name;
-    private ArrayList<String> data = new ArrayList<>();
+    private ArrayList<Object> data = new ArrayList<>();
 
     public ItemInterface(int slot, ItemStack itemStack, String name) {
-        this.slot = slot;
-        this.itemStack = itemStack;
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
+        this(slot, itemStack, UUID.randomUUID().toString(), name);
     }
     public ItemInterface(int slot, ItemStack itemStack) {
-        this.slot = slot;
-        this.itemStack = itemStack;
-        this.id = UUID.randomUUID().toString();
+        this(slot, itemStack, UUID.randomUUID().toString(),"");
     }
-    public ItemInterface(int slot, ItemStack itemStack, String name, ArrayList<String> data) {
-        this.slot = slot;
-        this.itemStack = itemStack;
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
-        this.data = data;
+    public ItemInterface(int slot, ItemStack itemStack, String name, ArrayList<Object> data) {
+        this(slot, itemStack, UUID.randomUUID().toString(), name, data);
     }
     public ItemInterface(int slot, ItemStack itemStack, String id, String name) {
-        this.slot = slot;
-        this.itemStack = itemStack;
-        this.id = id;
-        this.name = name;
+        this(slot, itemStack, id, name, new ArrayList<>());
     }
-    public ItemInterface(int slot, ItemStack itemStack, String id, String name, ArrayList<String> data) {
+    public ItemInterface(int slot, ItemStack itemStack, String id, String name, ArrayList<Object> data) {
         this.slot = slot;
         this.itemStack = itemStack;
         this.id = id;
@@ -50,7 +38,7 @@ public class ItemInterface {
         this.data = data;
     }
 
-    public ArrayList<String> getData() {
+    public ArrayList<Object> getData() {
         return data;
     }
     public int getSlot() {
@@ -58,7 +46,7 @@ public class ItemInterface {
     }
 
     public ItemStack getItemStack() {
-        return itemStack;
+        return itemStack.clone();
     }
 
     public String getId() {
@@ -76,7 +64,8 @@ public class ItemInterface {
         return name;
     }
 
-    public ItemStack getItemModified(){
+    public ItemStack getItemModified() {
+        ItemStack itemStack = getItemStack();
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX), PersistentDataType.STRING, id);
         itemStack.setItemMeta(itemMeta);

@@ -33,7 +33,6 @@ public class InvCustom implements InventoryHolder {
     private boolean damageCancel = false;
     private boolean pickupCancel = false;
     private static final String NAMESPACED_KEY_BLOCKED = "icm_blocked";
-    public static final String NAMESPACE_PREFIX = "imcd";
     public static final String NAMESPACE_ITEM_INTERFACE_PREFIX = "imcp";
 
     private HashMap<String, ItemInterface> itemInterfaces = new HashMap<>();
@@ -111,9 +110,6 @@ public class InvCustom implements InventoryHolder {
 
         if(event.getCurrentItem() != null){
             if(event.getCurrentItem().getItemMeta() != null){
-                if(event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER)){
-                    event.setCancelled(true);
-                }
                 //ITEM INTERFACE CLICK
                 if(event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX) , PersistentDataType.STRING)){
                     String namespace = event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX) , PersistentDataType.STRING);
@@ -150,15 +146,6 @@ public class InvCustom implements InventoryHolder {
         closeEventsListeners.forEach(consumer -> consumer.accept(closeEvent));
     }
     public void handleDrag(InventoryDragEvent event) {
-        for(Map.Entry<Integer, ItemStack> entry : event.getNewItems().entrySet()){
-            if(entry.getValue() != null){
-                if(entry.getValue().getItemMeta() != null){
-                    if(entry.getValue().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER)){
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        }
         onDrag(event);
         dragEventsListeners.forEach(consumer -> consumer.accept(event));
     }
@@ -277,6 +264,7 @@ public class InvCustom implements InventoryHolder {
 
     //*******************ITEMS METHOD***********************
 
+    //*************** WITH CONSUMER ***************
 
     public void setItem(int slot, ItemStack item, Consumer<InventoryClickEvent> consumer){
         inventory.setItem(slot, item);
@@ -301,74 +289,36 @@ public class InvCustom implements InventoryHolder {
             slotClickEventsListeners.remove(i);
         }
     }
-    public void setItemWithClickCancel(int slot, ItemStack item){
-        inventory.setItem(slot, applyClickCancel(item));
-    }
-    //ARRAY
-    public void setItemWithClickCancel(int[] slot, ItemStack item){
-        for(int i : slot){
-            inventory.setItem(i, applyClickCancel(item));
-        }
-    }
-    public void setItemWithClickCancel(int slot, ItemStack item, Consumer<InventoryClickEvent> consumer){
-        inventory.setItem(slot, applyClickCancel(item));
-        slotClickEventsListeners.put(slot, consumer);
-    }
-    //ARRAY
-    public void setItemWithClickCancel(int[] slot, ItemStack item, Consumer<InventoryClickEvent> consumer){
-        for(int i : slot){
-            inventory.setItem(i, applyClickCancel(item));
-            slotClickEventsListeners.put(i, consumer);
-        }
-    }
-    public void removeItemInterface(String id){
+
+    //*************** WITH ITEM INTERFACE ***************
+
+    //******* Register & Unregister ********
+
+    public void unRegisterItemInterface(String id){
         itemInterfaces.remove(id);
     }
-    public void removeItemInterface(ItemInterface itemInterface){
+    public void unRegisterItemInterface(ItemInterface itemInterface){
         itemInterfaces.remove(itemInterface.getId());
     }
-
-    public ItemStack applyItemInterface(ItemStack item, String id){
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX), PersistentDataType.STRING, id);
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-    public ItemInterface addItemInterface(ItemInterface itemInterface){
+    public ItemInterface registerItemInterface(ItemInterface itemInterface){
         itemInterfaces.put(itemInterface.getId(), itemInterface);
         return itemInterface;
     }
-    //ARRAY
-    public ItemStack applyItemInterface(ItemStack item, String[] id){
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX), PersistentDataType.STRING, id[0]);
-        item.setItemMeta(itemMeta);
-        return item;
-    }
+
+    //******* Set & Remove ********
 
     public void setItemInterfaceInv(ItemInterface itemInterface){
-        inventory.setItem(itemInterface.getSlot(), applyItemInterface(itemInterface.getItemStack(), itemInterface.getId()));
+        inventory.setItem(itemInterface.getSlot(), itemInterface.getItemModified());
     }
     //ARRAY
     public void setItemInterfaceInv(ItemInterface[] itemInterfaces){
         for(ItemInterface itemInterface : itemInterfaces){
-            inventory.setItem(itemInterface.getSlot(), applyItemInterface(itemInterface.getItemStack(), itemInterface.getId()));
+            inventory.setItem(itemInterface.getSlot(), itemInterface.getItemModified());
         }
     }
     public void setItemInterfaceInv(String id){
-        inventory.setItem(itemInterfaces.get(id).getSlot(), applyItemInterface(itemInterfaces.get(id).getItemStack(), id));
-    }
-
-    public void addItemInterfaceAndSetInv(ItemInterface itemInterface){
-        addItemInterface(itemInterface);
-        setItemInterfaceInv(itemInterface);
-    }
-    //ARRAY
-    public void addItemInterfaceAndSetInv(ItemInterface[] itemInterfaces){
-        for(ItemInterface itemInterface : itemInterfaces){
-            addItemInterface(itemInterface);
-            setItemInterfaceInv(itemInterface);
-        }
+        if(!itemInterfaces.containsKey(id)) return;
+        inventory.setItem(itemInterfaces.get(id).getSlot(), itemInterfaces.get(id).getItemModified());
     }
 
     public void removeItemInterfaceInv(String id){
@@ -377,22 +327,26 @@ public class InvCustom implements InventoryHolder {
     public void removeItemInterfaceInv(ItemInterface itemInterface){
         inventory.setItem(itemInterface.getSlot(), null);
     }
-    //ARRAY
 
     public void removeItemInterfaceInv(ItemInterface[] itemInterfaces){
         for(ItemInterface itemInterface : itemInterfaces){
             inventory.setItem(itemInterface.getSlot(), null);
         }
     }
-    public ItemStack removeItemInterface(ItemStack item){
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX));
-        item.setItemMeta(itemMeta);
-        return item;
+
+    //******* Register & Set ********
+
+    public void regAndSetInvItemInterface(ItemInterface itemInterface){
+        registerItemInterface(itemInterface);
+        setItemInterfaceInv(itemInterface);
+    }
+    public void regAndSetInvItemInterface(ItemInterface[] itemInterfaces){
+        for(ItemInterface itemInterface : itemInterfaces){
+            regAndSetInvItemInterface(itemInterface);
+        }
     }
 
-    //CHECK
-
+    //******** Checks ********
     public boolean isItemInterface(int slot){
         if(inventory.getItem(slot) != null){
             ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
@@ -408,184 +362,9 @@ public class InvCustom implements InventoryHolder {
         return false;
     }
 
+    //****** Getters ******
     public HashMap<String, ItemInterface> getItemInterfaces() {
         return itemInterfaces;
-    }
-
-    //CHECK
-
-
-    public void applyClickCancel(int slot) {
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER, 1);
-            inventory.getItem(slot).setItemMeta(itemMeta);
-        }
-    }
-
-    public void applyClickCancel(int[] slot){
-        for(int i : slot){
-            if(inventory.getItem(i) != null){
-                ItemMeta itemMeta = inventory.getItem(i).getItemMeta();
-                itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER, 1);
-                inventory.getItem(i).setItemMeta(itemMeta);
-            }
-        }
-    }
-
-    public void removeClickCancel(int[] slot) {
-        for(int i : slot){
-            if(inventory.getItem(i) != null){
-                ItemMeta itemMeta = inventory.getItem(i).getItemMeta();
-                itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED));
-                inventory.getItem(i).setItemMeta(itemMeta);
-            }
-        }
-    }
-
-    public void removeClickCancel(int slot) {
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-            itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED));
-            inventory.getItem(slot).setItemMeta(itemMeta);
-        }
-    }
-    public ItemStack applyClickCancel(ItemStack item) {
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER, 1);
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-    public void applyClickCancel(ItemStack[] item) {
-        for(ItemStack itemStack : item){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER, 1);
-            itemStack.setItemMeta(itemMeta);
-        }
-    }
-    public void removeClickCancel(ItemStack item) {
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED));
-        item.setItemMeta(itemMeta);
-    }
-    public void removeClickCancel(ItemStack[] item) {
-        for(ItemStack itemStack : item){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED));
-            itemStack.setItemMeta(itemMeta);
-        }
-    }
-    //CHECK
-
-    public boolean isClickCancel(int slot) {
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-            return itemMeta.getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_KEY_BLOCKED), PersistentDataType.INTEGER);
-        }
-        return false;
-    }
-
-
-    public void setItemData(ItemStack item, int slot, String... data){
-        ItemMeta itemMeta = item.getItemMeta();
-
-        if(data.length < 1) return;
-
-        String dataString = "";
-
-        for(String s : data){
-            dataString += s + ":_:";
-        }
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING, dataString);
-        item.setItemMeta(itemMeta);
-        inventory.setItem(slot, item);
-    }
-    //array
-
-    public void setItemData(ItemStack item, int[] slot, String... data){
-        for(int i : slot){
-            ItemMeta itemMeta = item.getItemMeta();
-
-            if(data.length < 1) return;
-
-            String dataString = "";
-
-            for(String s : data){
-                dataString += s + ":_:";
-            }
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING, dataString);
-            item.setItemMeta(itemMeta);
-            inventory.setItem(i, item);
-        }
-    }
-
-    public void addData(int slot, String... data){
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-
-            if(data.length < 1) return;
-
-            String dataString = "";
-
-            for(String s : data){
-                dataString += s + ":_:";
-            }
-            itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING, dataString);
-            inventory.getItem(slot).setItemMeta(itemMeta);
-        }
-    }
-    //arraY
-    public void addData(int[] slot, String... data){
-        for(int i : slot){
-            if(inventory.getItem(i) != null){
-                ItemMeta itemMeta = inventory.getItem(i).getItemMeta();
-
-                if(data.length < 1) return;
-
-                String dataString = "";
-
-                for(String s : data){
-                    dataString += s + ":_:";
-                }
-                itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING, dataString);
-                inventory.getItem(i).setItemMeta(itemMeta);
-            }
-        }
-    }
-
-    //REMOVE
-    public void removeItemData(int slot){
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-            itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX));
-            inventory.getItem(slot).setItemMeta(itemMeta);
-        }
-    }
-    //REMOVE ARRAY
-    public void removeItemData(int[] slot){
-        for(int i : slot){
-            if(inventory.getItem(i) != null){
-                ItemMeta itemMeta = inventory.getItem(i).getItemMeta();
-                itemMeta.getPersistentDataContainer().remove(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX));
-                inventory.getItem(i).setItemMeta(itemMeta);
-            }
-        }
-    }
-
-    //CHECK
-    public boolean isItemData(int slot){
-        if(inventory.getItem(slot) != null){
-            ItemMeta itemMeta = inventory.getItem(slot).getItemMeta();
-            return itemMeta.getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING);
-        }
-        return false;
-    }
-    public boolean isItemData(ItemStack item){
-        if(item != null){
-            ItemMeta itemMeta = item.getItemMeta();
-            return itemMeta.getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_PREFIX), PersistentDataType.STRING);
-        }
-        return false;
     }
 
 

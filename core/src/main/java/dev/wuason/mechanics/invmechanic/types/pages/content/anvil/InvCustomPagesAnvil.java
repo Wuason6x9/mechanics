@@ -57,8 +57,8 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         setItem(1, this.itemStackRename, event -> {
             event.setCancelled(true);
         });
-        addItemInterface(previousPageItem);
-        addItemInterface(nextPageItem);
+        registerItemInterface(previousPageItem);
+        registerItemInterface(nextPageItem);
         addCloseEventsListeners(this::handleClose2);
         addClickEventsListeners(this::handleClick1);
     }
@@ -343,10 +343,10 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         }
 
         if(page > getMinPage() ) {
-            player.getInventory().setItem(getItemBack().getSlot(), applyItemInterface(getItemBack().getItemStack(), getItemBack().getId()));
+            setItemInterfaceInv(getItemBack());
         }
         if(page < getMaxPage() ) {
-            player.getInventory().setItem(getItemNext().getSlot(), applyItemInterface(getItemNext().getItemStack(), getItemNext().getId()));
+            setItemInterfaceInv(getItemNext());
         }
     }
     public void removeButtonsPage() {
