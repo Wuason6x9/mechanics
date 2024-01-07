@@ -1,6 +1,8 @@
 # User-specific stuff
 .idea/
-
+plugin/
+bin/
+core/libs/
 *.iml
 *.ipr
 *.iws
@@ -15,6 +17,8 @@ atlassian-ide-plugin.xml
 
 # Compiled class file
 *.class
+*.png
+*.json
 
 # Log file
 *.log
@@ -23,7 +27,6 @@ atlassian-ide-plugin.xml
 *.ctxt
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
