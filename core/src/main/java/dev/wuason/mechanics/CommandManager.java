@@ -11,6 +11,7 @@ import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
 import dev.wuason.nms.wrappers.ServerNmsVersion;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -50,14 +51,10 @@ public class CommandManager {
                             Player player = (Player) sender;
 
                             ServerNmsVersion.getVersionWrapper().openSing(player, (lines) -> {
-                                StringBuilder str = new StringBuilder();
-                                for(int i=0;i<lines.length;i++){
-                                    if(lines[i] == null) return;
-                                    str.append(lines[i].toString());
-                                }
-                                player.sendMessage(">" + str.toString() + "<");
-                            });
 
+
+
+                            });
                         })
                 )
                 .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")

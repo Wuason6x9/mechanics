@@ -52,8 +52,8 @@ public class VersionWrapper_1_20_R2 implements VersionWrapper {
         private final InventoryView inventoryView;
 
         public AnvilInventoryCustom(Player player, String title, InventoryHolder holder){
-            //DEF VARS
             serverPlayer = ((CraftPlayer)player).getHandle();
+            //DEF VARS
             this.holder = holder;
 
             //CREATE INVENTORY
@@ -324,8 +324,7 @@ public class VersionWrapper_1_20_R2 implements VersionWrapper {
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
         if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
         ServerPlayer serverPlayer = (ServerPlayer)((CraftPlayer)player).getHandle();
-        Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getWorld().getMinHeight(), player.getLocation().getBlockZ());
-        while (!loc.getBlock().getType().isAir() && !loc.getBlock().getType().equals(Material.BEDROCK)) loc.add(0,1,0);
+        Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY() - 7, player.getLocation().getBlockZ());
         BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
         SignText signText = new SignText();
