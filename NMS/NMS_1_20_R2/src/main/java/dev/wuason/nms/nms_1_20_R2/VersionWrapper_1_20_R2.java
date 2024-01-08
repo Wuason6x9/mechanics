@@ -310,6 +310,7 @@ public class VersionWrapper_1_20_R2 implements VersionWrapper {
         serverPlayer.connection.send(packet2);
     }
 
+    //Update Inventory Title
     @Override
     public void updateCurrentInventoryTitle(String jsonTitle, Player player){
         ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
