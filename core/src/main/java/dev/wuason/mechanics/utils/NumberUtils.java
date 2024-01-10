@@ -14,7 +14,7 @@ public class NumberUtils {
     public static List<Integer> getRange(int start, int end) {
         return IntStream.range(start, end).boxed().toList();
     }
-
+    //
     public static boolean inRange(int number, int start, int end) {
         return number >= start && number <= end;
     }

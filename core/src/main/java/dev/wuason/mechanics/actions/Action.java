@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Action {
     private final Interpreter interpreter;
@@ -28,6 +29,8 @@ public class Action {
     private final String namespace;
 
     private boolean active = false;
+    private AtomicBoolean pendingToRun = new AtomicBoolean(false);
+    private AtomicBoolean loaded = new AtomicBoolean(false);
 
 
     public Action(@NotNull MechanicAddon core, @Nullable HashMap<String, Object> initPlaceholders, @NotNull ActionManager actionManager, @NotNull ActionConfig actionConfig, @NotNull String namespace, @Nullable Object... args){
@@ -57,6 +60,8 @@ public class Action {
             actionConfig.getEventAction().registerPlaceholders(Action.this);
             actionConfig.getExecutor().registerPlaceholders(Action.this);
 
+            loaded.set(true);
+            if(pendingToRun.get()) run();
         };
 
         switch (loadType){
@@ -83,6 +88,10 @@ public class Action {
 
 
     public void run(){
+        if(!loaded.get()) {
+            pendingToRun.set(true);
+            return;
+        }
         active = true;
 
 

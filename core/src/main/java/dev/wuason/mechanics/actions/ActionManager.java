@@ -1,13 +1,17 @@
 package dev.wuason.mechanics.actions;
 
 import dev.wuason.mechanics.actions.config.ActionConfig;
+import dev.wuason.mechanics.actions.events.EventAction;
+import dev.wuason.mechanics.actions.events.Events;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ActionManager {
@@ -19,10 +23,12 @@ public class ActionManager {
     //******** CONFIG ********//
 
     private final HashMap<String, ActionConfig> actionConfigs = new HashMap<>();
+    private final HashMap<String, ArrayList<ActionConfig>> eventActionConfigs = new HashMap<>();
 
     public ActionManager(MechanicAddon core) {
         if(!(core instanceof Plugin)) throw new RuntimeException("Core must be a plugin");
         this.core = core;
+        registerAllEvents();
     }
 
     //******** ACTIONS ********//
@@ -82,8 +88,6 @@ public class ActionManager {
 
     public void registerActionConfig(ActionConfig actionConfig){
 
-
-
     }
 
     public void unRegisterActionConfig(String id){
@@ -96,8 +100,32 @@ public class ActionManager {
         return actionConfigs.getOrDefault(id,null);
     }
 
+    public ActionConfig getActionConfig(EventAction eventAction){
+        return eventActionConfigs.getOrDefault(eventAction,null);
+    }
+
     public void clearActionConfigs(){
         actionConfigs.clear();
     }
 
+    //******** EVENTS ********//
+
+    public void callEvent(EventAction eventAction, String namespace, Object... args){
+        if(!eventActionConfigs.containsKey(eventAction.getId())) return;
+
+        for(ActionConfig actionConfig : eventActionConfigs.get(eventAction.getId())){
+
+            Action action = createAction(actionConfig, null, namespace, args);
+            action.load();
+            action.run();
+
+        }
+    }
+
+    public void registerAllEvents(){
+        eventActionConfigs.clear();
+        for(Map.Entry<String, Class<? extends EventAction>> entry : Events.EVENTS.entrySet()){
+            eventActionConfigs.put(entry.getKey(), new ArrayList<>());
+        }
+    }
 }
