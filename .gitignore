@@ -2,7 +2,6 @@
 .idea/
 plugin/
 bin/
-core/libs/
 *.iml
 *.ipr
 *.iws
