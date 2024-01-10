@@ -5,11 +5,11 @@ import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import java.util.HashMap;
 
 public class Executors {
-    public static final HashMap<String, Executor> executors = new HashMap<>();
+    public static final HashMap<String, Executor> EXECUTORS = new HashMap<>();
 
     static {
 
-        executors.put("INVENTORY_CUSTOM", new Executor("INVENTORY_CUSTOM", InvCustom.class) {
+        EXECUTORS.put("INVENTORY_CUSTOM", new Executor("INVENTORY_CUSTOM", InvCustom.class) {
             @Override
             public void registerPlaceholders(HashMap<String, Object> actualPlaceholders, Object... args) {
                 InvCustom invCustom = (InvCustom) args[0];

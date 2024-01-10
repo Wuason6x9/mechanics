@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.actions;
 
+import dev.wuason.mechanics.actions.config.ActionConfig;
 import dev.wuason.mechanics.actions.executators.Executor;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
@@ -14,9 +15,23 @@ public class ActionManager {
     private HashMap<String, HashMap<String, GlobalVar>> globalVars = new HashMap<>();
     private MechanicAddon core;
 
+    //******** CONFIG ********//
+
+    private final HashMap<String, ActionConfig> actionConfigs = new HashMap<>();
+
     public ActionManager(MechanicAddon core) {
         if(!(core instanceof Plugin)) throw new RuntimeException("Core must be a plugin");
         this.core = core;
+    }
+
+    //******** ACTIONS ********//
+
+    public Action getAction(UUID id){
+        return actionsActive.getOrDefault(id,null);
+    }
+
+    public void createAction(ActionConfig actionConfig){
+
     }
 
 
@@ -41,6 +56,25 @@ public class ActionManager {
 
     public void clearGlobalVars(String namespace){
         globalVars.remove(namespace);
+    }
+
+    //******** ACTIONS CONFIGS ********//
+
+    public void registerActionConfig(ActionConfig actionConfig){
+
+
+    }
+
+    public void unRegisterActionConfig(String id){
+
+    }
+
+    public ActionConfig getActionConfig(String id){
+        return actionConfigs.getOrDefault(id,null);
+    }
+
+    public void clearActionConfigs(){
+        actionConfigs.clear();
     }
 
 }
