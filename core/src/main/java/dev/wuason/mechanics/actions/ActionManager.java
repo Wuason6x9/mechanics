@@ -1,17 +1,18 @@
 package dev.wuason.mechanics.actions;
 
 import dev.wuason.mechanics.actions.config.ActionConfig;
-import dev.wuason.mechanics.actions.executators.Executor;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class ActionManager {
 
-    private HashMap<UUID, Action> actionsActive = new HashMap<>();
+    private HashMap<UUID, Action> actionsRegistered = new HashMap<>();
     private HashMap<String, HashMap<String, GlobalVar>> globalVars = new HashMap<>();
     private MechanicAddon core;
 
@@ -27,11 +28,30 @@ public class ActionManager {
     //******** ACTIONS ********//
 
     public Action getAction(UUID id){
-        return actionsActive.getOrDefault(id,null);
+        return actionsRegistered.getOrDefault(id,null);
     }
 
-    public void createAction(ActionConfig actionConfig){
+    public Action createAction(@NotNull ActionConfig actionConfig, @Nullable HashMap<String, Object> placeholders, String namespace, @Nullable Object... args){
+        if(actionConfig == null) throw new RuntimeException("ActionConfig cannot be null");
+        if(args == null) args = new Object[0];
+        if(placeholders == null) placeholders = new HashMap<>();
 
+        if(!globalVars.containsKey(namespace)) globalVars.put(namespace,new HashMap<>());
+
+        Action action = new Action(core, placeholders, this, actionConfig, namespace, args);
+        actionsRegistered.put(action.getId(), action);
+
+
+        return action;
+    }
+
+    public void removeAction(UUID id){
+        actionsRegistered.remove(id);
+    }
+
+    public void forceStopAction(UUID id){
+        Action action = actionsRegistered.getOrDefault(id,null);
+        if(action != null) action.finish();
     }
 
 
@@ -63,9 +83,12 @@ public class ActionManager {
     public void registerActionConfig(ActionConfig actionConfig){
 
 
+
     }
 
     public void unRegisterActionConfig(String id){
+
+
 
     }
 

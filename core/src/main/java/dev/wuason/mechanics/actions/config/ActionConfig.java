@@ -12,7 +12,33 @@ public class ActionConfig {
     private final Run runType;
     private final Executor executor;
     private final EventAction eventAction;
+    private final String id;
 
+
+
+
+
+    //*********** GETTERS ***********//
+
+    public Collection<String> getImports() {
+        return imports;
+    }
+
+    public Run getRunType() {
+        return runType;
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public EventAction getEventAction() {
+        return eventAction;
+    }
+
+    public String getId() {
+        return id;
+    }
 
 
 

@@ -1,5 +1,7 @@
 package dev.wuason.mechanics.actions.executators;
 
+import dev.wuason.mechanics.actions.Action;
+
 import java.util.HashMap;
 
 public abstract class Executor {
@@ -21,5 +23,5 @@ public abstract class Executor {
         return clazz;
     }
 
-    public abstract void registerPlaceholders(HashMap<String, Object> actualPlaceholders, Object... args);
+    public abstract void registerPlaceholders(Action action);
 }

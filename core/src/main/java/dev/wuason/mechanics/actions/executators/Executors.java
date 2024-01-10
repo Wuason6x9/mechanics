@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.actions.executators;
 
+import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
 
 import java.util.HashMap;
@@ -11,11 +12,10 @@ public class Executors {
 
         EXECUTORS.put("INVENTORY_CUSTOM", new Executor("INVENTORY_CUSTOM", InvCustom.class) {
             @Override
-            public void registerPlaceholders(HashMap<String, Object> actualPlaceholders, Object... args) {
-                InvCustom invCustom = (InvCustom) args[0];
-
-                actualPlaceholders.put("$inventory$", invCustom.getInventory());
-
+            public void registerPlaceholders(Action action) {
+                InvCustom invCustom = (InvCustom) action.getArgs()[0];
+                action.registerPlaceholder("$inventory$", invCustom.getInventory());
+                action.registerPlaceholder("$inventoryCustom$", invCustom);
             }
         });
     }
