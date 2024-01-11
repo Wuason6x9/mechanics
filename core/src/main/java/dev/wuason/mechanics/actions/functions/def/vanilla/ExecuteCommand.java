@@ -3,6 +3,8 @@ package dev.wuason.mechanics.actions.functions.def.vanilla;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
+import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
+import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,7 +16,7 @@ public class ExecuteCommand extends Function {
 
     public static final Map<String, FunctionArgument> ARGS = Collections.unmodifiableMap(new HashMap<>()
     {{
-        FunctionArgument asConsole = new FunctionArgument("asConsole", 0) {
+        FunctionArgument asConsole = new FunctionArgument("asConsole", 0, new FunctionArgumentProperties.Builder().build()) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 try {
@@ -28,7 +30,7 @@ public class ExecuteCommand extends Function {
 
         put(asConsole.getName(), asConsole);
 
-        FunctionArgument player = new FunctionArgument("player", 1) {
+        FunctionArgument player = new FunctionArgument("player", 1, new FunctionArgumentProperties.Builder().build()) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 if( (boolean)args[0] ) return null;
@@ -48,7 +50,7 @@ public class ExecuteCommand extends Function {
 
         put(player.getName(), player);
 
-        FunctionArgument asOp = new FunctionArgument("asOp", 2) {
+        FunctionArgument asOp = new FunctionArgument("asOp", 2, new FunctionArgumentProperties.Builder().build()) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 if( (boolean)args[0] ) return false;
@@ -66,7 +68,7 @@ public class ExecuteCommand extends Function {
 
         put(asOp.getName(), asOp);
 
-        FunctionArgument command = new FunctionArgument("command", 3) {
+        FunctionArgument command = new FunctionArgument("command", 3, new FunctionArgumentProperties.Builder().build()) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
 
@@ -79,7 +81,7 @@ public class ExecuteCommand extends Function {
 
         put(command.getName(), command);
 
-        FunctionArgument delay = new FunctionArgument("delay", 4) {
+        FunctionArgument delay = new FunctionArgument("delay", 4, new FunctionArgumentProperties.Builder().build()) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 try {
@@ -97,7 +99,7 @@ public class ExecuteCommand extends Function {
     );
 
     public ExecuteCommand() {
-        super("executecommand", ARGS);
+        super("executecommand", ARGS, new FunctionProperties.Builder().build());
     }
 
     @Override
@@ -109,15 +111,15 @@ public class ExecuteCommand extends Function {
         long delay = (long)Args[4];
         if(asConsole) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            return true;
+            return false;
         }
-        if(player == null) return true;
+        if(player == null) return false;
         if(asOp) player.setOp(true);
         if(delay > 0) Bukkit.getScheduler().runTaskLater((Plugin) action.getCore(), () -> Bukkit.dispatchCommand(player, command), delay);
         else {
             Bukkit.dispatchCommand(player, command);
         }
         if(asOp) player.setOp(false);
-        return true;
+        return false;
     }
 }

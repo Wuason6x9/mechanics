@@ -8,6 +8,7 @@ import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.executators.Run;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
+import dev.wuason.mechanics.actions.utils.ArgumentUtils;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -19,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class Action {
@@ -37,6 +39,7 @@ public class Action {
     private boolean active = false;
     private AtomicBoolean pendingToRun = new AtomicBoolean(false);
     private AtomicBoolean loaded = new AtomicBoolean(false);
+    private AtomicInteger actualFunction = new AtomicInteger(-1);
 
 
     public Action(@NotNull MechanicAddon core, @Nullable HashMap<String, Object> initPlaceholders, @NotNull ActionManager actionManager, @NotNull ActionConfig actionConfig, @NotNull String namespace, @NotNull EventAction eventAction, @Nullable Object... args){
@@ -106,10 +109,7 @@ public class Action {
 
     }
 
-    public void execute(int functionIndex, Run runType){
-        if(!active || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) return;
-
-        FunctionConfig functionConfig = actionConfig.getFunctions().get(functionIndex);
+    public boolean execute(FunctionConfig functionConfig, Run runType){
         Function function = functionConfig.getFunction();
 
         Object[] argsComputed = new Object[function.getArgs().size()];
@@ -120,22 +120,44 @@ public class Action {
             FunctionArgument functionArgument = functionArguments[i];
             if(functionArgument == null) continue;
             String argContent = functionConfig.getArgs().get(functionArgument.getName());
+            if(argContent == null) continue;
+            if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
+            if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+
             argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
+
         }
+        return function.execute(this, argsComputed);
+    }
 
-        function.execute(this, argsComputed);
-
-
+    public void execute(int functionIndex, Run runType){
+        if(!active || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) return;
+        actualFunction.set(functionIndex);
+        FunctionConfig functionConfig = actionConfig.getFunctions().get(functionIndex);
+        if(execute(functionConfig,runType)) return;
+        execute(functionIndex + 1, runType);
     }
 
     public void execute(int function){
         execute(function, actionConfig.getRunType());
     }
 
+    public void executeNext(Run runType){
+        execute(actualFunction.get() + 1, runType);
+    }
+
+    public void executeNext(){
+        executeNext(actionConfig.getRunType());
+    }
+
     public void finish(){
         active = false;
+        actualFunction.set(-1);
         actionManager.removeAction(id);
     }
+
+    //*********** CONDITIONS ***********//
+
 
 
     //*********** PLACEHOLDERS ***********//

@@ -9,10 +9,12 @@ public abstract class Function {
 
     private final Map<String, FunctionArgument> args;
     private final String name;
+    private final FunctionProperties properties;
 
-    public Function(String name, Map<String, FunctionArgument> args) {
+    public Function(String name, Map<String, FunctionArgument> args, FunctionProperties properties) {
         this.name = name.toUpperCase(Locale.ENGLISH);
         this.args = args;
+        this.properties = properties;
     }
 
     public Map<String, FunctionArgument> getArgs() {
@@ -31,6 +33,10 @@ public abstract class Function {
 
     public String getName() {
         return name;
+    }
+
+    public FunctionProperties getProperties() {
+        return properties;
     }
 
     public abstract boolean execute(Action action, Object... Args);
