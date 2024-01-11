@@ -3,6 +3,7 @@ package dev.wuason.mechanics.actions.utils;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
 import dev.wuason.mechanics.actions.args.Arguments;
+import dev.wuason.mechanics.actions.config.ArgumentConfig;
 import dev.wuason.mechanics.utils.MathUtils;
 
 import java.util.*;
@@ -68,12 +69,11 @@ public class ArgumentUtils {
         Set<String> placeholdersFound = findNestedPatterns(arg);
         for (String p : placeholdersFound) {
             if(!ArgumentConfigUtils.isArg(p)) continue;
-            String[] argString = ArgumentConfigUtils.getArg(p);
-            if(!Arguments.ARGUMENTS.containsKey(argString[0])) continue;
+            ArgumentConfig argConfig = ArgumentConfigUtils.getArg(p);
             String varOriginal = "<" + p + ">";
             String randomGen = UUID.randomUUID().toString().replace("-","");
             String varGen = ("$" + randomGen + "$");
-            Argument argument = Arguments.createArgument(argString[0], argString[1]);
+            Argument argument = Arguments.createArgument(argConfig);
             Object objComputed = argument.computeArg(action);
             action.registerPlaceholder(varGen, objComputed);
             arg = arg.replace(varOriginal, varGen);

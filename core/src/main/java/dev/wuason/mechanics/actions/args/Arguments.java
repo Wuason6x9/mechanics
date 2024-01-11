@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.actions.args;
 
 import dev.wuason.mechanics.actions.args.def.*;
+import dev.wuason.mechanics.actions.config.ArgumentConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -48,5 +49,13 @@ public class Arguments {
 
     public static Argument createArgument(Class<? extends Argument> type, String line){
         return createArgument(type, line, new Object[0]);
+    }
+
+    public static Argument createArgument(ArgumentConfig arg){
+        return createArgument(arg.getType(), arg.getArgument());
+    }
+
+    public static Argument createArgument(ArgumentConfig arg, Object... args){
+        return createArgument(arg.getType(), arg.getArgument(), args);
     }
 }
