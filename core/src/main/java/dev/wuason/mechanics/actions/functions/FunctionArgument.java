@@ -20,9 +20,9 @@ public abstract class FunctionArgument implements Comparable<FunctionArgument> {
 
     @Override
     public int compareTo(@NotNull FunctionArgument functionArgument) {
-        if(this.order > functionArgument.order) {
+        if(this.order < functionArgument.order) {
             return 1;
-        } else if(this.order < functionArgument.order) {
+        } else if(this.order > functionArgument.order) {
             return -1;
         } else {
             return 0;

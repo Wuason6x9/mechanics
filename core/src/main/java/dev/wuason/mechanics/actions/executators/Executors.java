@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.actions.executators;
 
 import dev.wuason.mechanics.actions.Action;
+import dev.wuason.mechanics.actions.executators.def.DefaultExecutor;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
 
 import java.util.HashMap;
@@ -18,6 +19,9 @@ public class Executors {
                 action.registerPlaceholder("$inventoryCustom$", invCustom);
             }
         });
+
+        EXECUTORS.put("DEFAULT", new DefaultExecutor("DEFAULT"));
+
     }
 
 }

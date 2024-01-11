@@ -19,6 +19,7 @@ public class ActionManager {
     private HashMap<UUID, Action> actionsRegistered = new HashMap<>();
     private HashMap<String, HashMap<String, GlobalVar>> globalVars = new HashMap<>();
     private MechanicAddon core;
+    private boolean listenDefEvents = false;
 
     //******** CONFIG ********//
 
@@ -37,14 +38,14 @@ public class ActionManager {
         return actionsRegistered.getOrDefault(id,null);
     }
 
-    public Action createAction(@NotNull ActionConfig actionConfig, @Nullable HashMap<String, Object> placeholders, String namespace, @Nullable Object... args){
+    public Action createAction(@NotNull ActionConfig actionConfig, @Nullable HashMap<String, Object> placeholders, @NotNull String namespace, @NotNull EventAction eventAction, @Nullable Object... args){
         if(actionConfig == null) throw new RuntimeException("ActionConfig cannot be null");
         if(args == null) args = new Object[0];
         if(placeholders == null) placeholders = new HashMap<>();
 
         if(!globalVars.containsKey(namespace)) globalVars.put(namespace,new HashMap<>());
 
-        Action action = new Action(core, placeholders, this, actionConfig, namespace, args);
+        Action action = new Action(core, placeholders, this, actionConfig, namespace, eventAction, args);
         actionsRegistered.put(action.getId(), action);
 
 
@@ -100,10 +101,6 @@ public class ActionManager {
         return actionConfigs.getOrDefault(id,null);
     }
 
-    public ActionConfig getActionConfig(EventAction eventAction){
-        return eventActionConfigs.getOrDefault(eventAction,null);
-    }
-
     public void clearActionConfigs(){
         actionConfigs.clear();
     }
@@ -115,7 +112,7 @@ public class ActionManager {
 
         for(ActionConfig actionConfig : eventActionConfigs.get(eventAction.getId())){
 
-            Action action = createAction(actionConfig, null, namespace, args);
+            Action action = createAction(actionConfig, null, namespace, eventAction, args);
             action.load();
             action.run();
 
@@ -128,4 +125,16 @@ public class ActionManager {
             eventActionConfigs.put(entry.getKey(), new ArrayList<>());
         }
     }
+
+    //******** LISTEN DEF EVENTS ********//
+
+    public boolean isListenDefEvents() {
+        return listenDefEvents;
+    }
+
+    public void setListenDefEvents(boolean listenDefEvents) {
+        this.listenDefEvents = listenDefEvents;
+    }
+
+
 }

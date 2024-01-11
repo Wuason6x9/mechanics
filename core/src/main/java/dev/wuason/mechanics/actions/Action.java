@@ -5,6 +5,7 @@ import bsh.Interpreter;
 import dev.wuason.mechanics.actions.config.ActionConfig;
 import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.executators.Run;
+import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -27,17 +28,20 @@ public class Action {
     private final Object[] args;
     private final ActionConfig actionConfig;
     private final String namespace;
+    private final EventAction eventAction;
 
     private boolean active = false;
     private AtomicBoolean pendingToRun = new AtomicBoolean(false);
     private AtomicBoolean loaded = new AtomicBoolean(false);
 
 
-    public Action(@NotNull MechanicAddon core, @Nullable HashMap<String, Object> initPlaceholders, @NotNull ActionManager actionManager, @NotNull ActionConfig actionConfig, @NotNull String namespace, @Nullable Object... args){
+    public Action(@NotNull MechanicAddon core, @Nullable HashMap<String, Object> initPlaceholders, @NotNull ActionManager actionManager, @NotNull ActionConfig actionConfig, @NotNull String namespace, @NotNull EventAction eventAction, @Nullable Object... args){
         if(!(core instanceof MechanicAddon)) throw new RuntimeException("Core must be a plugin");
         if(core == null) throw new RuntimeException("Core cannot be null");
         if(actionManager == null) throw new RuntimeException("ActionManager cannot be null");
         if(actionConfig == null) throw new RuntimeException("ActionConfig cannot be null");
+        if(namespace == null) throw new RuntimeException("Namespace cannot be null");
+        if(eventAction == null) throw new RuntimeException("EventAction cannot be null");
         if(args == null) args = new Object[0];
         if(initPlaceholders == null) initPlaceholders = new HashMap<>();
 
@@ -46,6 +50,7 @@ public class Action {
         this.namespace = namespace;
         this.args = args;
         this.actionConfig = actionConfig;
+        this.eventAction = eventAction;
 
         this.interpreter = new Interpreter(); //BEANSHELL
 
@@ -57,7 +62,7 @@ public class Action {
 
         Runnable runnable = () -> {
 
-            actionConfig.getEventAction().registerPlaceholders(Action.this);
+            eventAction.registerPlaceholders(Action.this);
             actionConfig.getExecutor().registerPlaceholders(Action.this);
 
             loaded.set(true);
@@ -97,13 +102,19 @@ public class Action {
 
     }
 
-    public void execute(Run runType){
-        if(!active) return;
+    public void execute(int functionIndex, Run runType){
+        if(!active || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) return;
+
+        Function function = actionConfig.getFunctions().get(functionIndex).getFunction();
+
+        Object[] argsComputed = new Object[function.getArgs().size()];
+
+
 
     }
 
-    public void execute(){
-        execute(actionConfig.getRunType());
+    public void execute(int function){
+        execute(function, actionConfig.getRunType());
     }
 
     public void finish(){
@@ -239,6 +250,14 @@ public class Action {
 
     public ActionConfig getActionConfig() {
         return actionConfig;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public EventAction getEventAction() {
+        return eventAction;
     }
 
 

@@ -5,6 +5,7 @@ import dev.wuason.mechanics.actions.Action;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 public abstract class Function {
 
@@ -12,7 +13,7 @@ public abstract class Function {
     private final String name;
 
     public Function(String name, Collection<FunctionArgument> args) {
-        this.name = name;
+        this.name = name.toUpperCase(Locale.ENGLISH);
         this.args = args;
     }
 
