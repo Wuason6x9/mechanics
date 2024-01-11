@@ -3,9 +3,11 @@ package dev.wuason.mechanics.actions;
 import bsh.EvalError;
 import bsh.Interpreter;
 import dev.wuason.mechanics.actions.config.ActionConfig;
+import dev.wuason.mechanics.actions.config.FunctionConfig;
 import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.executators.Run;
 import dev.wuason.mechanics.actions.functions.Function;
+import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -17,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 public class Action {
     private final Interpreter interpreter;
@@ -29,6 +32,7 @@ public class Action {
     private final ActionConfig actionConfig;
     private final String namespace;
     private final EventAction eventAction;
+
 
     private boolean active = false;
     private AtomicBoolean pendingToRun = new AtomicBoolean(false);
@@ -105,10 +109,21 @@ public class Action {
     public void execute(int functionIndex, Run runType){
         if(!active || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) return;
 
-        Function function = actionConfig.getFunctions().get(functionIndex).getFunction();
+        FunctionConfig functionConfig = actionConfig.getFunctions().get(functionIndex);
+        Function function = functionConfig.getFunction();
 
         Object[] argsComputed = new Object[function.getArgs().size()];
 
+        FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
+
+        for(int i=0;i<functionArguments.length;i++){
+            FunctionArgument functionArgument = functionArguments[i];
+            if(functionArgument == null) continue;
+            String argContent = functionConfig.getArgs().get(functionArgument.getName());
+            argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
+        }
+
+        function.execute(this, argsComputed);
 
 
     }

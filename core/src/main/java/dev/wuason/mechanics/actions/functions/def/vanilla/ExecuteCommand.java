@@ -8,17 +8,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 public class ExecuteCommand extends Function {
 
-    private static final Collection<FunctionArgument> args = Collections.unmodifiableCollection(new ArrayList<>()
+    public static final Map<String, FunctionArgument> ARGS = Collections.unmodifiableMap(new HashMap<>()
     {{
-
-        add(new FunctionArgument("asConsole", 0) {
+        FunctionArgument asConsole = new FunctionArgument("asConsole", 0) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 try {
@@ -28,9 +24,11 @@ public class ExecuteCommand extends Function {
                 }
             }
 
-        });
+        };
 
-        add(new FunctionArgument("player", 1) {
+        put(asConsole.getName(), asConsole);
+
+        FunctionArgument player = new FunctionArgument("player", 1) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 if( (boolean)args[0] ) return null;
@@ -46,9 +44,11 @@ public class ExecuteCommand extends Function {
                 return action.getPlaceholder("$player$");
             }
 
-        });
+        };
 
-        add(new FunctionArgument("asOp", 2) {
+        put(player.getName(), player);
+
+        FunctionArgument asOp = new FunctionArgument("asOp", 2) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 if( (boolean)args[0] ) return false;
@@ -62,9 +62,11 @@ public class ExecuteCommand extends Function {
                 }
             }
 
-        });
+        };
 
-        add(new FunctionArgument("command", 3) {
+        put(asOp.getName(), asOp);
+
+        FunctionArgument command = new FunctionArgument("command", 3) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
 
@@ -73,9 +75,11 @@ public class ExecuteCommand extends Function {
                 return command;
             }
 
-        });
+        };
 
-        add(new FunctionArgument("delay", 4) {
+        put(command.getName(), command);
+
+        FunctionArgument delay = new FunctionArgument("delay", 4) {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 try {
@@ -85,14 +89,15 @@ public class ExecuteCommand extends Function {
                 }
             }
 
-        });
+        };
 
+        put(delay.getName(), delay);
 
     }}
     );
 
     public ExecuteCommand() {
-        super("executecommand", args);
+        super("executecommand", ARGS);
     }
 
     @Override
