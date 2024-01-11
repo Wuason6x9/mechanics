@@ -21,7 +21,7 @@ public abstract class Function {
         return args;
     }
 
-    public FunctionArgument[] orderArgs(HashMap<String, String> args){
+    public FunctionArgument[] orderArgs(Map<String, String> args){
         FunctionArgument[] functionArguments = new FunctionArgument[getArgs().size()];
         for(Map.Entry<String, String> entry : args.entrySet()){
             FunctionArgument functionArgument = getArgs().get(entry.getKey());

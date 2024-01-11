@@ -7,10 +7,7 @@ import dev.wuason.mechanics.actions.config.FunctionConfig;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.Functions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 public class ActionConfigUtils {
     public static ConditionConfig getCondition(String line){
@@ -38,22 +35,42 @@ public class ActionConfigUtils {
         int indexOfLast = line.lastIndexOf("}");
         if(indexOfFirst == -1 || indexOfLast == -1) return null;
         String argsLine = line.substring(indexOfFirst + 1, indexOfLast);
-        ArrayList<String[]> args = getFunctionArguments(argsLine);
+        Map<String, String> args = getFunctionArguments(argsLine);
         Function function = Functions.FUNCTIONS.get(line.substring(0, indexOfFirst).replace(" ", "").toUpperCase(Locale.ENGLISH));
         if(function.equals("")) return null;
         FunctionConfig functionConfig = new FunctionConfig(function,args);
         return functionConfig;
     }
 
-    public static ArrayList<String[]> getFunctionArguments(String content){
+    public static Map<String, String> getFunctionArguments(String content){
         String[] s = content.split(" /(?![^\\[\\]]*\\])(?![^{}]*\\})(?![^()]*\\))");
-        ArrayList<String[]> args = new ArrayList<>();
+        Map<String, String> args = new HashMap<>();
         for(String split : s){
             int charResult = split.indexOf("=");
             String keyArg = split.substring(0,charResult).replace(" ", "").toUpperCase(Locale.ENGLISH);
             String valueArg = split.substring(charResult + 1).trim();
-            args.add(new String[]{keyArg,valueArg});
+            args.put(keyArg, valueArg);
         }
-        return args;
+        return Collections.unmodifiableMap(args);
+    }
+
+    public static String getImportsLine(List<String> imports){
+        String line = "";
+        for(String i : imports){
+            line = line + "import " + i.trim() + ";";
+        }
+        return line;
+    }
+
+    public static List<String> getListFromArg(String argContent) {
+        ArrayList<String> list = new ArrayList<>();
+        String input = argContent.replace("[", "").replace("]", "").trim();
+        String[] segments = input.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)(?![^\\{]*\\})");
+        for(String segment : segments) {
+            if (!segment.trim().equals("")) {
+                list.add(segment.trim());
+            }
+        }
+        return Collections.unmodifiableList(list);
     }
 }
