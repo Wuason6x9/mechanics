@@ -2,6 +2,10 @@ package dev.wuason.mechanics.actions.args.def;
 
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
+import dev.wuason.mechanics.actions.vars.GlobalVar;
+import dev.wuason.storagemechanic.storages.Storage;
+
+import java.util.Locale;
 
 public class VarArg extends Argument {
     public VarArg(String line) {
@@ -10,6 +14,21 @@ public class VarArg extends Argument {
 
     @Override
     public Object computeArg(Action action) {
-        return null;
+
+        String var = getLine().replace(" ", "");
+        //Global variable
+        if(var.contains("{") && var.contains("}")) {
+            String varGlobalVar = getGlobalVarString(var);
+            GlobalVar globalVar = action.getActionManager().getGlobalVar(action.getNamespace(), varGlobalVar);
+            return globalVar.data();
+        }
+
+        return action.getPlaceholder(var);
+    }
+
+    private String getGlobalVarString(String string){
+        int charFirst = string.indexOf("{");
+        int charLast = string.lastIndexOf("}");
+        return string.substring(charFirst,charLast + 1).toString();
     }
 }

@@ -35,5 +35,4 @@ public class Events implements Listener {
         actionManager.callEvent(eventAction, event.getPlayer().getPlayer().getUniqueId().toString());
     }
 
-
 }

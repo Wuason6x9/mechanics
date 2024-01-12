@@ -2,8 +2,9 @@ package dev.wuason.mechanics.actions;
 
 import bsh.EvalError;
 import bsh.Interpreter;
-import dev.wuason.mechanics.actions.config.ActionConfig;
-import dev.wuason.mechanics.actions.config.FunctionConfig;
+import dev.wuason.mechanics.actions.args.Argument;
+import dev.wuason.mechanics.actions.args.Arguments;
+import dev.wuason.mechanics.actions.config.*;
 import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.executators.Run;
 import dev.wuason.mechanics.actions.functions.Function;
@@ -15,10 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -29,6 +27,7 @@ public class Action {
     private final ActionManager actionManager;
     private final HashMap<String, Object> placeholders = new HashMap<>();
     private final HashMap<String, Object> placeholderReplacements = new HashMap<>();
+    private final WeakHashMap<String, Argument> conditionArgumentsRegistered = new WeakHashMap<>();
     private final UUID id = UUID.randomUUID();
     private final Object[] args;
     private final ActionConfig actionConfig;
@@ -36,7 +35,7 @@ public class Action {
     private final EventAction eventAction;
 
 
-    private boolean active = false;
+    private AtomicBoolean active = new AtomicBoolean(false);
     private AtomicBoolean pendingToRun = new AtomicBoolean(false);
     private AtomicBoolean loaded = new AtomicBoolean(false);
     private AtomicInteger actualFunction = new AtomicInteger(-1);
@@ -65,12 +64,75 @@ public class Action {
         registerDefaultMethods();
     }
 
-    public Action load(Run loadType){
+    public Action load(@NotNull Run loadType){
 
         Runnable runnable = () -> {
 
-            eventAction.registerPlaceholders(Action.this);
-            actionConfig.getExecutor().registerPlaceholders(Action.this);
+            eventAction.registerPlaceholders(Action.this); // REGISTER EVENT ACTION PLACEHOLDERS
+            actionConfig.getExecutor().registerPlaceholders(Action.this); // REGISTER EXECUTOR PLACEHOLDERS
+            runCode(actionConfig.getImportsLine()); // LOAD IMPORTS
+
+
+
+            //******* LOAD VAR LIST *******//
+
+            for(VarListConfig<? extends Class<? extends Argument>> varListConfig : actionConfig.getVarsList()){
+
+                List<Object> objList = new ArrayList<>();
+
+                for(ArgumentConfig argumentConfig : varListConfig.getArguments()){
+
+                    String argContent = argumentConfig.getArgument();
+
+                    argContent = ArgumentUtils.processArg(argContent, this);
+                    argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+
+                    Argument argument = Arguments.createArgument(argumentConfig.getType(), argContent);
+
+                    objList.add(argument.computeArg(this));
+
+                }
+
+                if(varListConfig.getVar().contains("{") && varListConfig.getVar().contains("}")){
+                    actionManager.setValueGlobalVar(namespace, varListConfig.getVar(), objList);
+                    continue;
+                }
+
+                if(varListConfig.getVar().contains("%")){
+                    registerPlaceholderReplacement(varListConfig.getVar(), objList);
+                    continue;
+                }
+                registerPlaceholder(varListConfig.getVar(), objList);
+
+            }
+
+            //******* LOAD VARS *******//
+
+            for(VarConfig varConfig : actionConfig.getVars()){
+
+                String argContent = varConfig.getArgument().getArgument();
+
+                argContent = ArgumentUtils.processArg(argContent, this);
+                argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+
+                Argument argument = Arguments.createArgument(varConfig.getArgument().getType(), argContent);
+
+                if(varConfig.getVar().contains("{") && varConfig.getVar().contains("}")){
+                    actionManager.setValueGlobalVar(namespace, varConfig.getVar(), argument.computeArg(this));
+                    continue;
+                }
+                if(varConfig.getVar().contains("%")){
+                    registerPlaceholderReplacement(varConfig.getVar(), argument.computeArg(this));
+                    continue;
+                }
+                registerPlaceholder(varConfig.getVar(), argument.computeArg(this));
+            }
+
+            //******* LOAD CONDITIONS *******//
+
+            for(ConditionConfig conditionConfig : actionConfig.getConditions()){ // LOAD CONDITIONS
+                loadCondition(conditionConfig);
+            }
 
             loaded.set(true);
             if(pendingToRun.get()) run();
@@ -104,38 +166,110 @@ public class Action {
             pendingToRun.set(true);
             return;
         }
-        active = true;
-
-
+        active.set(true);
+        execute(0);
     }
 
-    public boolean execute(FunctionConfig functionConfig, Run runType){
-        Function function = functionConfig.getFunction();
+    public void execute(FunctionConfig functionConfig, Run runType){
 
-        Object[] argsComputed = new Object[function.getArgs().size()];
+        Runnable runnable = () -> {
 
-        FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
+            Function function = functionConfig.getFunction();
 
-        for(int i=0;i<functionArguments.length;i++){
-            FunctionArgument functionArgument = functionArguments[i];
-            if(functionArgument == null) continue;
-            String argContent = functionConfig.getArgs().get(functionArgument.getName());
-            if(argContent == null) continue;
-            if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
-            if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+            Object[] argsComputed = new Object[function.getArgs().size()];
 
-            argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
+            FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
 
+            //debug
+            for(int i=0;i<functionArguments.length;i++){
+
+                System.out.println("arg: " + functionArguments[i]);
+
+            }
+
+            for(int i=0;i<functionArguments.length;i++){
+                FunctionArgument functionArgument = functionArguments[i];
+                if(functionArgument == null) continue;
+                String argContent = functionConfig.getArgs().get(functionArgument.getName());
+                if(argContent == null) continue;
+                if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
+                if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+
+                argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
+
+            }
+            function.execute(this, argsComputed);
+        };
+
+        if(runType == Run.CURRENT && pendingToRun.get()) runType = Run.SYNC;
+
+        switch (runType){
+            case SYNC -> {
+                Bukkit.getScheduler().runTask((Plugin)core, runnable);
+            }
+            case ASYNC -> {
+                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, runnable);
+            }
+            case CURRENT -> {
+                runnable.run();
+            }
         }
-        return function.execute(this, argsComputed);
+
     }
 
     public void execute(int functionIndex, Run runType){
-        if(!active || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) return;
+        if(!active.get() || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) {
+            finish();
+            return;
+        }
         actualFunction.set(functionIndex);
         FunctionConfig functionConfig = actionConfig.getFunctions().get(functionIndex);
-        if(execute(functionConfig,runType)) return;
-        execute(functionIndex + 1, runType);
+        Run finalRunType = runType;
+        Runnable runnable = () -> {
+
+            if(!checkAllConditions(actionConfig)) return;
+
+            Function function = functionConfig.getFunction();
+
+            Object[] argsComputed = new Object[function.getArgs().size()];
+
+            FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
+
+            for(int i=0;i<functionArguments.length;i++){
+
+                FunctionArgument functionArgument = functionArguments[i];
+
+                if(functionArgument == null) continue;
+
+                String argContent = functionConfig.getArgs().get(functionArgument.getName());
+
+                if(argContent == null) continue;
+
+                if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
+
+                if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+
+                argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
+
+            }
+            if(function.execute(this, argsComputed)) return;
+            execute(functionIndex + 1, finalRunType);
+
+        };
+
+        if(runType == Run.CURRENT && pendingToRun.get()) runType = Run.SYNC;
+
+        switch (runType){
+            case SYNC -> {
+                Bukkit.getScheduler().runTask((Plugin)core, runnable);
+            }
+            case ASYNC -> {
+                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, runnable);
+            }
+            case CURRENT -> {
+                runnable.run();
+            }
+        }
     }
 
     public void execute(int function){
@@ -151,12 +285,56 @@ public class Action {
     }
 
     public void finish(){
-        active = false;
+        active.set(false);
         actualFunction.set(-1);
         actionManager.removeAction(id);
     }
 
+    public Object runCode(String code){
+        try {
+            return interpreter.eval(code);
+        } catch (EvalError e) {
+        }
+        return null;
+    }
+
     //*********** CONDITIONS ***********//
+
+    public boolean checkConditionWithLoad(ConditionConfig conditionConfig){
+        String condition = conditionConfig.getReplacement();
+        loadCondition(conditionConfig);
+        return runCode(condition).equals(true);
+    }
+
+    public void loadCondition(ConditionConfig conditionConfig){
+        for(Map.Entry<String, ArgumentConfig> entry : conditionConfig.getReplacements().entrySet()){
+            String argContent = entry.getValue().getArgument();
+            argContent = ArgumentUtils.processArg(argContent, this);
+            argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+            Argument argument = Arguments.createArgument(entry.getValue().getType(), argContent);
+            registerPlaceholder(entry.getKey(), argument.computeArg(this));
+            conditionArgumentsRegistered.put(entry.getKey(), argument);
+        }
+    }
+
+    public boolean checkConditionWithOutLoad(ConditionConfig conditionConfig){
+        String condition = conditionConfig.getReplacement();
+        reLoadConditions();
+        return runCode(condition).equals(true);
+    }
+
+    public void reLoadConditions(){
+        for(Map.Entry<String, Argument> entry : conditionArgumentsRegistered.entrySet()){
+            registerPlaceholder(entry.getKey(), entry.getValue().computeArg(this));
+        }
+    }
+
+    public boolean checkAllConditions(ActionConfig actionConfig){
+        for(ConditionConfig conditionConfig : actionConfig.getConditions()){
+            if(!checkConditionWithOutLoad(conditionConfig)) return false;
+        }
+        return true;
+    }
 
 
 
@@ -219,7 +397,7 @@ public class Action {
     }
 
     public Object getPlaceholder(@NotNull String placeholder){
-        return placeholders.get(placeholder.toUpperCase(Locale.ENGLISH).intern());
+        return placeholders.getOrDefault(placeholder.toUpperCase(Locale.ENGLISH).intern(), "INVALID");
     }
 
     public boolean hasPlaceholder(@NotNull String placeholder){
@@ -239,19 +417,12 @@ public class Action {
     //*********** CUSTOM METHODS INTERPRETER ***********//
 
     public void registerMethod(String methodEval){
-        try {
-            interpreter.eval(methodEval);
-        } catch (EvalError e) {
-            throw new RuntimeException(e);
-        }
+        runCode(methodEval);
     }
 
+
     public void registerDefaultMethods(){
-        try {
-            interpreter.eval("import dev.wuason.mechanics.actions.utils.ArgUtils; Object runArg(String argType, String value){ return ArgUtils.runArg($ACTION$, argType, value); }");
-        } catch (EvalError e) {
-            throw new RuntimeException(e);
-        }
+        runCode("import dev.wuason.mechanics.actions.utils.ArgUtils; Object runArg(String argType, String value){ return ArgUtils.runArg($ACTION$, argType, value); }");
     }
 
     //*********** GETTERS ***********//
@@ -278,7 +449,7 @@ public class Action {
     }
 
     public boolean isActive() {
-        return active;
+        return active.get();
     }
 
     public Object[] getArgs() {

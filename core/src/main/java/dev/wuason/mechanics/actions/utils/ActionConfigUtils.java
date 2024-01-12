@@ -1,9 +1,8 @@
 package dev.wuason.mechanics.actions.utils;
 
+import dev.wuason.mechanics.actions.args.Argument;
 import dev.wuason.mechanics.actions.args.Arguments;
-import dev.wuason.mechanics.actions.config.ArgumentConfig;
-import dev.wuason.mechanics.actions.config.ConditionConfig;
-import dev.wuason.mechanics.actions.config.FunctionConfig;
+import dev.wuason.mechanics.actions.config.*;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.Functions;
 
@@ -24,7 +23,7 @@ public class ActionConfigUtils {
             if(charFirstResult == -1 || charLastResult == -1) break;
             String placeHolder = replacementPlaceHolder.replace("%", UUID.randomUUID().toString().replace("-",""));
             ArgumentConfig arg = ArgumentConfigUtils.getArg(line.substring(charFirstResult + 1,charLastResult));
-            replacements.put(placeHolder, arg);
+            replacements.put(placeHolder.toUpperCase(Locale.ENGLISH).intern(), arg);
             replacement = replacement.replace(line.substring(charFirstResult,charLastResult + 1),placeHolder);
         }
         return new ConditionConfig(replacements, line, replacement);
@@ -37,7 +36,7 @@ public class ActionConfigUtils {
         String argsLine = line.substring(indexOfFirst + 1, indexOfLast);
         Map<String, String> args = getFunctionArguments(argsLine);
         Function function = Functions.FUNCTIONS.get(line.substring(0, indexOfFirst).replace(" ", "").toUpperCase(Locale.ENGLISH));
-        if(function.equals("")) return null;
+        if(function == null) return null;
         FunctionConfig functionConfig = new FunctionConfig(function,args);
         return functionConfig;
     }
@@ -72,5 +71,26 @@ public class ActionConfigUtils {
             }
         }
         return Collections.unmodifiableList(list);
+    }
+
+    public static VarConfig getVar(String str){
+        int indexOf = str.indexOf("|");
+        if(indexOf == -1) return null;
+        String varContent = str.substring(indexOf + 1);
+        String var = str.substring(0,indexOf).replace(" ", "").toUpperCase(Locale.ENGLISH);
+        if(var == "" || varContent == "") return null;
+        int resultChar = varContent.indexOf("=");
+        String argType = varContent.substring(0, resultChar).replace(" ", "").toUpperCase(Locale.ENGLISH);
+        ArgumentConfig argConfig = new ArgumentConfig(Arguments.ARGUMENTS.get(argType), varContent.substring(resultChar + 1 ).trim());
+        VarConfig varConfig = new VarConfig(var, argConfig);
+        return varConfig;
+    }
+
+    public static VarListConfig<?> getVarList(String var, Class<? extends Argument> type, List<String> listArgs){
+        List<ArgumentConfig> arguments = new ArrayList<>();
+        for(String arg : listArgs){
+            arguments.add(new ArgumentConfig(type, arg.trim()));
+        }
+        return new VarListConfig(var.replace(" ", "").toUpperCase(Locale.ENGLISH), type, arguments);
     }
 }

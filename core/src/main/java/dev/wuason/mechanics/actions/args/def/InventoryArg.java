@@ -10,10 +10,6 @@ public class InventoryArg extends Argument {
     }
     @Override
     public Object computeArg(Action action) {
-        try {
-            return action.getInterpreter().eval("$inventory$.".toUpperCase() + getLine());
-        } catch (EvalError e) {
-            throw new RuntimeException(e);
-        }
+        return action.runCode("$inventory$.".toUpperCase() + getLine());
     }
 }

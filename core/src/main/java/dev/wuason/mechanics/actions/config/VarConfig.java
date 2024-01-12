@@ -2,14 +2,12 @@ package dev.wuason.mechanics.actions.config;
 
 import dev.wuason.mechanics.actions.args.Argument;
 
-public class VarConfig<T extends Argument> {
+public class VarConfig {
     private final String var;
-    private final String value;
-    private final T argument;
+    private final ArgumentConfig argument;
 
-    public VarConfig(String var, String value, T argument) {
+    public VarConfig(String var, ArgumentConfig argument) {
         this.var = var;
-        this.value = value;
         this.argument = argument;
     }
 
@@ -17,11 +15,7 @@ public class VarConfig<T extends Argument> {
         return var;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public T getArgument() {
+    public ArgumentConfig getArgument() {
         return argument;
     }
 }

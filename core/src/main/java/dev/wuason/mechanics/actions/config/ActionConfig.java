@@ -14,12 +14,12 @@ public class ActionConfig {
     private final Executor executor;
     private final String eventAction;
     private final String id;
-    private final ArrayList<VarConfig<?>> vars;
+    private final ArrayList<VarConfig> vars;
     private final ArrayList<VarListConfig<?>> varsList;
     private final ArrayList<FunctionConfig> functions;
     private final ArrayList<ConditionConfig> conditions;
 
-    public ActionConfig(Collection<String> imports, Run runType, Executor executor, String eventAction, String id, ArrayList<VarConfig<?>> vars, ArrayList<VarListConfig<?>> varsList, ArrayList<FunctionConfig> functions, ArrayList<ConditionConfig> conditions) {
+    public ActionConfig(Collection<String> imports, Run runType, Executor executor, String eventAction, String id, ArrayList<VarConfig> vars, ArrayList<VarListConfig<?>> varsList, ArrayList<FunctionConfig> functions, ArrayList<ConditionConfig> conditions) {
         this.imports = imports;
         this.runType = runType;
         this.executor = executor;
@@ -33,6 +33,15 @@ public class ActionConfig {
 
     public Collection<String> getImports() {
         return imports;
+    }
+
+    public String getImportsLine(){
+        if(getImports().size() < 1) return "";
+        StringBuilder sb = new StringBuilder();
+        for (String s : imports) {
+            sb.append("import ").append(s.trim()).append(";");
+        }
+        return sb.toString();
     }
 
     public Run getRunType() {
@@ -51,7 +60,7 @@ public class ActionConfig {
         return id;
     }
 
-    public ArrayList<VarConfig<?>> getVars() {
+    public ArrayList<VarConfig> getVars() {
         return vars;
     }
 

@@ -3,28 +3,28 @@ package dev.wuason.mechanics.actions.config;
 import dev.wuason.mechanics.actions.args.Argument;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class VarListConfig<T extends Argument> {
-    private final String id;
+public class VarListConfig<T extends Class<? extends Argument>> {
     private final String var;
+    private final Class<T> type;
+    private final List<ArgumentConfig> arguments;
 
-    private final ArrayList<T> arguments;
-
-    public VarListConfig(String id, String var, ArrayList<T> arguments) {
-        this.id = id;
+    public VarListConfig(String var, Class<T> type, List<ArgumentConfig> arguments) {
         this.var = var;
         this.arguments = arguments;
-    }
-
-    public String getId() {
-        return id;
+        this.type = type;
     }
 
     public String getVar() {
         return var;
     }
 
-    public ArrayList<T> getArguments() {
+    public List<ArgumentConfig> getArguments() {
         return arguments;
+    }
+
+    public Class<T> getType() {
+        return type;
     }
 }

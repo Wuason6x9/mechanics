@@ -5,14 +5,12 @@ import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.events.Events;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ActionManager {
 
@@ -29,6 +27,9 @@ public class ActionManager {
     public ActionManager(MechanicAddon core) {
         if(!(core instanceof Plugin)) throw new RuntimeException("Core must be a plugin");
         this.core = core;
+
+        Bukkit.getPluginManager().registerEvents(new Events((Plugin) core, this), (Plugin) core);
+
         registerAllEvents();
     }
 
@@ -67,18 +68,18 @@ public class ActionManager {
 
     //******** GLOBAL VARS ********//
     public GlobalVar getGlobalVar(String namespace, String id){
-        return globalVars.getOrDefault(namespace,new HashMap<>()).getOrDefault(id,null);
+        return globalVars.getOrDefault(namespace,new HashMap<>()).getOrDefault(id.toUpperCase(Locale.ENGLISH),null);
     }
 
     public void setValueGlobalVar(String namespace, String id, Object value){
         HashMap<String, GlobalVar> globalVars = this.globalVars.getOrDefault(namespace,new HashMap<>());
-        globalVars.put(id,new GlobalVar(id, value));
+        globalVars.put(id.toUpperCase(Locale.ENGLISH),new GlobalVar(id.toUpperCase(Locale.ENGLISH), value));
         if(!this.globalVars.containsKey(namespace)) this.globalVars.put(namespace,globalVars);
     }
 
     public void removeGlobalVar(String namespace, String id){
         HashMap<String, GlobalVar> globalVars = this.globalVars.getOrDefault(namespace,new HashMap<>());
-        globalVars.remove(id);
+        globalVars.remove(id.toUpperCase(Locale.ENGLISH));
     }
 
     public void clearGlobalVars(String namespace){
@@ -88,17 +89,34 @@ public class ActionManager {
     //******** ACTIONS CONFIGS ********//
 
     public void registerActionConfig(ActionConfig actionConfig){
-
+        actionConfigs.put(actionConfig.getId(),actionConfig);
+        ArrayList<ActionConfig> eventActionConfigs = this.eventActionConfigs.getOrDefault(actionConfig.getEventAction(), new ArrayList<>());
+        eventActionConfigs.add(actionConfig);
     }
 
     public void unRegisterActionConfig(String id){
+        ActionConfig actionConfig = actionConfigs.getOrDefault(id,null);
+        if(actionConfig == null) return;
+        ArrayList<ActionConfig> eventActionConfigs = this.eventActionConfigs.getOrDefault(actionConfig.getEventAction(), new ArrayList<>());
+        eventActionConfigs.remove(actionConfig);
+        actionConfigs.remove(id);
 
+    }
 
-
+    public boolean isActionConfigRegistered(String id){
+        return actionConfigs.containsKey(id);
     }
 
     public ActionConfig getActionConfig(String id){
         return actionConfigs.getOrDefault(id,null);
+    }
+
+    public Collection<ActionConfig> getActionConfigs(){
+        return actionConfigs.values();
+    }
+
+    public ArrayList<ActionConfig> getEventActionConfigs(String eventAction){
+        return eventActionConfigs.getOrDefault(eventAction, new ArrayList<>());
     }
 
     public void clearActionConfigs(){
@@ -109,12 +127,10 @@ public class ActionManager {
 
     public void callEvent(EventAction eventAction, String namespace, Object... args){
         if(!eventActionConfigs.containsKey(eventAction.getId())) return;
-
         for(ActionConfig actionConfig : eventActionConfigs.get(eventAction.getId())){
 
             Action action = createAction(actionConfig, null, namespace, eventAction, args);
-            action.load();
-            action.run();
+            action.load().run();
 
         }
     }
