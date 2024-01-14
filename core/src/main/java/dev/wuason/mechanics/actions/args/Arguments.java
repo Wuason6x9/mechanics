@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.actions.args;
 
 import dev.wuason.mechanics.actions.args.def.*;
+import dev.wuason.mechanics.actions.args.def.internal.InternalArg;
 import dev.wuason.mechanics.actions.config.ArgumentConfig;
 
 import java.lang.reflect.InvocationTargetException;
@@ -57,5 +58,20 @@ public class Arguments {
 
     public static Argument createArgument(ArgumentConfig arg, Object... args){
         return createArgument(arg.getType(), arg.getArgument(), args);
+    }
+
+    public static ArgumentProperties getArgumentProperties(String type){
+        Argument argument = createArgument(type, "");
+        return argument.getProperties();
+    }
+
+    public static ArgumentProperties getArgumentProperties(Class<? extends Argument> type){
+        Argument argument = createArgument(type, "");
+        return argument.getProperties();
+    }
+
+    public static ArgumentProperties getArgumentProperties(ArgumentConfig arg){
+        Argument argument = createArgument(arg);
+        return argument.getProperties();
     }
 }

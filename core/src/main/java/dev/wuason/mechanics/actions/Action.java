@@ -3,6 +3,7 @@ package dev.wuason.mechanics.actions;
 import bsh.EvalError;
 import bsh.Interpreter;
 import dev.wuason.mechanics.actions.args.Argument;
+import dev.wuason.mechanics.actions.args.ArgumentProperties;
 import dev.wuason.mechanics.actions.args.Arguments;
 import dev.wuason.mechanics.actions.config.*;
 import dev.wuason.mechanics.actions.events.EventAction;
@@ -84,12 +85,16 @@ public class Action {
 
                     String argContent = argumentConfig.getArgument();
 
-                    argContent = ArgumentUtils.processArg(argContent, this);
-                    argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+                    ArgumentProperties properties = Arguments.getArgumentProperties(argumentConfig.getType());
+
+                    if(properties.isReSearchPlaceholders()){
+                        argContent = ArgumentUtils.processArg(argContent, this);
+                        argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+                    }
 
                     Argument argument = Arguments.createArgument(argumentConfig.getType(), argContent);
 
-                    objList.add(argument.computeArg(this));
+                    objList.add(argument.computeArgInit(this));
 
                 }
 
@@ -112,20 +117,24 @@ public class Action {
 
                 String argContent = varConfig.getArgument().getArgument();
 
-                argContent = ArgumentUtils.processArg(argContent, this);
-                argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+                ArgumentProperties properties = Arguments.getArgumentProperties(varConfig.getArgument().getType());
+
+                if(properties.isReSearchPlaceholders()){
+                    argContent = ArgumentUtils.processArg(argContent, this);
+                    argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+                }
 
                 Argument argument = Arguments.createArgument(varConfig.getArgument().getType(), argContent);
 
                 if(varConfig.getVar().contains("{") && varConfig.getVar().contains("}")){
-                    actionManager.setValueGlobalVar(namespace, varConfig.getVar(), argument.computeArg(this));
+                    actionManager.setValueGlobalVar(namespace, varConfig.getVar(), argument.computeArgInit(this));
                     continue;
                 }
                 if(varConfig.getVar().contains("%")){
-                    registerPlaceholderReplacement(varConfig.getVar(), argument.computeArg(this));
+                    registerPlaceholderReplacement(varConfig.getVar(), argument.computeArgInit(this));
                     continue;
                 }
-                registerPlaceholder(varConfig.getVar(), argument.computeArg(this));
+                registerPlaceholder(varConfig.getVar(), argument.computeArgInit(this));
             }
 
             //******* LOAD CONDITIONS *******//
@@ -161,6 +170,10 @@ public class Action {
     //*********** EXECUTION ***********//
 
 
+    /**
+     * Executes the action. If the action is not loaded, it sets a flag to indicate that it should be executed when loaded.
+     * If the action is loaded, it sets a flag to indicate that it is active and calls the execute method to perform the action.
+     */
     public void run(){
         if(!loaded.get()) {
             pendingToRun.set(true);
@@ -170,126 +183,151 @@ public class Action {
         execute(0);
     }
 
-    public void execute(FunctionConfig functionConfig, Run runType){
-
-        Runnable runnable = () -> {
-
-            Function function = functionConfig.getFunction();
-
-            Object[] argsComputed = new Object[function.getArgs().size()];
-
-            FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
-
-            //debug
-            for(int i=0;i<functionArguments.length;i++){
-
-                System.out.println("arg: " + functionArguments[i]);
-
-            }
-
-            for(int i=0;i<functionArguments.length;i++){
-                FunctionArgument functionArgument = functionArguments[i];
-                if(functionArgument == null) continue;
-                String argContent = functionConfig.getArgs().get(functionArgument.getName());
-                if(argContent == null) continue;
-                if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
-                if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
-
-                argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
-
-            }
-            function.execute(this, argsComputed);
-        };
-
+    /**
+     * Executes a function with the specified configuration, run type, and conditions.
+     *
+     * @param functionConfig The configuration of the function to execute.
+     * @param runType The type of execution (SYNC, ASYNC, CURRENT).
+     * @param conditions The list of conditions to check before executing the function.
+     */
+    public void execute(FunctionConfig functionConfig, Run runType, List<ConditionConfig> conditions){
         if(runType == Run.CURRENT && pendingToRun.get()) runType = Run.SYNC;
-
         switch (runType){
             case SYNC -> {
-                Bukkit.getScheduler().runTask((Plugin)core, runnable);
+                Bukkit.getScheduler().runTask((Plugin)core, () -> {
+                    if(executeFunction(functionConfig, conditions));
+                });
             }
             case ASYNC -> {
-                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, runnable);
+                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, () ->{
+                    if(executeFunction(functionConfig, conditions));
+                });
             }
             case CURRENT -> {
-                runnable.run();
+                if(executeFunction(functionConfig, conditions));
             }
         }
+    }
+
+    /**
+     * Executes a function with the given function configuration and conditions.
+     *
+     * @param functionConfig The function configuration containing the function and arguments.
+     * @param conditions     The conditions to check before executing the function.
+     *                       Can be null if there are no conditions.
+     * @return true if the function is executed successfully, false otherwise.
+     */
+    public boolean executeFunction(@NotNull FunctionConfig functionConfig, @Nullable List<ConditionConfig> conditions){
+        if(conditions != null && !checkAllConditions(conditions)) return false;
+
+        Function function = functionConfig.getFunction();
+
+        Object[] argsComputed = new Object[function.getArgs().size()];
+
+        FunctionArgument[] functionArguments = function.getOrderedArgs();
+
+        for(int i=0;i<functionArguments.length;i++){
+
+            FunctionArgument functionArgument = functionArguments[i];
+
+            String argContent = functionConfig.getArgs().get(functionArgument.getName());
+
+            if(argContent != null){
+                if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
+                if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+            }
+
+            argsComputed[i] = functionArgument.computeArgInit(argContent, this, argsComputed);
+
+        }
+        return function.execute(this, argsComputed);
 
     }
 
+    /**
+     * Executes a function based on the provided function index and run type.
+     *
+     * @param functionIndex The index of the function to execute.
+     * @param runType The type of run to perform (SYNC, ASYNC, CURRENT).
+     */
     public void execute(int functionIndex, Run runType){
-        if(!active.get() || actionConfig.getFunctions().size()<functionIndex || functionIndex < 0) {
+        if(!active.get() || actionConfig.getFunctions().size()<=functionIndex || functionIndex < 0) {
             finish();
             return;
         }
+
         actualFunction.set(functionIndex);
+
         FunctionConfig functionConfig = actionConfig.getFunctions().get(functionIndex);
-        Run finalRunType = runType;
-        Runnable runnable = () -> {
-
-            if(!checkAllConditions(actionConfig)) return;
-
-            Function function = functionConfig.getFunction();
-
-            Object[] argsComputed = new Object[function.getArgs().size()];
-
-            FunctionArgument[] functionArguments = function.orderArgs(functionConfig.getArgs());
-
-            for(int i=0;i<functionArguments.length;i++){
-
-                FunctionArgument functionArgument = functionArguments[i];
-
-                if(functionArgument == null) continue;
-
-                String argContent = functionConfig.getArgs().get(functionArgument.getName());
-
-                if(argContent == null) continue;
-
-                if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
-
-                if(function.getProperties().isProcessArgsSearchArgs() && functionArgument.getProperties().isProcessArgSearchArgs()) argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
-
-                argsComputed[i] = functionArgument.computeArg(argContent, this, argsComputed);
-
-            }
-            if(function.execute(this, argsComputed)) return;
-            execute(functionIndex + 1, finalRunType);
-
-        };
 
         if(runType == Run.CURRENT && pendingToRun.get()) runType = Run.SYNC;
 
         switch (runType){
             case SYNC -> {
-                Bukkit.getScheduler().runTask((Plugin)core, runnable);
+                Bukkit.getScheduler().runTask((Plugin)core, () -> {
+                    if(executeFunction(functionConfig, actionConfig.getConditions())) return;
+                    executeNext();
+                });
             }
             case ASYNC -> {
-                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, runnable);
+                Bukkit.getScheduler().runTaskAsynchronously((Plugin)core, () -> {
+                    if(executeFunction(functionConfig, actionConfig.getConditions())) return;
+                    executeNext();
+                });
             }
             case CURRENT -> {
-                runnable.run();
+                if(executeFunction(functionConfig, actionConfig.getConditions())) return;
+                executeNext();
             }
         }
     }
 
+    /**
+     * Executes the specified function with the given index using the default run type.
+     *
+     * @param function The index of the function to execute.
+     */
     public void execute(int function){
         execute(function, actionConfig.getRunType());
     }
 
+    /**
+     * Executes the next function in the Action using the specified Run type.
+     *
+     * @param runType the Run type to use for execution (SYNC, ASYNC, CURRENT)
+     */
     public void executeNext(Run runType){
         execute(actualFunction.get() + 1, runType);
     }
 
+    /**
+     * Executes the next function in the Action using the specified run type.
+     * If the Action is not active or there are no more functions to execute, it finishes.
+     */
     public void executeNext(){
         executeNext(actionConfig.getRunType());
     }
 
+    /**
+     * Finishes the execution of the action.
+     * Sets the 'active' flag of the action to false,
+     * sets the 'actualFunction' value to -1,
+     * removes the action from the action manager,
+     * and prints "FINISH" to the console.
+     */
     public void finish(){
         active.set(false);
         actualFunction.set(-1);
         actionManager.removeAction(id);
+        System.out.println("FINISH");
     }
 
+    /**
+     * Executes the given code using an interpreter and returns the result.
+     *
+     * @param code The code to be executed.
+     * @return The result of the code execution.
+     */
     public Object runCode(String code){
         try {
             return interpreter.eval(code);
@@ -312,7 +350,7 @@ public class Action {
             argContent = ArgumentUtils.processArg(argContent, this);
             argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
             Argument argument = Arguments.createArgument(entry.getValue().getType(), argContent);
-            registerPlaceholder(entry.getKey(), argument.computeArg(this));
+            registerPlaceholder(entry.getKey(), argument.computeArgInit(this));
             conditionArgumentsRegistered.put(entry.getKey(), argument);
         }
     }
@@ -320,17 +358,19 @@ public class Action {
     public boolean checkConditionWithOutLoad(ConditionConfig conditionConfig){
         String condition = conditionConfig.getReplacement();
         reLoadConditions();
-        return runCode(condition).equals(true);
+        Object obj = runCode(condition);
+        if(obj == null) return false;
+        return obj.equals(true);
     }
 
     public void reLoadConditions(){
         for(Map.Entry<String, Argument> entry : conditionArgumentsRegistered.entrySet()){
-            registerPlaceholder(entry.getKey(), entry.getValue().computeArg(this));
+            registerPlaceholder(entry.getKey(), entry.getValue().computeArgInit(this));
         }
     }
 
-    public boolean checkAllConditions(ActionConfig actionConfig){
-        for(ConditionConfig conditionConfig : actionConfig.getConditions()){
+    public boolean checkAllConditions(List<ConditionConfig> list){
+        for(ConditionConfig conditionConfig : list){
             if(!checkConditionWithOutLoad(conditionConfig)) return false;
         }
         return true;

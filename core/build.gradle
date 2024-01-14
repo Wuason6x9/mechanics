@@ -18,6 +18,8 @@ dependencies {
     implementation 'com.github.oraxen:protectionlib:1.3.5'
     implementation 'de.tr7zw:item-nbt-api:2.12.2' //pasiva
     implementation 'dev.dejvokep:boosted-yaml:1.3' //pasiva
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
     implementation fileTree(dir: 'libs-impl', include: ['*.jar'])
     implementation project(path: ':NMS:WRAPPER')
 

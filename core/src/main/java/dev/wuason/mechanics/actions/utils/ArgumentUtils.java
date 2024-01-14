@@ -2,6 +2,7 @@ package dev.wuason.mechanics.actions.utils;
 
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
+import dev.wuason.mechanics.actions.args.ArgumentProperties;
 import dev.wuason.mechanics.actions.args.Arguments;
 import dev.wuason.mechanics.actions.config.ArgumentConfig;
 import dev.wuason.mechanics.utils.MathUtils;
@@ -18,8 +19,15 @@ public class ArgumentUtils {
 
 
 
+    /**
+     * Processes the given argument based on the provided action.
+     *
+     * @param arg    The argument to be processed. Must not be null.
+     * @param action The action to be performed on the argument.
+     * @return The processed argument.
+     */
     public static String processArg(String arg, Action action) {
-
+        if(arg == null) return null;
         //************** % % ****************
         Matcher matcherPercent = PATTERN_PERCENT.matcher(arg);
         Set<String> placeholdersFoundPercent = new HashSet<>();
@@ -65,49 +73,85 @@ public class ArgumentUtils {
         return arg;
     }
 
-    public static String processArgSearchArgs(String arg, Action action) {
-        Set<String> placeholdersFound = findNestedPatterns(arg);
-        for (String p : placeholdersFound) {
-            if(!ArgumentConfigUtils.isArg(p)) continue;
-            ArgumentConfig argConfig = ArgumentConfigUtils.getArg(p);
-            String varOriginal = "<" + p + ">";
-            String randomGen = UUID.randomUUID().toString().replace("-","");
-            String varGen = ("$" + randomGen + "$");
+    /**
+     * Processes the argument string by replacing placeholders with computed values.
+     *
+     * @param arg the argument string with placeholders
+     * @param action the Action object that provides the context for argument processing
+     * @return the argument string with placeholders replaced by computed values
+     */
+    public static String processArgSearchArgs(String arg, Action action){
+
+        List<String> placeholders = findPlaceholdersArguments(arg);
+
+        for(int i = 0; i < placeholders.size(); i++){
+            String placeholder = placeholders.get(i);
+            String[] argRaw = ArgumentConfigUtils.getArgRaw(placeholder.substring(1, placeholder.length() - 1).trim());
+
+            ArgumentProperties properties = Arguments.getArgumentProperties(argRaw[0]);
+
+            String argProcessed = argRaw[1];
+
+            if(properties.isReSearchPlaceholders()){
+                argProcessed = processArgSearchArgs(argProcessed, action);
+            }
+
+            String rndPlaceholder = "$" + UUID.randomUUID().toString().replace("-", "").toUpperCase(Locale.ENGLISH) + "$";
+
+            ArgumentConfig argConfig = ArgumentConfigUtils.getArg(argRaw[0] + "=" + argProcessed);
+
             Argument argument = Arguments.createArgument(argConfig);
-            Object objComputed = argument.computeArg(action);
-            action.registerPlaceholder(varGen, objComputed);
-            arg = arg.replace(varOriginal, varGen);
+
+            action.registerPlaceholder(rndPlaceholder, argument.computeArgInit(action));
+
+            arg = arg.replace(placeholder, rndPlaceholder);
         }
         return arg;
     }
 
-    public static Set<String> findNestedPatterns(String input) {
-        Set<String> results = new HashSet<>();
-        findNestedPatterns(input, 0, 0, results);
-        return results;
-    }
-    private static void findNestedPatterns(String input, int start, int level, Set<String> results) {
-        int openCount = 0;
-        int lastOpenIndex = -1;
-        for (int i = start; i < input.length(); i++) {
-            if (input.charAt(i) == '<') {
-                openCount++;
-                if (openCount == 1) {
-                    lastOpenIndex = i;
+
+
+    /**
+     * Finds the placeholders arguments in a given line.
+     *
+     * @param line the line to search for placeholders arguments
+     * @return the list of placeholders arguments found in the line
+     */
+    public static List<String> findPlaceholdersArguments(String line) {
+        List<String> placeholders = new ArrayList<>();
+        int depth = 0;
+        int start = -1;
+
+        for (int i = 0; i < line.length(); i++) {
+            char ch = line.charAt(i);
+
+            if (ch == '<') {
+                depth++;
+                if (depth == 1) {
+                    start = i;
                 }
-            } else if (input.charAt(i) == '>') {
-                openCount--;
-                if (openCount == 0) {
-                    String substring = input.substring(lastOpenIndex + 1, i);
-                    if (!substring.contains("<")) {
-                        results.add(substring);
-                    } else {
-                        findNestedPatterns(substring, 0, level + 1, results);
-                        results.add(substring);
-                    }
+            } else if (ch == '>') {
+                depth--;
+                if (depth == 0 && start != -1) {
+                    placeholders.add(line.substring(start, i + 1));
+                    start = -1;
                 }
             }
         }
+
+        return placeholders;
+    }
+
+    /**
+     * Retrieves the placeholder argument from the given text using the provided action.
+     * A placeholder argument is identified as a non-null and trimmed string that is a valid placeholder in the action.
+     *
+     * @param text   the text to search for a placeholder argument
+     * @param action the action to check for the placeholder
+     * @return the placeholder argument if found, otherwise null
+     */
+    public static Object getArgumentPlaceHolder(String text, Action action){
+        return ( text == null || !action.hasPlaceholder(text.trim()) ) ? null : action.getPlaceholder(text.trim());
     }
 
 }

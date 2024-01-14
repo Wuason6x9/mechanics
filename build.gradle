@@ -56,6 +56,7 @@ shadowJar {
     relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
     relocate("bsh", "dev.wuason.libs.bsh")
     relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
+    relocate("org.apache.commons.lang3", "dev.wuason.libs.apache.lang3")
     destinationDirectory.set(file("$rootDir/plugin"))
     archiveClassifier.set("")
     archiveFileName.set("Mechanics-" + project.version + ".jar")

@@ -5,6 +5,7 @@ import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
+import dev.wuason.mechanics.utils.TimeUnitsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -16,10 +17,7 @@ public class WaitFunction extends Function {
             "TIME", new FunctionArgument("TIME", 0, new FunctionArgumentProperties.Builder().build()) {
                 @Override
                 public Object computeArg(String line, Action action, Object... args) {
-
-                    Long time = Long.parseLong(line);
-
-                    return time;
+                    return TimeUnitsUtils.parseTime(line);
                 }
             }
     );

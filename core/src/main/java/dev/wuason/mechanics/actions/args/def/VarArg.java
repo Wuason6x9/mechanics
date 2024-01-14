@@ -2,20 +2,21 @@ package dev.wuason.mechanics.actions.args.def;
 
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
+import dev.wuason.mechanics.actions.args.ArgumentProperties;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
 import dev.wuason.storagemechanic.storages.Storage;
 
 import java.util.Locale;
 
 public class VarArg extends Argument {
-    public VarArg(String line) {
-        super(line);
+    public VarArg(String line, Object[] args) {
+        super(line, new ArgumentProperties.Builder().setAutoTransformPlaceholder(true).build(), args);
     }
 
     @Override
-    public Object computeArg(Action action) {
+    public Object computeArg(Action action, String line) {
 
-        String var = getLine().replace(" ", "");
+        String var = line.replace(" ", "");
         //Global variable
         if(var.contains("{") && var.contains("}")) {
             String varGlobalVar = getGlobalVarString(var);

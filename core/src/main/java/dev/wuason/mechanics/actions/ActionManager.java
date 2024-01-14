@@ -35,10 +35,27 @@ public class ActionManager {
 
     //******** ACTIONS ********//
 
+    /**
+     * Retrieves an Action object with the specified UUID.
+     *
+     * @param id the UUID of the Action
+     * @return the Action object with the specified UUID, or null if no such Action exists
+     */
     public Action getAction(UUID id){
         return actionsRegistered.getOrDefault(id,null);
     }
 
+    /**
+     * Creates a new Action based on the given parameters.
+     *
+     * @param actionConfig The ActionConfig object that defines the action's configuration. Must not be null.
+     * @param placeholders A HashMap of placeholders to be used in the action. Can be null.
+     * @param namespace The namespace for the action. Must not be null.
+     * @param eventAction The EventAction type for the action. Must not be null.
+     * @param args Additional arguments for the action. Can be null.
+     * @return The newly created Action object.
+     * @throws RuntimeException if actionConfig is null.
+     */
     public Action createAction(@NotNull ActionConfig actionConfig, @Nullable HashMap<String, Object> placeholders, @NotNull String namespace, @NotNull EventAction eventAction, @Nullable Object... args){
         if(actionConfig == null) throw new RuntimeException("ActionConfig cannot be null");
         if(args == null) args = new Object[0];
@@ -53,10 +70,20 @@ public class ActionManager {
         return action;
     }
 
+    /**
+     * Removes an action from the registered actions.
+     *
+     * @param id the UUID of the action to be removed
+     */
     public void removeAction(UUID id){
         actionsRegistered.remove(id);
     }
 
+    /**
+     * Forcefully stops the action with the specified ID.
+     *
+     * @param id The ID of the action to be stopped.
+     */
     public void forceStopAction(UUID id){
         Action action = actionsRegistered.getOrDefault(id,null);
         if(action != null) action.finish();

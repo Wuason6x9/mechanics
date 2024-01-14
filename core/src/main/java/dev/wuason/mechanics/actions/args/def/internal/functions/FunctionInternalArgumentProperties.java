@@ -1,12 +1,14 @@
-package dev.wuason.mechanics.actions.functions;
+package dev.wuason.mechanics.actions.args.def.internal.functions;
 
-public class FunctionArgumentProperties {
+import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
+
+public class FunctionInternalArgumentProperties {
     private boolean processArg;
     private boolean processArgSearchArgs;
     private boolean autoGetPlaceholder;
     private boolean autoGetNull;
 
-    private FunctionArgumentProperties(boolean processArg, boolean processArgSearchArgs, boolean autoGetPlaceholder, boolean autoGetNull) {
+    private FunctionInternalArgumentProperties(boolean processArg, boolean processArgSearchArgs, boolean autoGetPlaceholder, boolean autoGetNull) {
         this.processArg = processArg;
         this.processArgSearchArgs = processArgSearchArgs;
         this.autoGetPlaceholder = autoGetPlaceholder;
@@ -29,14 +31,6 @@ public class FunctionArgumentProperties {
         this.processArgSearchArgs = processArgSearchArgs;
     }
 
-    public boolean isAutoGetNull() {
-        return autoGetNull;
-    }
-
-    public void setAutoGetNull(boolean autoGetNull) {
-        this.autoGetNull = autoGetNull;
-    }
-
     public boolean isAutoGetPlaceholder() {
         return autoGetPlaceholder;
     }
@@ -45,39 +39,43 @@ public class FunctionArgumentProperties {
         this.autoGetPlaceholder = autoGetPlaceholder;
     }
 
+    public boolean isAutoGetNull() {
+        return autoGetNull;
+    }
+
     public static class Builder {
         private boolean processArg = true;
         private boolean processArgSearchArgs = true;
 
-        private boolean autoGetNull = false;
-
         private boolean autoGetPlaceholder = true;
+
+        private boolean autoGetNull = false;
 
         public Builder() {
         }
 
-        public FunctionArgumentProperties.Builder setProcessArg(boolean processArg) {
+        public FunctionInternalArgumentProperties.Builder setProcessArg(boolean processArg) {
             this.processArg = processArg;
             return this;
         }
 
-        public FunctionArgumentProperties.Builder setProcessArgSearchArgs(boolean processArgSearchArgs) {
+        public FunctionInternalArgumentProperties.Builder setProcessArgSearchArgs(boolean processArgSearchArgs) {
             this.processArgSearchArgs = processArgSearchArgs;
             return this;
         }
 
-        public FunctionArgumentProperties.Builder setAutoGetPlaceholder(boolean autoGetPlaceholder) {
+        public FunctionInternalArgumentProperties.Builder setAutoGetPlaceholder(boolean autoGetPlaceholder) {
             this.autoGetPlaceholder = autoGetPlaceholder;
             return this;
         }
 
-        public FunctionArgumentProperties.Builder setAutoGetNull(boolean autoGetNull) {
+        public FunctionInternalArgumentProperties.Builder setAutoGetNull(boolean autoGetNull) {
             this.autoGetNull = autoGetNull;
             return this;
         }
 
-        public FunctionArgumentProperties build() {
-            return new FunctionArgumentProperties(processArg, processArgSearchArgs, autoGetPlaceholder, autoGetNull);
+        public FunctionInternalArgumentProperties build() {
+            return new FunctionInternalArgumentProperties(processArg, processArgSearchArgs, autoGetPlaceholder, autoGetNull);
         }
     }
 }

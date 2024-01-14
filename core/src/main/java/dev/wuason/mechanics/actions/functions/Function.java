@@ -4,6 +4,8 @@ import dev.wuason.mechanics.actions.Action;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class Function {
 
@@ -31,6 +33,14 @@ public abstract class Function {
         return functionArguments;
     }
 
+    public FunctionArgument[] getOrderedArgs(){
+        FunctionArgument[] functionArguments = new FunctionArgument[getArgs().size()];
+        for(Map.Entry<String, FunctionArgument> entry : getArgs().entrySet()){
+            functionArguments[entry.getValue().getOrder()] = entry.getValue();
+        }
+        return functionArguments;
+    }
+
     public String getName() {
         return name;
     }
@@ -42,5 +52,50 @@ public abstract class Function {
     public abstract boolean execute(Action action, Object... Args);
 
 
+    public static class Builder {
 
+        private FunctionArgument.Builder argumentBuilder;
+        private String name;
+        private FunctionProperties.Builder properties;
+
+        private BiFunction<Action, Object[], Boolean> execute;
+
+        public Builder(){
+            argumentBuilder = new FunctionArgument.Builder();
+            properties = new FunctionProperties.Builder();
+        }
+
+        public Builder addArguments(Consumer<FunctionArgument.Builder> argBuilder){
+            argBuilder.accept(argumentBuilder);
+            return this;
+        }
+
+        public Builder setName(String name){
+            this.name = name;
+            return this;
+        }
+
+        public Builder setProperties(Consumer<FunctionProperties.Builder> properties){
+            properties.accept(this.properties);
+            return this;
+        }
+
+        public Builder setExecute(BiFunction<Action, Object[], Boolean> execute){
+            this.execute = execute;
+            return this;
+        }
+
+
+        public Function build(){
+            if(name == null) throw new RuntimeException("Name cannot be null!");
+            if(execute == null) throw new RuntimeException("Execute cannot be null!");
+            return new Function(name, argumentBuilder.build(), properties.build()) {
+                @Override
+                public boolean execute(Action action, Object... Args) {
+                    return execute.apply(action, Args);
+                }
+            };
+        }
+
+    }
 }
