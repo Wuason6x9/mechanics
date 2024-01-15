@@ -5,12 +5,14 @@ public class FunctionArgumentProperties {
     private boolean processArgSearchArgs;
     private boolean autoGetPlaceholder;
     private boolean autoGetNull;
+    private boolean required;
 
-    private FunctionArgumentProperties(boolean processArg, boolean processArgSearchArgs, boolean autoGetPlaceholder, boolean autoGetNull) {
+    private FunctionArgumentProperties(boolean processArg, boolean processArgSearchArgs, boolean autoGetPlaceholder, boolean autoGetNull, boolean required) {
         this.processArg = processArg;
         this.processArgSearchArgs = processArgSearchArgs;
         this.autoGetPlaceholder = autoGetPlaceholder;
         this.autoGetNull = autoGetNull;
+        this.required = required;
     }
 
     public boolean isProcessArg() {
@@ -45,13 +47,16 @@ public class FunctionArgumentProperties {
         this.autoGetPlaceholder = autoGetPlaceholder;
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
     public static class Builder {
         private boolean processArg = true;
         private boolean processArgSearchArgs = true;
-
         private boolean autoGetNull = false;
-
         private boolean autoGetPlaceholder = true;
+        private boolean required = false;
 
         public Builder() {
         }
@@ -76,8 +81,13 @@ public class FunctionArgumentProperties {
             return this;
         }
 
+        public FunctionArgumentProperties.Builder setRequired(boolean required) {
+            this.required = required;
+            return this;
+        }
+
         public FunctionArgumentProperties build() {
-            return new FunctionArgumentProperties(processArg, processArgSearchArgs, autoGetPlaceholder, autoGetNull);
+            return new FunctionArgumentProperties(processArg, processArgSearchArgs, autoGetPlaceholder, autoGetNull, required);
         }
     }
 }

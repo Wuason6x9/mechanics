@@ -34,8 +34,8 @@ public class Chance extends FunctionInternal {
     }};
 
 
-    public Chance(FunctionInternalConfig config) {
-        super(PROPERTIES, ARGUMENTS, config);
+    public Chance() {
+        super(PROPERTIES, ARGUMENTS, "chance");
     }
 
     @Override

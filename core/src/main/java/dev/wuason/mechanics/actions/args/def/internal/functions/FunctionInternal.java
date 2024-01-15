@@ -11,14 +11,14 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public abstract class FunctionInternal {
+    private final String id;
     private final FunctionInternalProperties properties;
-    private final FunctionInternalConfig config;
     private final HashMap<String, FunctionInternalArgument> argumentsRequired;
 
-    public FunctionInternal(FunctionInternalProperties properties, HashMap<String, FunctionInternalArgument> argumentsRequired, FunctionInternalConfig config) {
+    public FunctionInternal(FunctionInternalProperties properties, HashMap<String, FunctionInternalArgument> argumentsRequired, String id) {
         this.properties = properties;
         this.argumentsRequired = argumentsRequired;
-        this.config = config;
+        this.id = id.toUpperCase(Locale.ENGLISH);
     }
 
     public FunctionInternalProperties getProperties() {
@@ -28,12 +28,12 @@ public abstract class FunctionInternal {
         return argumentsRequired;
     }
 
-    public FunctionInternalConfig getConfig() {
-        return config;
-    }
-
     public Object computeInit(Action action, Object... args){
         return compute(action, args);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public abstract Object compute(Action action, Object... args);
@@ -46,10 +46,12 @@ public abstract class FunctionInternal {
         return functionArguments;
     }
 
-    /*public static class Builder {
+    public static class Builder {
 
         private FunctionInternalProperties.Builder properties;
-        private FunctionInternalConfig config;
+
+        private String name;
+
         private FunctionInternalArgument.Builder argumentBuilder;
         private BiFunction<Action, Object[], Object> compute;
 
@@ -58,8 +60,9 @@ public abstract class FunctionInternal {
             argumentBuilder = new FunctionInternalArgument.Builder();
         }
 
-        public Builder setConfig(FunctionInternalConfig config){
-            this.config = config;
+
+        public Builder setName(String name){
+            this.name = name;
             return this;
         }
 
@@ -80,8 +83,18 @@ public abstract class FunctionInternal {
 
         public FunctionInternal build(){
 
+            if(name == null) throw new NullPointerException("Name cannot be null");
+            if(compute == null) throw new NullPointerException("Compute cannot be null");
 
+            FunctionInternal functionInternal = new FunctionInternal(properties.build(), argumentBuilder.build(), name) {
+                @Override
+                public Object compute(Action action, Object... args) {
+                    return compute.apply(action, args);
+                }
+            };
+
+            return functionInternal;
 
         }
-    }*/
+    }
 }

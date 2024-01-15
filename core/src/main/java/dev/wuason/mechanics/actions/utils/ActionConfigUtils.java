@@ -63,7 +63,9 @@ public class ActionConfigUtils {
     public static Map<String, String> getFunctionArguments(String content){
         String[] s = content.split(" /(?![^\\[\\]]*\\])(?![^{}]*\\})(?![^()]*\\))");
         Map<String, String> args = new HashMap<>();
+        if(s.length<1) return Collections.unmodifiableMap(args);
         for(String split : s){
+            if(split.trim().equals("")) continue;
             int charResult = split.indexOf("=");
             String keyArg = split.substring(0,charResult).replace(" ", "").toUpperCase(Locale.ENGLISH);
             String valueArg = split.substring(charResult + 1).trim();

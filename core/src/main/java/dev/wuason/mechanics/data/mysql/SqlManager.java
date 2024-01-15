@@ -2,6 +2,7 @@ package dev.wuason.mechanics.data.mysql;
 
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.data.Data;
+import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.Utils;
 import org.bukkit.Bukkit;
@@ -19,7 +20,7 @@ public class SqlManager {
     private Connection connection;
     private static ArrayList<SqlManager> dataManagers = new ArrayList<>();
 
-    private Plugin plugin;
+    private MechanicAddon addon;
     private String host;
     private int port;
     private String database;
@@ -30,8 +31,8 @@ public class SqlManager {
     final public static String DATA_ID_NAME_COLUMN = "data_id";
     public BukkitTask bukkitTask;
 
-    public SqlManager(Plugin plugin, String host, int port, String database, String user, String password, String driver) {
-        this.plugin = plugin;
+    public SqlManager(MechanicAddon addon, String host, int port, String database, String user, String password, String driver) {
+        this.addon = addon;
         this.host = host;
         this.port = port;
         this.database = database;
@@ -39,7 +40,7 @@ public class SqlManager {
         this.password = password;
         this.driver = driver;
         connectToMySQL();
-        bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,() ->{
+        bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously((Plugin) addon,() ->{
 
             if(!isDatabaseConnected()){
                 handleDisconnection();
@@ -61,8 +62,8 @@ public class SqlManager {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
-            AdventureUtils.sendMessagePluginConsole(plugin, "<red> Cannot establish a connection to the database. Plugin is being disabled.");
-            Bukkit.getPluginManager().disablePlugin(plugin);
+            AdventureUtils.sendMessagePluginConsole(addon, "<red> Cannot establish a connection to the database. Plugin is being disabled.");
+            Bukkit.getPluginManager().disablePlugin((Plugin) addon);
         }
     }
 
@@ -82,15 +83,15 @@ public class SqlManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            AdventureUtils.sendMessagePluginConsole(plugin, "<red> Cannot reconnect to the database. Plugin is being disabled.");
-            Bukkit.getPluginManager().disablePlugin(plugin);
+            AdventureUtils.sendMessagePluginConsole(addon, "<red> Cannot reconnect to the database. Plugin is being disabled.");
+            Bukkit.getPluginManager().disablePlugin((Plugin) addon);
         }
     }
 
     public void handleDisconnection() {
         new Thread(() -> {
             while (!isDatabaseConnected()) {
-                AdventureUtils.sendMessagePluginConsole(plugin, "<red> Attempting to reconnect to the database...");
+                AdventureUtils.sendMessagePluginConsole(addon, "<red> Attempting to reconnect to the database...");
                 reconnectToDatabase();
                 try {
                     Thread.sleep(10000); // Retry every 10 seconds

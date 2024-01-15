@@ -1,6 +1,8 @@
 package dev.wuason.mechanics.actions.events;
 
 import dev.wuason.mechanics.actions.ActionManager;
+import dev.wuason.mechanics.actions.events.def.ActionCreateEvent;
+import dev.wuason.mechanics.actions.events.def.Generic;
 import dev.wuason.mechanics.actions.events.defbukkit.OnJoinEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,13 +26,15 @@ public class Events implements Listener {
     static {
 
         EVENTS.put("onJoin".toUpperCase(), OnJoinEvent.class);
+        EVENTS.put("default".toUpperCase(), Generic.class);
+        EVENTS.put("createAction".toUpperCase(), ActionCreateEvent.class);
 
     }
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if(!actionManager.isListenDefEvents()) return;
+        if(!actionManager.isListenDefEvents() && !actionManager.isListenEvent(OnJoinEvent.class)) return;
         EventAction eventAction = new OnJoinEvent(event);
         actionManager.callEvent(eventAction, event.getPlayer().getPlayer().getUniqueId().toString());
     }

@@ -47,8 +47,8 @@ public class RandomNumber extends FunctionInternal {
 
 
 
-    public RandomNumber(FunctionInternalConfig config) {
-        super(PROPERTIES, ARGUMENTS, config);
+    public RandomNumber() {
+        super(PROPERTIES, ARGUMENTS, "randomNumber");
     }
 
     @Override

@@ -13,9 +13,13 @@ public abstract class EventBukkit implements EventAction {
     }
 
     @Override
-    @OverridingMethodsMustInvokeSuper
     public void registerPlaceholders(Action action) {
         action.registerPlaceholder("$event$", event);
+        registerPlaceholdersBukkit(action);
+    }
+
+    public void registerPlaceholdersBukkit(Action action){
+
     }
 
 

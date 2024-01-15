@@ -12,6 +12,8 @@ import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.utils.ArgumentUtils;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
+import dev.wuason.mechanics.utils.AdventureUtils;
+import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -127,8 +129,10 @@ public class Action {
                 Argument argument = Arguments.createArgument(varConfig.getArgument().getType(), argContent);
 
                 if(varConfig.getVar().contains("{") && varConfig.getVar().contains("}")){
-                    actionManager.setValueGlobalVar(namespace, varConfig.getVar(), argument.computeArgInit(this));
-                    continue;
+                    if(!actionManager.isGlobalVarRegistered(namespace, varConfig.getVar())){
+                        actionManager.setValueGlobalVar(namespace, varConfig.getVar(), argument.computeArgInit(this));
+                        continue;
+                    }
                 }
                 if(varConfig.getVar().contains("%")){
                     registerPlaceholderReplacement(varConfig.getVar(), argument.computeArgInit(this));
@@ -191,7 +195,6 @@ public class Action {
      * @param conditions The list of conditions to check before executing the function.
      */
     public void execute(FunctionConfig functionConfig, Run runType, List<ConditionConfig> conditions){
-        if(runType == Run.CURRENT && pendingToRun.get()) runType = Run.SYNC;
         switch (runType){
             case SYNC -> {
                 Bukkit.getScheduler().runTask((Plugin)core, () -> {
@@ -231,6 +234,12 @@ public class Action {
             FunctionArgument functionArgument = functionArguments[i];
 
             String argContent = functionConfig.getArgs().get(functionArgument.getName());
+
+
+            if(argContent == null && functionArgument.getProperties().isRequired()) {
+                AdventureUtils.sendMessagePluginConsole(core, "Argument " + functionArgument.getName() + " is required for function " + function.getName() + " in action " + actionConfig.getId() + " but it is not provided.");
+                return false;
+            }
 
             if(argContent != null){
                 if(function.getProperties().isProcessArgs() && functionArgument.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, this);
@@ -319,7 +328,6 @@ public class Action {
         active.set(false);
         actualFunction.set(-1);
         actionManager.removeAction(id);
-        System.out.println("FINISH");
     }
 
     /**
@@ -379,6 +387,20 @@ public class Action {
 
 
     //*********** PLACEHOLDERS ***********//
+
+
+    public void refreshPlaceholder(@NotNull String placeholder){
+        placeholder = placeholder.toUpperCase(Locale.ENGLISH).intern();
+        Object obj = runCode(placeholder);
+        if(obj == null) return;
+        placeholders.put(placeholder, obj);
+    }
+
+    public void refreshAllPlaceholders(){
+        for(Map.Entry<String, Object> placeholderEntry : placeholders.entrySet()){
+            refreshPlaceholder(placeholderEntry.getKey());
+        }
+    }
 
     public void unRegisterPlaceholder(@NotNull String placeholder){
         placeholders.remove(placeholder.toUpperCase(Locale.ENGLISH).intern());
@@ -447,6 +469,7 @@ public class Action {
     public void registerDefPlaceholders(){
         registerPlaceholder("$action$", this);
         registerPlaceholder("$actionConfig$", actionConfig);
+        registerPlaceholder("$actionConfigId$", actionConfig.getId());
         registerPlaceholder("$eventAction$", actionConfig.getEventAction());
         registerPlaceholder("$executor$", actionConfig.getExecutor());
         registerPlaceholder("$namespace$", namespace);
@@ -508,5 +531,24 @@ public class Action {
         return eventAction;
     }
 
+    public boolean isLoaded() {
+        return loaded.get();
+    }
+
+    public boolean isPendingToRun() {
+        return pendingToRun.get();
+    }
+
+    public int getActualFunction() {
+        return actualFunction.get();
+    }
+
+    public HashMap<String, Object> getPlaceholderReplacements() {
+        return placeholderReplacements;
+    }
+
+    public WeakHashMap<String, Argument> getConditionArgumentsRegistered() {
+        return conditionArgumentsRegistered;
+    }
 
 }

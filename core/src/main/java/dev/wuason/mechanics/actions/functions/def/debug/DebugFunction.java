@@ -28,7 +28,7 @@ public class DebugFunction extends Function {
 
     @Override
     public boolean execute(Action action, Object... Args) {
-        AdventureUtils.sendMessagePluginConsole((Plugin) action.getCore(),  (Args[0]).toString());
+        AdventureUtils.sendMessagePluginConsole(action.getCore(),  (Args[0]).toString());
         return false;
     }
 }

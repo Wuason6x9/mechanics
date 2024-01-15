@@ -7,6 +7,12 @@ public class TimeUnitsUtils {
 
     private static Pattern pattern = Pattern.compile("(\\d+)([a-zA-Z]+)");
 
+    /**
+     * Parses a time string and returns the corresponding time in ticks.
+     *
+     * @param time the time string to parse
+     * @return the time in milliseconds, or 20L if the time string is null or cannot be parsed
+     */
     public static Long parseTime(String time) {
         if (time == null) return 20L;
 

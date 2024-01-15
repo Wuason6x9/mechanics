@@ -18,17 +18,21 @@ public class ActionManager {
     private HashMap<String, HashMap<String, GlobalVar>> globalVars = new HashMap<>();
     private MechanicAddon core;
     private boolean listenDefEvents = false;
+    private List<Class<? extends EventAction>> listenEvents = new ArrayList<>();
+    private ActionConfigManager actionConfigManager;
 
     //******** CONFIG ********//
 
     private final HashMap<String, ActionConfig> actionConfigs = new HashMap<>();
     private final HashMap<String, ArrayList<ActionConfig>> eventActionConfigs = new HashMap<>();
 
-    public ActionManager(MechanicAddon core) {
+    public ActionManager(MechanicAddon core, boolean actionConfigManager) {
         if(!(core instanceof Plugin)) throw new RuntimeException("Core must be a plugin");
         this.core = core;
 
         Bukkit.getPluginManager().registerEvents(new Events((Plugin) core, this), (Plugin) core);
+
+        if(actionConfigManager) this.actionConfigManager = new ActionConfigManager(core, this);
 
         registerAllEvents();
     }
@@ -60,14 +64,28 @@ public class ActionManager {
         if(actionConfig == null) throw new RuntimeException("ActionConfig cannot be null");
         if(args == null) args = new Object[0];
         if(placeholders == null) placeholders = new HashMap<>();
-
         if(!globalVars.containsKey(namespace)) globalVars.put(namespace,new HashMap<>());
-
         Action action = new Action(core, placeholders, this, actionConfig, namespace, eventAction, args);
         actionsRegistered.put(action.getId(), action);
-
-
         return action;
+    }
+
+
+    /**
+     * Creates an Action based on the given parameters.
+     *
+     * @param actionConfigId  The ID of the ActionConfig object that defines the action's configuration. Must not be null.
+     * @param placeholders    A HashMap of placeholders to be used in the action. Can be null.
+     * @param namespace       The namespace for the action. Must not be null.
+     * @param eventAction     The EventAction type for the action. Must not be null.
+     * @param args            Additional arguments for the action. Can be null.
+     * @return The newly created Action object.
+     * @throws RuntimeException if actionConfigId is not found in actionConfigs.
+     */
+    public Action createAction(@NotNull String actionConfigId, @Nullable HashMap<String, Object> placeholders, @NotNull String namespace, @NotNull EventAction eventAction, @Nullable Object... args){
+        ActionConfig actionConfig = actionConfigs.getOrDefault(actionConfigId,null);
+        if(actionConfig == null) throw new RuntimeException("ActionConfig with id " + actionConfigId + " not found");
+        return createAction(actionConfig, placeholders, namespace, eventAction, args);
     }
 
     /**
@@ -107,6 +125,10 @@ public class ActionManager {
     public void removeGlobalVar(String namespace, String id){
         HashMap<String, GlobalVar> globalVars = this.globalVars.getOrDefault(namespace,new HashMap<>());
         globalVars.remove(id.toUpperCase(Locale.ENGLISH));
+    }
+
+    public boolean isGlobalVarRegistered(String namespace, String id){
+        return globalVars.containsKey(namespace) && globalVars.get(namespace).containsKey(id.toUpperCase(Locale.ENGLISH));
     }
 
     public void clearGlobalVars(String namespace){
@@ -150,6 +172,10 @@ public class ActionManager {
         actionConfigs.clear();
     }
 
+    public ActionConfigManager getActionConfigManager() {
+        return actionConfigManager;
+    }
+
     //******** EVENTS ********//
 
     public void callEvent(EventAction eventAction, String namespace, Object... args){
@@ -177,6 +203,22 @@ public class ActionManager {
 
     public void setListenDefEvents(boolean listenDefEvents) {
         this.listenDefEvents = listenDefEvents;
+    }
+
+    public boolean isListenEvent(Class<? extends EventAction> eventAction){
+        return listenEvents.contains(eventAction);
+    }
+
+    public void setListenEvent(Class<? extends EventAction> eventAction){
+        if(!listenEvents.contains(eventAction)) listenEvents.add(eventAction);
+    }
+
+    public void unSetListenEvent(Class<? extends EventAction> eventAction){
+        if(listenEvents.contains(eventAction)) listenEvents.remove(eventAction);
+    }
+
+    public void clearListenEvents(){
+        listenEvents.clear();
     }
 
 

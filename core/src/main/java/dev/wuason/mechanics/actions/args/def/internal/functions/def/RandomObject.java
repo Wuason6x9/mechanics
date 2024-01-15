@@ -31,8 +31,8 @@ public class RandomObject extends FunctionInternal {
 
     public static final FunctionInternalProperties PROPERTIES = new FunctionInternalProperties.Builder().build();
 
-    public RandomObject(FunctionInternalConfig config) {
-        super(PROPERTIES, ARGS, config);
+    public RandomObject() {
+        super(PROPERTIES, ARGS, "randomObject");
     }
 
     @Override

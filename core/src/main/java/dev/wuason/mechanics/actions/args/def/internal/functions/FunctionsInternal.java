@@ -10,32 +10,42 @@ import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class FunctionsInternal {
-    public static HashMap<String, Class<? extends FunctionInternal>> FUNCTIONS = new HashMap<>();
+    public static final HashMap<String, FunctionInternal> FUNCTIONS = new HashMap<>();
 
 
     static {
 
-        register(RandomObject.ID, RandomObject.class);
-        register(Chance.ID, Chance.class);
-        register(RandomNumber.ID, RandomNumber.class);
-        register(GetItemStackByAdapter.ID, GetItemStackByAdapter.class);
-        register(GetAdapterId.ID, GetAdapterId.class);
+        //************ MATH ************//
+
+        FunctionInternal chance = new Chance();
+        FUNCTIONS.put(chance.getId(), chance);
+
+        FunctionInternal randomNumber = new RandomNumber();
+        FUNCTIONS.put(randomNumber.getId(), randomNumber);
+
+        //************ OBJECT ************//
+
+        FunctionInternal randomObject = new RandomObject();
+        FUNCTIONS.put(randomObject.getId(), randomObject);
+
+        //************ ADAPTER ************//
+
+        FunctionInternal getAdapterId = new GetAdapterId();
+        FUNCTIONS.put(getAdapterId.getId(), getAdapterId);
+        FunctionInternal getItemStackByAdapter = new GetItemStackByAdapter();
+        FUNCTIONS.put(getItemStackByAdapter.getId(), getItemStackByAdapter);
+
 
     }
 
-    public static void register(String id, Class<? extends FunctionInternal> clazz){
-        FUNCTIONS.put(id.toUpperCase(Locale.ENGLISH), clazz);
-    }
+    public static void register(Consumer<FunctionInternal.Builder> builderConsumer){
+        FunctionInternal.Builder builder = new FunctionInternal.Builder();
+        builderConsumer.accept(builder);
+        FunctionInternal functionInternal = builder.build();
+        FUNCTIONS.put(functionInternal.getId(), functionInternal);
 
-    public static FunctionInternal createFunctionInternal(String id, FunctionInternalConfig config){
-        Class<? extends FunctionInternal> clazz = FUNCTIONS.get(id.toUpperCase(Locale.ENGLISH));
-        if(clazz == null) return null;
-        try {
-            return (FunctionInternal) clazz.getConstructors()[0].newInstance(config);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

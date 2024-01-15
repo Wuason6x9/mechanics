@@ -671,4 +671,118 @@ public class InvCustom implements InventoryHolder {
         this.inventory = inventory;
     }
 
+    public static class Builder {
+
+        private Consumer<InventoryClickEvent> onClick;
+        private Consumer<InventoryOpenEvent> onOpen;
+        private Consumer<CloseEvent> onClose;
+        private Consumer<InventoryDragEvent> onDrag;
+        private Consumer<ItemInterfaceClickEvent> onItemInterfaceClick;
+        private List<Consumer<InvCustom>> invCustoms = new ArrayList<>();
+        private Function<InvCustom, Inventory> inventory;
+        private String title;
+        private int size;
+        private InventoryType type;
+
+        private boolean damageCancel = false;
+        private boolean pickupCancel = false;
+
+        public Builder onClick(Consumer<InventoryClickEvent> onClick) {
+            this.onClick = onClick;
+            return this;
+        }
+
+        public Builder onOpen(Consumer<InventoryOpenEvent> onOpen) {
+            this.onOpen = onOpen;
+            return this;
+        }
+
+        public Builder onClose(Consumer<CloseEvent> onClose) {
+            this.onClose = onClose;
+            return this;
+        }
+
+        public Builder onDrag(Consumer<InventoryDragEvent> onDrag) {
+            this.onDrag = onDrag;
+            return this;
+        }
+
+        public Builder onItemInterfaceClick(Consumer<ItemInterfaceClickEvent> onItemInterfaceClick) {
+            this.onItemInterfaceClick = onItemInterfaceClick;
+            return this;
+        }
+
+        public Builder addEdit(Consumer<InvCustom> invCustom) {
+            this.invCustoms.add(invCustom);
+            return this;
+        }
+
+        public Builder damageCancel(boolean damageCancel) {
+            this.damageCancel = damageCancel;
+            return this;
+        }
+
+        public Builder pickupCancel(boolean pickupCancel) {
+            this.pickupCancel = pickupCancel;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder size(int size) {
+            this.size = size;
+            return this;
+        }
+
+        public Builder type(InventoryType type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder inventory(Function<InvCustom, Inventory> inventory) {
+            this.inventory = inventory;
+            return this;
+        }
+
+        public InvCustom build() {
+            InvCustom invCustom = new InvCustom( (Function<InvCustom, Inventory>) invCustom1 -> {
+                if(title != null && size != 0) return Bukkit.createInventory(invCustom1, size, title);
+                if(title != null && type != null) return Bukkit.createInventory(invCustom1, type, title);
+                if(inventory != null) return inventory.apply(invCustom1);
+                return null;
+            })
+            {
+                @Override
+                public void onClick(InventoryClickEvent event) {
+                    if(onClick != null) onClick.accept(event);
+                }
+
+                @Override
+                public void onOpen(InventoryOpenEvent event) {
+                    if(onOpen != null) onOpen.accept(event);
+                }
+
+                @Override
+                public void onClose(CloseEvent closeEvent) {
+                    if(onClose != null) onClose.accept(closeEvent);
+                }
+
+                @Override
+                public void onDrag(InventoryDragEvent event) {
+                    if(onDrag != null) onDrag.accept(event);
+                }
+
+                @Override
+                public void onItemInterfaceClick(ItemInterfaceClickEvent event) {
+                    if(onItemInterfaceClick != null) onItemInterfaceClick.accept(event);
+                }
+            };
+
+            return invCustom;
+        }
+
+    }
 }

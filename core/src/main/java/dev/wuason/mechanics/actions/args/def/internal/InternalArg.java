@@ -9,6 +9,7 @@ import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionsInterna
 import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
 import dev.wuason.mechanics.actions.utils.ArgumentUtils;
 import dev.wuason.mechanics.actions.utils.FunctionInternalUtils;
+import dev.wuason.mechanics.utils.AdventureUtils;
 
 public class InternalArg extends Argument {
     public InternalArg(String line, Object[] args) {
@@ -20,7 +21,11 @@ public class InternalArg extends Argument {
 
         FunctionInternalConfig config = FunctionInternalUtils.getFunctionInternalConfig(line);
 
-        FunctionInternal functionInternal = FunctionsInternal.createFunctionInternal(config.getId(), config);
+        FunctionInternal functionInternal = FunctionsInternal.FUNCTIONS.get(config.getId());
+        if(functionInternal == null) {
+            AdventureUtils.sendMessagePluginConsole(action.getCore(), "FunctionInternal not found: " + config.getId() + " in line: " + line);
+            return null;
+        }
 
         Object[] argsComputed = new Object[functionInternal.getArgumentsRequired().size()];
         FunctionInternalArgument[] orderedArgs = functionInternal.getOrderedArgs();
@@ -30,6 +35,11 @@ public class InternalArg extends Argument {
             FunctionInternalArgument argF = orderedArgs[i];
 
             String argContent = config.getArgs().get(argF.getName());
+
+            if(argContent == null && argF.getProperties().isRequired()) {
+                AdventureUtils.sendMessagePluginConsole(action.getCore(), "Internal Argument not found: " + argF.getName() + " in function: " + functionInternal.getId() + " in line: " + line);
+                return null;
+            }
 
             if(argContent != null){
                 if(functionInternal.getProperties().isProcessArgs() && argF.getProperties().isProcessArg()) argContent = ArgumentUtils.processArg(argContent, action);

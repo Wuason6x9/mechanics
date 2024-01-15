@@ -57,13 +57,13 @@ public class GetItemStackByAdapter extends FunctionInternal {
 
 
 
-    public GetItemStackByAdapter(FunctionInternalConfig config) {
-        super(PROPERTIES, ARGS, config);
+    public GetItemStackByAdapter() {
+        super(PROPERTIES, ARGS, "getItemStackByAdapter");
     }
 
     @Override
     public Object compute(Action action, Object... args) {
-        if(args[2] == null) return args[0];
+        if(args[2] == null) return args[1];
         return new ItemBuilderMechanic((ItemStack) args[1]).setNameWithMiniMessage((String) args[2]).build();
     }
 }

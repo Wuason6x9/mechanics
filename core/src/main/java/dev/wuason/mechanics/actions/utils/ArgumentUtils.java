@@ -86,6 +86,7 @@ public class ArgumentUtils {
 
         for(int i = 0; i < placeholders.size(); i++){
             String placeholder = placeholders.get(i);
+            if(!placeholder.contains("=")) continue;
             String[] argRaw = ArgumentConfigUtils.getArgRaw(placeholder.substring(1, placeholder.length() - 1).trim());
 
             ArgumentProperties properties = Arguments.getArgumentProperties(argRaw[0]);

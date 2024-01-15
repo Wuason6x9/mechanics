@@ -30,8 +30,8 @@ public class GetAdapterId extends FunctionInternal {
 
     }};
 
-    public GetAdapterId(FunctionInternalConfig config) {
-        super(PROPERTIES, ARGS, config);
+    public GetAdapterId() {
+        super(PROPERTIES, ARGS, "getAdapterId");
     }
 
     @Override

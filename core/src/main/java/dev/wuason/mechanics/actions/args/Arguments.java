@@ -2,6 +2,7 @@ package dev.wuason.mechanics.actions.args;
 
 import dev.wuason.mechanics.actions.args.def.*;
 import dev.wuason.mechanics.actions.args.def.internal.InternalArg;
+import dev.wuason.mechanics.actions.args.def.internal.PlayerArg;
 import dev.wuason.mechanics.actions.config.ArgumentConfig;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +23,7 @@ public class Arguments {
         ARGUMENTS.put("JAVA", JavaArg.class);
         ARGUMENTS.put("INTERNAL", InternalArg.class);
         ARGUMENTS.put("EVENT", EventArg.class);
+        ARGUMENTS.put("PLAYER", PlayerArg.class);
 
     }
 

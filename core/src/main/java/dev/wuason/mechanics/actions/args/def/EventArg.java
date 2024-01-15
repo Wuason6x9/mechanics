@@ -14,7 +14,7 @@ public class EventArg extends Argument {
     @Override
     public Object computeArg(Action action, String line) {
         try {
-            return action.getInterpreter().eval("$event$.".toUpperCase() + line);
+            return action.getInterpreter().eval("$bukkitEvent$.".toUpperCase() + line);
         } catch (EvalError e) {
             throw new RuntimeException(e);
         }

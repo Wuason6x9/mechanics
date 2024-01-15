@@ -13,10 +13,10 @@ public class OnJoinEvent extends EventBukkit {
     }
 
     @Override
-    public void registerPlaceholders(Action action) {
-        super.registerPlaceholders(action);
+    public void registerPlaceholdersBukkit(Action action) {
 
         action.registerPlaceholder("$player$", ((PlayerJoinEvent) getEvent()).getPlayer());
+        action.registerPlaceholder("$bukkitEvent$", getEvent());
 
     }
 

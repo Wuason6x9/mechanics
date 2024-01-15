@@ -2,7 +2,6 @@ package dev.wuason.mechanics.actions.args.def.internal.functions;
 
 public class FunctionInternalProperties {
 
-
     private boolean processArgs;
     private boolean processArgsSearchArgs;
 

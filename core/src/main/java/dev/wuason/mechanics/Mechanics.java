@@ -62,10 +62,20 @@ public final class Mechanics extends JavaPlugin {
 
     }
 
+    /**
+     * Retrieves the AdventureAudiences instance.
+     *
+     * @return The AdventureAudiences instance.
+     */
     public static BukkitAudiences getAdventureAudiences(){
         return adventure;
     }
 
+    /**
+     * Retrieves the instance of the Mechanics class.
+     *
+     * @return The Mechanics instance.
+     */
     public static Mechanics getInstance() {
         return core;
     }
@@ -92,6 +102,11 @@ public final class Mechanics extends JavaPlugin {
         return false;
     }
 
+    /**
+     * Retrieves the version of the server's NMS (Net Minecraft Server) version.
+     *
+     * @return The ServerNmsVersion instance.
+     */
     public ServerNmsVersion getServerNmsVersion() {
         return serverNmsVersion;
     }
