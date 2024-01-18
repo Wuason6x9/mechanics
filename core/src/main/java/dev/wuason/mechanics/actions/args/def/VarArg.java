@@ -10,12 +10,11 @@ import java.util.Locale;
 
 public class VarArg extends Argument {
     public VarArg(String line, Object[] args) {
-        super(line, new ArgumentProperties.Builder().setAutoTransformPlaceholder(true).build(), args);
+        super(line, new ArgumentProperties.Builder().setAutoGetPlaceholder(false).build(), args);
     }
 
     @Override
     public Object computeArg(Action action, String line) {
-
         String var = line.replace(" ", "");
         //Global variable
         if(var.contains("{") && var.contains("}")) {
@@ -23,7 +22,6 @@ public class VarArg extends Argument {
             GlobalVar globalVar = action.getActionManager().getGlobalVar(action.getNamespace(), varGlobalVar);
             return globalVar.data();
         }
-
         return action.getPlaceholder(var);
     }
 

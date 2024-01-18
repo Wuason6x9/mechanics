@@ -9,6 +9,7 @@ import dev.wuason.mechanics.actions.functions.def.vanilla.CancelEventFunction;
 import dev.wuason.mechanics.actions.functions.def.vanilla.ExecuteCommand;
 import dev.wuason.mechanics.actions.functions.def.vanilla.PlaySound;
 import dev.wuason.mechanics.actions.functions.def.vars.Vars;
+import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.PlayerUtils;
 import dev.wuason.nms.wrappers.ServerNmsVersion;
@@ -16,7 +17,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -151,29 +154,49 @@ public class Functions {
 
             });
 
+            fBuilder.addArguments(argBuilder -> {
+
+                argBuilder.addArgument(2, "lines", (s, action, objects) -> {
+                    if(s == null) return new ArrayList<>();
+                    return ActionConfigUtils.getListFromArg(s);
+                }, pBuilder -> {
+
+                    pBuilder.setRequired(false);
+                    pBuilder.setAutoGetPlaceholder(true);
+                    pBuilder.setProcessArgSearchArgs(true);
+                    pBuilder.setProcessArg(true);
+
+                });
+
+            });
+
             fBuilder.setExecute((action, objects) -> {
 
                 Player player = (Player) objects[0];
                 String var = (String) objects[1];
+                String[] lines = new String[4];
+                List<String> list = (List<String>) objects[2];
+                for(int i = 0; i < 4; i++){
+                    if(list.size() > i) lines[i] = list.get(i);
+                    else lines[i] = "";
+                }
                 if(player == null) return false;
                 if(var == null) return false;
+                if(lines == null) return false;
 
-                Bukkit.getScheduler().runTask((Plugin) action.getCore(), () -> {
+                ServerNmsVersion.getVersionWrapper().openSing(player, lines, strings -> {
 
-                    player.closeInventory();
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                    ServerNmsVersion.getVersionWrapper().openSing(player, strings -> {
+                    for (String string : strings) {
+                        stringBuilder.append(string);
+                    }
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                    action.registerPlaceholder(var, stringBuilder.toString());
 
-                        for (String string : strings) {
-                            stringBuilder.append(string);
-                        }
-
-                        action.registerPlaceholder(var, stringBuilder.toString());
-
+                    Bukkit.getScheduler().runTask((Plugin) action.getCore(), () -> {
+                        player.closeInventory();
                         action.executeNext();
-
                     });
 
                 });

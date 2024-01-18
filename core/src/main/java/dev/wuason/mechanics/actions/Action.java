@@ -346,37 +346,73 @@ public class Action {
 
     //*********** CONDITIONS ***********//
 
+    /**
+     * Checks a condition with a specified load type and returns a boolean result.
+     *
+     * @param conditionConfig The configuration of the condition to check.
+     *                        It contains replacements, line, and replacement properties.
+     * @return true if the condition is true, false otherwise.
+     */
     public boolean checkConditionWithLoad(ConditionConfig conditionConfig){
         String condition = conditionConfig.getReplacement();
         loadCondition(conditionConfig);
-        return runCode(condition).equals(true);
+        Object result = runCode(condition);
+        return result.equals(true);
     }
 
+    /**
+     * Loads the conditions from the given condition configuration.
+     *
+     * @param conditionConfig The configuration of the conditions to load.
+     */
     public void loadCondition(ConditionConfig conditionConfig){
         for(Map.Entry<String, ArgumentConfig> entry : conditionConfig.getReplacements().entrySet()){
             String argContent = entry.getValue().getArgument();
-            argContent = ArgumentUtils.processArg(argContent, this);
-            argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+            ArgumentProperties properties = Arguments.getArgumentProperties(entry.getValue().getType());
+            if(properties.isReSearchPlaceholders()){
+                argContent = ArgumentUtils.processArg(argContent, this);
+                argContent = ArgumentUtils.processArgSearchArgs(argContent, this);
+            }
             Argument argument = Arguments.createArgument(entry.getValue().getType(), argContent);
             registerPlaceholder(entry.getKey(), argument.computeArgInit(this));
             conditionArgumentsRegistered.put(entry.getKey(), argument);
         }
     }
 
+    /**
+     * Checks a condition without reloading the conditions.
+     *
+     * @param conditionConfig The condition configuration.
+     * @return true if the condition is met, false otherwise.
+     */
     public boolean checkConditionWithOutLoad(ConditionConfig conditionConfig){
         String condition = conditionConfig.getReplacement();
         reLoadConditions();
-        Object obj = runCode(condition);
-        if(obj == null) return false;
-        return obj.equals(true);
+        Object result = runCode(condition);
+        List<String> list = new ArrayList<>();
+        list.addAll(conditionConfig.getReplacements().keySet());
+        if(result == null) return false;
+        return result.equals(true);
     }
 
+    /**
+     * Reloads the conditions by registering the placeholders with their computed initial arguments.
+     * This method loops through the conditionArgumentsRegistered map and calls the computeArgInit()
+     * method of each Argument object. The computed argument is then registered as a placeholder
+     * using the registerPlaceholder() method.
+     */
     public void reLoadConditions(){
         for(Map.Entry<String, Argument> entry : conditionArgumentsRegistered.entrySet()){
             registerPlaceholder(entry.getKey(), entry.getValue().computeArgInit(this));
         }
     }
 
+    /**
+     * Checks all conditions in a given list.
+     *
+     * @param list The list of conditions to check.
+     * @return {@code true} if all conditions pass, {@code false} otherwise.
+     */
     public boolean checkAllConditions(List<ConditionConfig> list){
         for(ConditionConfig conditionConfig : list){
             if(!checkConditionWithOutLoad(conditionConfig)) return false;

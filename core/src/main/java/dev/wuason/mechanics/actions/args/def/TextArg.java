@@ -10,6 +10,6 @@ public class TextArg extends Argument {
     }
     @Override
     public Object computeArg(Action action, String line) {
-        return line.trim().intern();
+        return line.trim();
     }
 }

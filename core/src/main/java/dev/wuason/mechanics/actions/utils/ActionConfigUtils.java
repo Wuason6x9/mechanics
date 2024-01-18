@@ -8,6 +8,8 @@ import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.Functions;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ActionConfigUtils {
     /**
@@ -33,7 +35,32 @@ public class ActionConfigUtils {
             replacements.put(placeHolder, arg);
             replacement = replacement.replace(line.substring(charFirstResult,charLastResult + 1), placeHolder);
         }
-        return new ConditionConfig(replacements, line, replacement);
+        return new ConditionConfig(replacements, line, processCondition(replacement));
+    }
+
+    /**
+     * Processes a condition string by replacing the placeholders with their corresponding values.
+     *
+     * @param e The condition string to process.
+     * @return The processed condition string.
+     */
+    public static String processCondition(String e) {
+        String pa = "\\$(.+?)\\$\\s*(==|!=)\\s*\\$(.+?)\\$";
+        Pattern p = Pattern.compile(pa);
+        Matcher matcher = p.matcher(e);
+        StringBuffer n = new StringBuffer();
+        while (matcher.find()) {
+            String o = matcher.group(2).trim();
+            String r;
+            if ("==".equals(o)) {
+                r = "$" + matcher.group(1) + "$.equals($" + matcher.group(3) + "$)";
+            } else {
+                r = "!$" + matcher.group(1) + "$.equals($" + matcher.group(3) + "$)";
+            }
+            matcher.appendReplacement(n, Matcher.quoteReplacement(r));
+        }
+        matcher.appendTail(n);
+        return n.toString();
     }
 
     /**

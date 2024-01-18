@@ -305,6 +305,14 @@ public class InvCustom implements InventoryHolder {
         return itemInterface;
     }
 
+    public ItemInterface registerItemInterface(Consumer<ItemInterface.Builder> itemBuilder){
+        ItemInterface.Builder builder = new ItemInterface.Builder();
+        itemBuilder.accept(builder);
+        ItemInterface itemInterface = builder.build();
+        itemInterfaces.put(itemInterface.getId(), itemInterface);
+        return itemInterface;
+    }
+
     //******* Set & Remove ********
 
     public void setItemInterfaceInv(ItemInterface itemInterface){
@@ -316,6 +324,16 @@ public class InvCustom implements InventoryHolder {
             inventory.setItem(itemInterface.getSlot(), itemInterface.getItemModified());
         }
     }
+    public void setItemInterfaceInv(ItemInterface item, int slot){
+        inventory.setItem(slot, item.getItemModified());
+    }
+    //ARRAY only slots
+    public void setItemInterfaceInv(ItemInterface item, int[] slots){
+        for(int slot : slots){
+            inventory.setItem(slot, item.getItemModified());
+        }
+    }
+
     public void setItemInterfaceInv(String id){
         if(!itemInterfaces.containsKey(id)) return;
         inventory.setItem(itemInterfaces.get(id).getSlot(), itemInterfaces.get(id).getItemModified());
@@ -344,6 +362,14 @@ public class InvCustom implements InventoryHolder {
         for(ItemInterface itemInterface : itemInterfaces){
             regAndSetInvItemInterface(itemInterface);
         }
+    }
+    //builder
+    public void regAndSetInvItemInterface(Consumer<ItemInterface.Builder> itemBuilder){
+        ItemInterface.Builder builder = new ItemInterface.Builder();
+        itemBuilder.accept(builder);
+        ItemInterface itemInterface = builder.build();
+        registerItemInterface(itemInterface);
+        setItemInterfaceInv(itemInterface);
     }
 
     //******** Checks ********

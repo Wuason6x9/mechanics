@@ -37,8 +37,6 @@ public final class Mechanics extends JavaPlugin {
         if(checkVersion()) return;
         serverNmsVersion = new ServerNmsVersion();
         adventure = BukkitAudiences.create(this);
-
-        printMechanics();
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");

@@ -339,4 +339,59 @@ public class Utils {
         return new String(Base64.getDecoder().decode(data));
     }
 
+    /**
+     * Saves a resource from an input stream to a specified destination.
+     *
+     * @param in           The input stream from which to read the resource.
+     * @param destination  The destination path where the resource will be saved.
+     */
+    public static void saveResource(InputStream in, String destination) {
+
+        try {
+            OutputStream out = new FileOutputStream(new File(destination));
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+
+            out.close();
+            in.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static ArrayList<Integer> configFill(List<String> arrayList){
+
+        ArrayList<Integer> arrayListNumbers = new ArrayList<>();
+
+        for(String number : arrayList){
+
+            if(!number.contains("-")) {
+                if (Utils.isNumber(number)) {
+                    arrayListNumbers.add(Integer.parseInt(number));
+                }
+                continue;
+            }
+
+            String numbers[] = number.split("-");
+
+            if(numbers.length>0){
+                for(String n : numbers){
+                    if(!Utils.isNumber(n)) continue;
+                }
+                for(int i=Integer.parseInt(numbers[0]);i<Integer.parseInt(numbers[1])+1;i++){
+                    arrayListNumbers.add(i);
+                }
+            }
+        }
+
+        return arrayListNumbers;
+
+    }
+
 }

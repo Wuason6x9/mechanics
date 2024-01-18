@@ -57,7 +57,10 @@ public class ExecuteFunctions extends Function {
 
         for(String line : conditionsLines){
             ConditionConfig condition = ActionConfigUtils.getCondition(line);
-            if(condition != null) conditions.add(condition);
+            if(condition != null) {
+                conditions.add(condition);
+                action.loadCondition(condition);
+            }
         }
 
         for(FunctionConfig function : functions){
