@@ -2,26 +2,19 @@ package dev.wuason.mechanics;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
-import dev.lone.itemsadder.api.CustomStack;
-import dev.lone.itemsadder.api.ItemsAdder;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
-import dev.wuason.nms.wrappers.ServerNmsVersion;
+import dev.wuason.nms.wrappers.NMSManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.stream.IntStream;
 
 public class CommandManager {
     private Mechanics core;
@@ -50,7 +43,7 @@ public class CommandManager {
                         .executes((sender, args) -> {
                             Player player = (Player) sender;
 
-                            ServerNmsVersion.getVersionWrapper().openSing(player, (lines) -> {
+                            NMSManager.getVersionWrapper().openSing(player, (lines) -> {
 
 
 

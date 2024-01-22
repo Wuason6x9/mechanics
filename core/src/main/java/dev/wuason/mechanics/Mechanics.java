@@ -4,9 +4,9 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AsciiUtils;
-import dev.wuason.nms.utils.VersionNmsDetector;
+import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.mechanics.utils.AdventureUtils;
-import dev.wuason.nms.wrappers.ServerNmsVersion;
+import dev.wuason.nms.wrappers.NMSManager;
 import io.th0rgal.protectionlib.ProtectionLib;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ public final class Mechanics extends JavaPlugin {
     private static BukkitAudiences adventure;
     private static Mechanics core = null;
     private Manager manager;
-    private ServerNmsVersion serverNmsVersion;
+    private NMSManager NMSManager;
 
 
     public Mechanics(){
@@ -35,12 +35,12 @@ public final class Mechanics extends JavaPlugin {
     @Override
     public void onEnable() {
         if(checkVersion()) return;
-        serverNmsVersion = new ServerNmsVersion();
+        NMSManager = new NMSManager();
         adventure = BukkitAudiences.create(this);
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");
-        AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNmsDetector.getServerVersion());
+        AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNMS.getServerVersion());
         AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon).map(plugin -> plugin.getName()).toList());
         CommandAPI.onEnable();
         ProtectionLib.init(this);
@@ -87,11 +87,11 @@ public final class Mechanics extends JavaPlugin {
     }
 
     public boolean checkVersion(){
-        if(VersionNmsDetector.getServerVersion().equals(VersionNmsDetector.ServerVersion.UNSUPPORTED)){
+        if(VersionNMS.getServerVersion().equals(VersionNMS.ServerVersion.UNSUPPORTED)){
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("                 Unsupported version minecraft ");
-            core.getLogger().severe("                     Actual version: " + VersionNmsDetector.getNMSVersion());
+            core.getLogger().severe("                     Actual version: " + VersionNMS.getNMSVersion());
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(core);
@@ -105,7 +105,7 @@ public final class Mechanics extends JavaPlugin {
      *
      * @return The ServerNmsVersion instance.
      */
-    public ServerNmsVersion getServerNmsVersion() {
-        return serverNmsVersion;
+    public NMSManager getServerNmsVersion() {
+        return NMSManager;
     }
 }

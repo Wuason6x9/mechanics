@@ -12,7 +12,7 @@ import dev.wuason.mechanics.actions.functions.def.vars.Vars;
 import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.PlayerUtils;
-import dev.wuason.nms.wrappers.ServerNmsVersion;
+import dev.wuason.nms.wrappers.NMSManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -20,7 +20,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Functions {
@@ -184,7 +183,7 @@ public class Functions {
                 if(var == null) return false;
                 if(lines == null) return false;
 
-                ServerNmsVersion.getVersionWrapper().openSing(player, lines, strings -> {
+                NMSManager.getVersionWrapper().openSing(player, lines, strings -> {
 
                     StringBuilder stringBuilder = new StringBuilder();
 

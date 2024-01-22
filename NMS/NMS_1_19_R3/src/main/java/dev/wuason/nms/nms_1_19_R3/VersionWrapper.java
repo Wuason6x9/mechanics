@@ -1,7 +1,6 @@
-package dev.wuason.nms.nms_1_18_R2;
+package dev.wuason.nms.nms_1_19_R3;
 
 import dev.wuason.nms.wrappers.DataInfo;
-import dev.wuason.nms.wrappers.VersionWrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -13,18 +12,16 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryAnvil;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryAnvil;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryView;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
@@ -32,33 +29,32 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 
-
-public class VersionWrapper_1_18_R2 implements VersionWrapper {
+public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     public String getVersion(){
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
         return craftServer.getServer().getServerVersion();
     }
 
     @Override
-    public AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
+    public dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
         return new AnvilInventoryCustom(player, title, holder);
     }
 
-    public class AnvilInventoryCustom implements VersionWrapper.AnvilInventoryCustom {
+    public class AnvilInventoryCustom implements dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom {
         private final AnvilInventory inventory;
         private final AnvilMenu anvilMenu;
         private final ServerPlayer serverPlayer;
         private final InventoryHolder holder;
         private final InventoryView inventoryView;
 
-        public AnvilInventoryCustom(Player player, String title, InventoryHolder holder) {
+        public AnvilInventoryCustom(Player player, String title, InventoryHolder holder){
             //DEF VARS
-            serverPlayer = ((CraftPlayer) player).getHandle();
+            serverPlayer = ((CraftPlayer)player).getHandle();
             this.holder = holder;
 
             //CREATE INVENTORY
             int invId = serverPlayer.nextContainerCounter();
-            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()) {
+            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()){
 
                 private CraftInventoryView bukkitEntity;
 
@@ -68,7 +64,7 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
                         return this.bukkitEntity;
                     }
 
-                    CraftInventory inventory = new CraftInventoryAnvil(access.getLocation(), this.inputSlots, this.resultSlots, this) {
+                    CraftInventory inventory = new CraftInventoryAnvil(access.getLocation(), this.inputSlots, this.resultSlots, this){
                         @Override
                         public InventoryHolder getHolder() {
                             return holder;
@@ -81,26 +77,26 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
 
             };
 
-            anvilMenu.setTitle(Component.nullToEmpty(title));
+            anvilMenu.setTitle(Component.literal(title));
 
             this.anvilMenu = anvilMenu;
             this.inventory = (AnvilInventory) anvilMenu.getBukkitView().getTopInventory();
             this.inventoryView = anvilMenu.getBukkitView();
 
 
+
         }
 
         @Override
-        public void open(String title) {
-            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL, Component.nullToEmpty(title));
+        public void open(String title){
+            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL,Component.literal(title));
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
         }
-
         @Override
-        public void open() {
-            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL, anvilMenu.getTitle());
+        public void open(){
+            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL,anvilMenu.getTitle());
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
@@ -132,17 +128,14 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
         public void setCheckReachable(boolean r){
             anvilMenu.checkReachable = r;
         }
-
         @Override
-        public Object getAnvilMenuNMS() {
+        public Object getAnvilMenuNMS(){
             return anvilMenu;
         }
-
         @Override
         public InventoryHolder getHolder() {
             return holder;
         }
-
         @Override
         public @NotNull AnvilInventory getInventory() {
             return inventory;
@@ -175,128 +168,9 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
     }
 
     @Override
-    public VersionWrapper.AnvilGui createAnvilGui(Player player, String title, ItemStack repairItem){
-        return new AnvilGui(player, title, repairItem);
-    }
-
-    public class AnvilGui implements VersionWrapper.AnvilGui {
-        private int invId = 0;
-        private Player player;
-        private Inventory inventory;
-        private ServerPlayer serverPlayer;
-        private AnvilMenu anvilMenu;
-        private String title;
-        private boolean blockClose = false;
-        private boolean open = false;
-        private ItemStack repairItem = null;
-
-        public AnvilGui(Player player, String title, ItemStack repairItem){
-            serverPlayer = ((CraftPlayer)player).getHandle();
-            this.player = player;
-            this.title = title;
-            this.repairItem = repairItem;
-        }
-        @Override
-        public AnvilInventory getAnvilInventory(){
-            return (AnvilInventory) inventory;
-        }
-        @Override
-        public Object getAnvilMenuNMS(){
-            return anvilMenu;
-        }
-        @Override
-        public void callCloseInventoryEvent(){
-            CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
-        }
-        @Override
-        public void setDefMenu(){
-            serverPlayer.containerMenu = serverPlayer.inventoryMenu;
-        }
-        @Override
-        public void open(){
-
-            open = true;
-
-            invId = serverPlayer.nextContainerCounter();
-
-            ContainerLevelAccess containerLevelAccess = ContainerLevelAccess.create(serverPlayer.getLevel(),new BlockPos(0,0,0));
-            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory(), containerLevelAccess);
-
-            this.anvilMenu = anvilMenu;
-
-            anvilMenu.setTitle(Component.nullToEmpty(title));
-            anvilMenu.repairItemCountCost = 0;
-            anvilMenu.maximumRepairCost = 0;
-            anvilMenu.checkReachable = false;
-
-            inventory = anvilMenu.getBukkitView().getTopInventory();
-
-            if(repairItem != null) inventory.setItem(0, repairItem);
-            if(repairItem != null) inventory.setItem(1, repairItem);
-
-            ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(invId, MenuType.ANVIL,Component.nullToEmpty(title));
-            serverPlayer.connection.send(packet);
-            serverPlayer.containerMenu = anvilMenu;
-            serverPlayer.initMenu(anvilMenu);
-        }
-        @Override
-        public void close(){
-            open = false;
-            CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
-            serverPlayer.containerMenu = serverPlayer.inventoryMenu;
-            ClientboundContainerClosePacket packet = new ClientboundContainerClosePacket(invId);
-            serverPlayer.connection.send(packet);
-        }
-
-        @Override
-        public int getInvId() {
-            return invId;
-        }
-        @Override
-        public Player getPlayer() {
-            return player;
-        }
-        @Override
-        public Inventory getInventory() {
-            return inventory;
-        }
-        @Override
-        public String getTitle() {
-            return title;
-        }
-        @Override
-        public void setTitle(String title) {
-            this.title = title;
-        }
-        @Override
-        public boolean isBlockClose() {
-            return blockClose;
-        }
-        @Override
-        public void setBlockClose(boolean blockClose) {
-            this.blockClose = blockClose;
-        }
-        @Override
-        public boolean isOpen() {
-            return open;
-        }
-        @Override
-        public void setOpen(boolean open) {
-            this.open = open;
-        }
-        @Override
-        public ItemStack getRepairItem() {
-            return repairItem;
-        }
-        @Override
-        public void setRepairItem(ItemStack repairItem) {
-            this.repairItem = repairItem;
-        }
-    }
-    @Override
     public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType){
         ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
-        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.Serializer.fromJson(titleJson),Component.nullToEmpty("."),null, FrameType.valueOf(toastType.toString()),true,false,true);
+        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.Serializer.fromJson(titleJson),Component.literal("."),null, FrameType.valueOf(toastType.toString()),true,false,true);
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
         ResourceLocation id = new ResourceLocation("custom","custom");
         Criterion criterion = new Criterion(new ImpossibleTrigger.TriggerInstance());
@@ -322,6 +196,7 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
         serverPlayer.connection.send(packetOpen);
         serverPlayer.initMenu(serverPlayer.containerMenu);
     }
+
     @Override
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
         if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
@@ -332,7 +207,7 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
         for(int i = 0; i < defLines.length; i++){
             if(defLines[i] == null) continue;
-            signBlock.setMessage(i, Component.nullToEmpty(defLines[i]));
+            signBlock.setMessage(i, Component.literal(defLines[i]));
         }
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
         serverPlayer.connection.send(signBlock.getUpdatePacket());
@@ -342,8 +217,7 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
                 {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        if(msg instanceof ServerboundSignUpdatePacket){
-                            ServerboundSignUpdatePacket packet = (ServerboundSignUpdatePacket) msg;
+                        if(msg instanceof ServerboundSignUpdatePacket packet){
                             onSend.accept(packet.getLines());
                             player.sendBlockChange(loc, loc.getBlock().getBlockData());
                             pipeline.remove(DataInfo.NAMESPACE_SIGN);

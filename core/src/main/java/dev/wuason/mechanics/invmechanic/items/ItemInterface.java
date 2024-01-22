@@ -34,7 +34,7 @@ public abstract class ItemInterface {
     public ItemInterface(int slot, ItemStack itemStack, String id, String name, ArrayList<Object> data) {
         this.slot = slot;
         this.itemStack = itemStack;
-        this.id = id;
+        this.id = id == null ? UUID.randomUUID().toString() : id;
         this.name = name;
         this.data = data;
     }
@@ -73,7 +73,7 @@ public abstract class ItemInterface {
     }
 
     public static class Builder {
-        private int slot;
+        private int slot = 0;
         private ItemStack itemStack;
         private String id;
         private String name;

@@ -1,8 +1,7 @@
 package dev.wuason.mechanics.configuration.inventories;
 
+import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
-import dev.wuason.storagemechanic.customblocks.CustomBlock;
-import dev.wuason.storagemechanic.customblocks.CustomBlockProperties;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class InventoryConfigManager {
@@ -87,9 +86,9 @@ public class InventoryConfigManager {
      * @param onItemLoad A tri-consumer to be called when an item in the inventory configuration is loaded.
      * @return The created InventoryConfig object, or null if the id is not found in the inventories map.
      */
-    public InventoryConfig createInventoryConfig(String id, Consumer<InventoryConfig> onLoad, TriConsumer<InventoryConfig, ConfigurationSection, ItemConfig> onItemLoad){
+    public InventoryConfig createInventoryConfig(String id, Consumer<InventoryConfig> onLoad, TriConsumer<InventoryConfig, ConfigurationSection, ItemConfig> onItemLoad, @Nullable BiConsumer<ItemInterface, ItemConfig> itemBlockedConsumer){
         if(inventories.containsKey(id.toUpperCase(Locale.ENGLISH))){
-            return new InventoryConfig(inventories.get(id.toUpperCase(Locale.ENGLISH)), this, onLoad, onItemLoad);
+            return new InventoryConfig(inventories.get(id.toUpperCase(Locale.ENGLISH)), this, onLoad, onItemLoad, itemBlockedConsumer);
         }
         return null;
     }

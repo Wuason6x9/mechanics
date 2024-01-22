@@ -2,7 +2,7 @@ package dev.wuason.nms.utils;
 
 import org.bukkit.Bukkit;
 
-public class VersionNmsDetector {
+public class VersionNMS {
 
     private static ServerVersion serverVersion = null;
     public enum ServerVersion {

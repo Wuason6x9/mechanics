@@ -301,6 +301,7 @@ public class InvCustom implements InventoryHolder {
         itemInterfaces.remove(itemInterface.getId());
     }
     public ItemInterface registerItemInterface(ItemInterface itemInterface){
+        if(itemInterface == null) return null;
         itemInterfaces.put(itemInterface.getId(), itemInterface);
         return itemInterface;
     }
@@ -358,6 +359,17 @@ public class InvCustom implements InventoryHolder {
         registerItemInterface(itemInterface);
         setItemInterfaceInv(itemInterface);
     }
+
+    public void regAndSetInvItemInterface(ItemInterface itemInterface, int slot){
+        registerItemInterface(itemInterface);
+        setItemInterfaceInv(itemInterface, slot);
+    }
+
+    public void regAndSetInvItemInterface(ItemInterface itemInterface, int[] slots){
+        registerItemInterface(itemInterface);
+        setItemInterfaceInv(itemInterface, slots);
+    }
+
     public void regAndSetInvItemInterface(ItemInterface[] itemInterfaces){
         for(ItemInterface itemInterface : itemInterfaces){
             regAndSetInvItemInterface(itemInterface);
@@ -371,6 +383,8 @@ public class InvCustom implements InventoryHolder {
         registerItemInterface(itemInterface);
         setItemInterfaceInv(itemInterface);
     }
+
+
 
     //******** Checks ********
     public boolean isItemInterface(int slot){

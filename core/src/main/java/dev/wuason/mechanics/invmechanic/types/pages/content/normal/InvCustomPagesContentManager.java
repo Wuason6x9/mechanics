@@ -254,6 +254,12 @@ public class InvCustomPagesContentManager<T> {
     }
 
 
+    /**
+     * Opens a custom inventory page for a player.
+     *
+     * @param player the player to open the inventory for
+     * @param page   the page number of the inventory
+     */
     //******************** OPEN ********************
     public void open(Player player, int page){
         if(!pages.containsKey(page)){
@@ -269,6 +275,15 @@ public class InvCustomPagesContentManager<T> {
         inventoryCustomPagesContent.open(player);
     }
 
+    /**
+     * Opens a simple custom page for the given player with the specified page number.
+     * If the page number does not exist, a new page will be created.
+     * Fires the OpenPageEvent and invokes all registered open page listeners.
+     * If the event is cancelled, the method will return without opening the page.
+     *
+     * @param player the player to open the page for
+     * @param page   the page number to open
+     */
     public void openSimple(Player player, int page){
         if(!pages.containsKey(page)){
             createPage(page);
@@ -289,6 +304,12 @@ public class InvCustomPagesContentManager<T> {
     //******************** CONTENT PAGE ********************
 
 
+    /**
+     * Returns a HashMap containing the content for a specific page.
+     *
+     * @param page the page number
+     * @return a HashMap with the content of the specified page
+     */
     public HashMap<Integer, T> getContentPage(int page){
         HashMap<Integer, T> contentPage = new HashMap<>();
         int a = page * dataSlots.size();
@@ -302,6 +323,11 @@ public class InvCustomPagesContentManager<T> {
         return contentPage;
     }
 
+    /**
+     * Sets the content of the specified page in the custom inventory.
+     *
+     * @param page the page number to set the content for
+     */
     public void setContent(int page){
         clearDataSlots(page);
         InvCustom inventoryCustom = pages.get(page);
@@ -339,6 +365,19 @@ public class InvCustomPagesContentManager<T> {
         if(getItemBack() == null || getItemNext() == null || !pages.containsKey(page)) return;
         pages.get(page).getInventory().setItem(getItemBack().getSlot(), null);
         pages.get(page).getInventory().setItem(getItemNext().getSlot(), null);
+    }
+
+    public void setButtons(ItemInterface itemBack, ItemInterface itemNext){
+        this.itemBack = itemBack;
+        this.itemNext = itemNext;
+    }
+
+    public void setNextButton(ItemInterface itemNext){
+        this.itemNext = itemNext;
+    }
+
+    public void setBackButton(ItemInterface itemBack){
+        this.itemBack = itemBack;
     }
 
     public ItemInterface getItemBack() {

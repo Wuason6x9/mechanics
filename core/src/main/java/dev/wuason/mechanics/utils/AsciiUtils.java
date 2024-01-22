@@ -13,7 +13,6 @@ public class AsciiUtils {
      * @return a BufferedImage containing the rendered text
      */
     public static BufferedImage createTextImage(String text, Font font, Color color) {
-        // Calcula el tamaño de la imagen
         BufferedImage dummyImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = dummyImage.createGraphics();
         g2d.setFont(font);
@@ -22,7 +21,6 @@ public class AsciiUtils {
         int height = fm.getHeight();
         g2d.dispose();
 
-        // Crea la imagen final con el texto
         BufferedImage textImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g2d = textImage.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -54,10 +52,10 @@ public class AsciiUtils {
             for (int x = 0; x < image.getWidth(); x++) {
                 int pixel = image.getRGB(x, y);
                 int alpha = (pixel >> 24) & 0xff;
-                if (alpha == 0) { // Pixel transparente
+                if (alpha == 0) {
                     asciiArt.append(" ");
                 } else {
-                    asciiArt.append("#"); // Puedes mejorar la conversión con una escala de grises
+                    asciiArt.append("#");
                 }
             }
             asciiArt.append("\n");

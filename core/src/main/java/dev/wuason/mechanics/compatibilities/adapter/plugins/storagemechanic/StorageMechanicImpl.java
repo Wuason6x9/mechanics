@@ -1,9 +1,8 @@
 package dev.wuason.mechanics.compatibilities.adapter.plugins.storagemechanic;
 
-import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.compatibilities.adapter.Implementation;
 import dev.wuason.storagemechanic.StorageMechanic;
-import dev.wuason.storagemechanic.customblocks.CustomBlockManager;
+import dev.wuason.storagemechanic.customitems.CustomItemsManager;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,11 +15,10 @@ public class StorageMechanicImpl extends Implementation {
 
     @Override
     public ItemStack getAdapterItem(String id) {
-
         if(isEnabled()){
-            CustomBlockManager customBlockManager = StorageMechanic.getInstance().getManagers().getCustomBlockManager();
-            if(customBlockManager.customBlockExists(id)){
-                return customBlockManager.getCustomBlockById(id).getItemStack();
+            CustomItemsManager customItemManager = StorageMechanic.getInstance().getManagers().getCustomItemsManager();
+            if(customItemManager.customItemExists(id)){
+                return customItemManager.getCustomItemById(id).getItemStack();
             }
         }
         return null;
@@ -29,9 +27,9 @@ public class StorageMechanicImpl extends Implementation {
     @Override
     public String getAdapterID(ItemStack itemStack) {
         if(isEnabled()){
-            CustomBlockManager customBlockManager = StorageMechanic.getInstance().getManagers().getCustomBlockManager();
-            if(customBlockManager.isCustomBlockItemStack(itemStack)){
-                return getType().toLowerCase(Locale.ENGLISH) + ":" + customBlockManager.getCustomBlockIdFromItemStack(itemStack);
+            CustomItemsManager customItemManager = StorageMechanic.getInstance().getManagers().getCustomItemsManager();
+            if(customItemManager.isCustomItemItemStack(itemStack)){
+                return getType().toLowerCase(Locale.ENGLISH) + ":" + customItemManager.getCustomItemIdFromItemStack(itemStack);
             }
         }
         return null;
@@ -40,9 +38,9 @@ public class StorageMechanicImpl extends Implementation {
     @Override
     public String getAdapterID(Block block) {
         if(isEnabled()){
-            CustomBlockManager customBlockManager = StorageMechanic.getInstance().getManagers().getCustomBlockManager();
-            if(customBlockManager.isCustomBlock(block)){
-                return getType().toLowerCase(Locale.ENGLISH) + ":" + customBlockManager.getCustomBlockIdFromBlock(block);
+            CustomItemsManager customItemManager = StorageMechanic.getInstance().getManagers().getCustomItemsManager();
+            if(customItemManager.isCustomItem(block)){
+                return getType().toLowerCase(Locale.ENGLISH) + ":" + customItemManager.getCustomItemIdFromBlock(block);
             }
         }
         return null;
@@ -50,6 +48,6 @@ public class StorageMechanicImpl extends Implementation {
 
     @Override
     public boolean existItemAdapter(String id) {
-        return StorageMechanic.getInstance().getManagers().getCustomBlockManager().customBlockExists(id);
+        return StorageMechanic.getInstance().getManagers().getCustomItemsManager().customItemExists(id);
     }
 }
