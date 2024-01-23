@@ -38,7 +38,7 @@ public class AdventureUtils {
      * @param player the player to whom the message is sent
      */
     public static void playerMessage(String text, Player player){
-        if(text == null) return;
+        if(text == null || player == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
         if(player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
         Mechanics.getAdventureAudiences().player(player).sendMessage(mm.deserialize(text));
@@ -55,6 +55,9 @@ public class AdventureUtils {
         if(text != null) return GsonComponentSerializer.gson().serialize(AdventureUtils.deserialize(text));
         return null;
     }
+    public static String deserializeJson(String text){
+        return deserializeJson(text,null);
+    }
     /**
      * Sends a message to the specified CommandSender.
      *
@@ -64,8 +67,8 @@ public class AdventureUtils {
     public static void sendMessage(CommandSender sender, String text){
         if(text == null || sender == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
-        if(sender instanceof Player) {
-            if((Player)sender != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders((Player) sender, text);
+        if(sender instanceof Player player) {
+            if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
             Mechanics.getAdventureAudiences().player((Player) sender).sendMessage(mm.deserialize(text));
         }
         if(sender instanceof ConsoleCommandSender) Mechanics.getAdventureAudiences().console().sendMessage(mm.deserialize(text));
@@ -90,10 +93,12 @@ public class AdventureUtils {
     public static String deserializeLegacy(String text, Player player){
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
         if(text != null) return LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(text));
-
         return null;
-
     }
+    public static String deserializeLegacy(String text){
+        return deserializeLegacy(text,null);
+    }
+
     /**
      * Deserialize a list of legacy formatted strings into a list of serialized adventure components.
      *
@@ -113,6 +118,9 @@ public class AdventureUtils {
 
         return deserialized;
 
+    }
+    public static List<String> deserializeLegacyList(List<String> listText){
+        return deserializeLegacyList(listText,null);
     }
 
     /**

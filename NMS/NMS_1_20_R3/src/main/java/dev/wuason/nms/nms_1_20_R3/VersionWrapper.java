@@ -18,7 +18,9 @@ import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventoryAnvil;
@@ -237,6 +239,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 }
         );
     }
+
     @Override
     public void openSing(Player player, Consumer<String[]> onSend){
         openSing(player, new String[4], onSend);

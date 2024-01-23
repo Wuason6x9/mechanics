@@ -176,6 +176,15 @@ public class InvCustomPagesContentManager<T> {
         }
     }
 
+    public void removeContentAndUpdate(T t, int page){
+        removeContent(t);
+        setContent(page);
+    }
+    public void addContentAndUpdate(T t, int page){
+        addContent(t);
+        setContent(page);
+    }
+
     //******************** DATA SLOTS ********************
 
     public List<Integer> getDataSlots() {

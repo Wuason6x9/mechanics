@@ -125,29 +125,31 @@ public class InvCustom implements InventoryHolder {
             }
         }
 
-        onClick(event);
-
         if(slotClickEventsListeners.containsKey(event.getRawSlot())){
             slotClickEventsListeners.get(event.getSlot()).accept(event);
         }
 
         clickEventsListeners.forEach(consumer -> consumer.accept(event));
+
+        onClick(event);
     }
     public void handleOpen(InventoryOpenEvent event) {
 
-        onOpen(event);
-
         openEventsListeners.forEach(consumer -> consumer.accept(event));
+
+        onOpen(event);
     }
     public void handleClose(CloseEvent closeEvent) {
 
-        onClose(closeEvent);
-
         closeEventsListeners.forEach(consumer -> consumer.accept(closeEvent));
+
+        onClose(closeEvent);
     }
     public void handleDrag(InventoryDragEvent event) {
-        onDrag(event);
+
         dragEventsListeners.forEach(consumer -> consumer.accept(event));
+
+        onDrag(event);
     }
 
     public void open(Player player) {

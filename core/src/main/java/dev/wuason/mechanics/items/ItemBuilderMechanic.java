@@ -214,6 +214,15 @@ public class ItemBuilderMechanic {
         this.meta.setLore(lore);
         return this;
     }
+    public ItemBuilderMechanic addLoreLines(List<String> lines) {
+        List<String> lore = new ArrayList<>();
+        if(this.meta.getLore() != null){
+            lore = new ArrayList<>(this.meta.getLore());
+        }
+        lore.addAll(lines);
+        this.meta.setLore(lore);
+        return this;
+    }
 
     /**
      * Removes a line from the lore of the item.
