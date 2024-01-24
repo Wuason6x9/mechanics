@@ -188,6 +188,18 @@ public class InventoryConfig {
 
     //****************** GETTERS ******************//
 
+    public String getTitle(){
+        return this.section.getString("title", "Inventory");
+    }
+
+    public int getRows(){
+        return this.section.getInt("rows", 3);
+    }
+
+    public InventoryType getType(){
+        return InventoryType.valueOf(this.section.getString("type", "CHEST").toUpperCase(Locale.ENGLISH));
+    }
+
     public String getId() {
         return this.id;
     }

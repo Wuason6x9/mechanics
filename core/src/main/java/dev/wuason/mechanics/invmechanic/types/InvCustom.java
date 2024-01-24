@@ -269,11 +269,13 @@ public class InvCustom implements InventoryHolder {
     //*************** WITH CONSUMER ***************
 
     public void setItem(int slot, ItemStack item, Consumer<InventoryClickEvent> consumer){
+        if(item == null) return;
         inventory.setItem(slot, item);
         slotClickEventsListeners.put(slot, consumer);
     }
     //ARRAY
     public void setItem(int[] slot, ItemStack item, Consumer<InventoryClickEvent> consumer){
+        if(item == null) return;
         for(int i : slot){
             inventory.setItem(i, item);
             slotClickEventsListeners.put(i, consumer);
@@ -402,6 +404,10 @@ public class InvCustom implements InventoryHolder {
             return itemMeta.getPersistentDataContainer().has(new NamespacedKey(Mechanics.getInstance(), InvCustom.NAMESPACE_ITEM_INTERFACE_PREFIX), PersistentDataType.STRING);
         }
         return false;
+    }
+
+    public boolean existItemInterface(String id){
+        return itemInterfaces.containsKey(id);
     }
 
     //****** Getters ******

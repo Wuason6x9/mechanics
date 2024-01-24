@@ -214,12 +214,58 @@ public class ItemBuilderMechanic {
         this.meta.setLore(lore);
         return this;
     }
+    /**
+     * Adds the given lines to the lore of the item.
+     * @param lines the lines to be added to the lore (non-null)
+     * @return the ItemBuilderMechanic object with the updated lore
+     */
     public ItemBuilderMechanic addLoreLines(List<String> lines) {
         List<String> lore = new ArrayList<>();
         if(this.meta.getLore() != null){
             lore = new ArrayList<>(this.meta.getLore());
         }
         lore.addAll(lines);
+        this.meta.setLore(lore);
+        return this;
+    }
+
+    /**
+     * Removes a specific line from the lore of the item.
+     *
+     * @param line the line to be removed from the lore
+     * @return the ItemBuilderMechanic object with the updated lore
+     */
+    public ItemBuilderMechanic removeLoreLine(String line) {
+        List<String> lore = new ArrayList<>(this.meta.getLore());
+        lore.remove(line);
+        this.meta.setLore(lore);
+        return this;
+    }
+
+    /**
+     * Removes the last line from the lore of the item.
+     *
+     * @return The ItemBuilderMechanic object with the updated lore.
+     */
+    public ItemBuilderMechanic removeLastLoreLine() {
+        List<String> lore = new ArrayList<>();
+        if(this.meta.getLore() != null){
+            lore = new ArrayList<>(this.meta.getLore());
+        }
+        if(lore.size() == 0) return this;
+        lore.remove(lore.size() - 1);
+        this.meta.setLore(lore);
+        return this;
+    }
+
+    /**
+     * Removes the first line of lore from the ItemBuilderMechanic.
+     *
+     * @return The ItemBuilderMechanic instance with the first line of lore removed.
+     */
+    public ItemBuilderMechanic removeFirstLoreLine() {
+        List<String> lore = new ArrayList<>(this.meta.getLore());
+        lore.remove(0);
         this.meta.setLore(lore);
         return this;
     }

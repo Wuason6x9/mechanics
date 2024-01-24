@@ -49,7 +49,7 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         this.contentList = contentList;
         this.itemNextPage = nextPageItem;
         this.itemPreviousPage = previousPageItem;
-        this.itemStackRename = new ItemBuilderMechanic(itemStackRename).buildWithVoidName();
+        if(itemStackRename != null) this.itemStackRename = new ItemBuilderMechanic(itemStackRename).buildWithVoidName();
         setMenuAnvilOptions();
         setItem(0, this.itemStackRename, event -> {
             event.setCancelled(true);
@@ -132,6 +132,22 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
 
     //********** SEARCH **********
 
+    public void setSearchList(List<T> searchList) {
+        this.searchList = searchList;
+    }
+
+    public void removeSearchList(T content){
+        searchList.remove(content);
+    }
+
+    public void addSearchList(T content){
+        searchList.add(content);
+    }
+
+    public void clearSearchList(){
+        searchList.clear();
+    }
+
     public void search(){
         searchList.clear();
         String search = getRenameText();
@@ -206,7 +222,7 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
             int index = Integer.parseInt(split[0]);
             int slot = Integer.parseInt(split[1]);
             int page = Integer.parseInt(split[2]);
-            T content = contentList.get(index);
+            T content = searchList.get(index);
             ContentClickAnvilEvent<T> contentClickAnvilEvent = new ContentClickAnvilEvent<T>(event, content, slot, page);
             onContentClick(contentClickAnvilEvent);
             contentClickListeners.forEach(contentClickAnvilEventConsumer -> contentClickAnvilEventConsumer.accept(contentClickAnvilEvent));
@@ -318,16 +334,60 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         return contentPage;
     }
 
+    public ItemStack getItemStackRename() {
+        return itemStackRename;
+    }
+
     public void setContent(int page){
         clearDataSlots();
         for(Map.Entry<Integer, T> entry : getContentPage(page).entrySet()){
             ItemStack itemStack = onContentPage(page, entry.getKey(), entry.getValue());
             if(itemStack == null || itemStack.getItemMeta() == null) itemStack = new ItemBuilderMechanic(Material.BOOK).setName(entry.getValue().toString()).build();
             ItemMeta itemMeta = itemStack.getItemMeta();
-            String data = contentList.indexOf(entry.getValue()) + ":" + entry.getKey() + ":" + page;
+            String data = searchList.indexOf(entry.getValue()) + ":" + entry.getKey() + ":" + page;
             itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_CONTENT_KEY), PersistentDataType.STRING, data);
             itemStack.setItemMeta(itemMeta);
             player.getInventory().setItem(entry.getKey(), itemStack);
+        }
+    }
+    //************** ITEM INTERFACE **************
+    //******* Set & Remove ********
+
+    public void setItemInterfaceInvPlayer(ItemInterface itemInterface) {
+        player.getInventory().setItem(itemInterface.getSlot(), itemInterface.getItemModified());
+    }
+
+    public void setItemInterfaceInvPlayer(ItemInterface[] itemInterfaces){
+        for(ItemInterface itemInterface : itemInterfaces){
+            player.getInventory().setItem(itemInterface.getSlot(), itemInterface.getItemModified());
+        }
+    }
+
+    public void setItemInterfaceInvPlayer(ItemInterface item, int slot){
+        player.getInventory().setItem(slot, item.getItemModified());
+    }
+    //ARRAY only slots
+    public void setItemInterfaceInvPlayer(ItemInterface item, int[] slots){
+        for(int slot : slots){
+            player.getInventory().setItem(slot, item.getItemModified());
+        }
+    }
+
+    public void setItemInterfaceInvPlayer(String id){
+        if(!existItemInterface(id)) return;
+        player.getInventory().setItem(getItemInterfaces().get(id).getSlot(), getItemInterfaces().get(id).getItemModified());
+    }
+
+    public void removeItemInterfaceInvPlayer(String id){
+        player.getInventory().setItem(getItemInterfaces().get(id).getSlot(), null);
+    }
+    public void removeItemInterfaceInvPlayer(ItemInterface itemInterface){
+        player.getInventory().setItem(itemInterface.getSlot(), null);
+    }
+
+    public void removeItemInterfaceInvPlayer(ItemInterface[] itemInterfaces){
+        for(ItemInterface itemInterface : itemInterfaces){
+            player.getInventory().setItem(itemInterface.getSlot(), null);
         }
     }
 
@@ -341,12 +401,11 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         if( page == getMaxPage() ){
             player.getInventory().setItem(getItemNext().getSlot(), null);
         }
-
         if(page > getMinPage() ) {
-            setItemInterfaceInv(getItemBack());
+            player.getInventory().setItem(getItemBack().getSlot(), getItemBack().getItemModified());
         }
         if(page < getMaxPage() ) {
-            setItemInterfaceInv(getItemNext());
+            player.getInventory().setItem(getItemNext().getSlot(), getItemNext().getItemModified());
         }
     }
     public void removeButtonsPage() {
@@ -361,6 +420,26 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
 
     public ItemInterface getItemNext() {
         return itemNextPage;
+    }
+
+    public void setItemBack(ItemInterface itemBack) {
+        this.itemPreviousPage = itemBack;
+        registerItemInterface(itemBack);
+    }
+
+    public void setItemNext(ItemInterface itemNext) {
+        this.itemNextPage = itemNext;
+        registerItemInterface(itemNext);
+    }
+
+    public void setItemStackRename(ItemStack itemStackRename) {
+        this.itemStackRename = itemStackRename;
+        setItem(0, this.itemStackRename, event -> {
+            event.setCancelled(true);
+        });
+        setItem(1, this.itemStackRename, event -> {
+            event.setCancelled(true);
+        });
     }
 
     public Player getPlayer() {
