@@ -221,8 +221,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        if(msg instanceof ServerboundSignUpdatePacket){
-                            ServerboundSignUpdatePacket packet = (ServerboundSignUpdatePacket) msg;
+                        if(msg instanceof ServerboundSignUpdatePacket packet){
                             onSend.accept(packet.getLines());
                             player.sendBlockChange(loc, loc.getBlock().getBlockData());
                             pipeline.remove(DataInfo.NAMESPACE_SIGN);

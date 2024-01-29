@@ -217,6 +217,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         SignText signText = new SignText();
         for(int i = 0; i < defLines.length; i++){
             if(defLines[i] == null) continue;
+            System.out.println("LINE:" + defLines[i]);
             signText.setMessage(i,Component.literal(defLines[i]));
         }
         signBlock.setText(signText, true);
@@ -228,8 +229,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        if(msg instanceof ServerboundSignUpdatePacket){
-                            ServerboundSignUpdatePacket packet = (ServerboundSignUpdatePacket) msg;
+                        if(msg instanceof ServerboundSignUpdatePacket packet){
                             onSend.accept(packet.getLines());
                             player.sendBlockChange(loc, loc.getBlock().getBlockData());
                             pipeline.remove(DataInfo.NAMESPACE_SIGN);

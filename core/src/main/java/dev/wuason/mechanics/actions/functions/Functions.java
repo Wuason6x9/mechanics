@@ -176,8 +176,7 @@ public class Functions {
                 String[] lines = new String[4];
                 List<String> list = (List<String>) objects[2];
                 for(int i = 0; i < 4; i++){
-                    if(list.size() > i) lines[i] = list.get(i);
-                    else lines[i] = "";
+                    lines[i] = list.get(i);
                 }
                 if(player == null) return false;
                 if(var == null) return false;
