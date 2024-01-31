@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Bukkit;
@@ -200,16 +201,16 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
 
     @Override
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
-        if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
         ServerPlayer serverPlayer = (ServerPlayer)((CraftPlayer)player).getHandle();
         Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY() - 7, player.getLocation().getBlockZ());
         BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
-        SignText signText = new SignText();
-        for(int i = 0; i < defLines.length; i++){
-            if(defLines[i] == null) continue;
-            signText.setMessage(i,Component.literal(defLines[i]));
+        Component[] signTexts = new Component[4];
+        for (int i = 0; i < 4; i++) {
+            if (defLines[i] == null) continue;
+            signTexts[i] = Component.literal(defLines[i]);
         }
+        SignText signText = new SignText(signTexts, signTexts, DyeColor.BLACK, false);
         signBlock.setText(signText, true);
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
         serverPlayer.connection.send(signBlock.getUpdatePacket());

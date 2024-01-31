@@ -176,7 +176,8 @@ public class Functions {
                 String[] lines = new String[4];
                 List<String> list = (List<String>) objects[2];
                 for(int i = 0; i < 4; i++){
-                    lines[i] = list.get(i);
+                    if(i>=list.size()) lines[i] = "";
+                    else lines[i] = AdventureUtils.deserializeLegacy(list.get(i), player);
                 }
                 if(player == null) return false;
                 if(var == null) return false;
