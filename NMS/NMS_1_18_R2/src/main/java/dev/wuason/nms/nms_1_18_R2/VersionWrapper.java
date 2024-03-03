@@ -199,6 +199,13 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         serverPlayer.connection.send(packetOpen);
         serverPlayer.initMenu(serverPlayer.containerMenu);
     }
+
+    @Override
+    public void sendCloseInventoryPacket(Player player) {
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
+        serverPlayer.connection.send(new ClientboundContainerClosePacket(serverPlayer.containerMenu.containerId));
+    }
+
     @Override
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
         if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
@@ -208,7 +215,10 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
         for(int i = 0; i < defLines.length; i++){
-            if(defLines[i] == null) continue;
+            if (defLines[i] == null) {
+                signBlock.setMessage(i, Component.nullToEmpty(""));
+                continue;
+            }
             signBlock.setMessage(i, Component.nullToEmpty(defLines[i]));
         }
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());

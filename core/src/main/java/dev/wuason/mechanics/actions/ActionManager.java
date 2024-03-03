@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.actions;
 
+import dev.wuason.mechanics.actions.api.events.CallEventApiEvent;
 import dev.wuason.mechanics.actions.config.ActionConfig;
 import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.events.Events;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ActionManager {
 
@@ -21,10 +23,16 @@ public class ActionManager {
     private List<Class<? extends EventAction>> listenEvents = new ArrayList<>();
     private ActionConfigManager actionConfigManager;
 
+    //******** EVENTS API ********//
+    public List<Consumer<CallEventApiEvent>> callEventApiEventListeners = new ArrayList<>();
+
     //******** CONFIG ********//
 
     private final HashMap<String, ActionConfig> actionConfigs = new HashMap<>();
     private final HashMap<String, ArrayList<ActionConfig>> eventActionConfigs = new HashMap<>();
+
+
+    //******** CONSTRUCTORS ********//
 
     public ActionManager(MechanicAddon core, boolean actionConfigManager) {
         if(!(core instanceof Plugin)) throw new RuntimeException("Core must be a plugin");
@@ -35,6 +43,20 @@ public class ActionManager {
         if(actionConfigManager) this.actionConfigManager = new ActionConfigManager(core, this);
 
         registerAllEvents();
+    }
+
+    //******** EVENTS API METHODS ********//
+
+    public void addCallEventApiEventListener(Consumer<CallEventApiEvent> listener){
+        callEventApiEventListeners.add(listener);
+    }
+
+    public void removeCallEventApiEventListener(Consumer<CallEventApiEvent> listener){
+        callEventApiEventListeners.remove(listener);
+    }
+
+    public void callEventApiEvent(CallEventApiEvent event){
+        callEventApiEventListeners.forEach(listener -> listener.accept(event));
     }
 
     //******** ACTIONS ********//
@@ -180,6 +202,11 @@ public class ActionManager {
 
     public void callEvent(EventAction eventAction, String namespace, Object... args){
         if(!eventActionConfigs.containsKey(eventAction.getId())) return;
+        CallEventApiEvent event = new CallEventApiEvent(eventAction, namespace, args);
+        for(Consumer<CallEventApiEvent> listener : callEventApiEventListeners){
+            listener.accept(event);
+            if(event.isCancelled()) return;
+        }
         for(ActionConfig actionConfig : eventActionConfigs.get(eventAction.getId())){
 
             Action action = createAction(actionConfig, null, namespace, eventAction, args);

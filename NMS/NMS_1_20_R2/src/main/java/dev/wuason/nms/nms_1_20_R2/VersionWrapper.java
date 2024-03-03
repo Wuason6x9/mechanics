@@ -202,6 +202,12 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     }
 
     @Override
+    public void sendCloseInventoryPacket(Player player) {
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
+        serverPlayer.connection.send(new ClientboundContainerClosePacket(serverPlayer.containerMenu.containerId));
+    }
+
+    @Override
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
         ServerPlayer serverPlayer = (ServerPlayer)((CraftPlayer)player).getHandle();
         Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY() - 7, player.getLocation().getBlockZ());
@@ -209,7 +215,10 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
         Component[] signTexts = new Component[4];
         for (int i = 0; i < 4; i++) {
-            if (defLines[i] == null) continue;
+            if (defLines[i] == null) {
+                signTexts[i] = Component.literal("");
+                continue;
+            }
             signTexts[i] = Component.literal(defLines[i]);
         }
         SignText signText = new SignText(signTexts, signTexts, DyeColor.BLACK, false);

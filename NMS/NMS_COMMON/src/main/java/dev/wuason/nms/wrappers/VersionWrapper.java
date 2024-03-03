@@ -26,6 +26,9 @@ public interface VersionWrapper {
         public void setCheckReachable(boolean r);
     }
     public void updateCurrentInventoryTitle(String jsonTitle, Player player);
+
+    public void sendCloseInventoryPacket(Player player);
+
     public enum ToastType{
         TASK,
         CHALLENGE,
