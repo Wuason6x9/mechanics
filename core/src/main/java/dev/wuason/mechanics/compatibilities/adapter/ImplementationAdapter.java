@@ -1,6 +1,5 @@
 package dev.wuason.mechanics.compatibilities.adapter;
 
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -8,24 +7,24 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Locale;
 
-public abstract class Implementation {
+public abstract class ImplementationAdapter {
 
     private String type;
     private boolean enabled = false;
     private String pluginName;
 
-    public Implementation(String type, String pluginName){
+    public ImplementationAdapter(String type, String pluginName){
         this.type = type.toUpperCase(Locale.ENGLISH);
         this.pluginName = pluginName;
-        Adapter.getTypes().put(this.type,this);
     }
 
 
     public abstract ItemStack getAdapterItem(String id);
 
-    public abstract String getAdapterID(ItemStack itemStack);
-    public abstract String getAdapterID(Block block);
+    public abstract String getAdapterId(ItemStack itemStack);
+    public abstract String getAdapterId(Block block);
     public abstract boolean existItemAdapter(String id);
+    public abstract String computeAdapterId(String itemId);
 
 
     public void setEnabled(boolean enabled) {

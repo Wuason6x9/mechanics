@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.compatibilities.adapter.plugins.mythiccucible;
 
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.utils.jnbt.CompoundTag;
@@ -12,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class MythicCrucibleImpl extends Implementation {
+public class MythicCrucibleImpl extends ImplementationAdapter {
     public MythicCrucibleImpl() {
         super("MythicCrucible","MythicCrucible");
     }
@@ -29,7 +30,7 @@ public class MythicCrucibleImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         if(isEnabled()){
             CompoundTag compoundTag = MythicBukkit.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
             if(compoundTag.containsKey("MYTHIC_TYPE")){
@@ -40,7 +41,7 @@ public class MythicCrucibleImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         if(isEnabled()){
             CustomBlockItemContext customBlock = MythicCrucible.inst().getItemManager().getCustomBlockManager().getBlockFromBlock(block).orElse(null);
             if(customBlock != null){
@@ -56,5 +57,13 @@ public class MythicCrucibleImpl extends Implementation {
             return MythicCrucible.inst().getItemManager().getItemNames().contains(id);
         }
         return false;
+    }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(!isEnabled()) return null;
+        ItemStack item = getAdapterItem(itemId);
+        if(item == null) return null;
+        return NBT.itemStackToNBT(item).toString();
     }
 }

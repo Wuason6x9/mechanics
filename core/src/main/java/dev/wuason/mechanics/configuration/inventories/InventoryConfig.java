@@ -106,7 +106,7 @@ public class InventoryConfig {
                     if(itemConfig.getActionId().equalsIgnoreCase("blocked")){
                         ItemInterface item = new ItemInterface.Builder()
                                 .setId(itemConfig.getId())
-                                .setItemStack(Adapter.getInstance().getItemStack(itemConfig.getItemId()))
+                                .setItemStack(Adapter.getItemStack(itemConfig.getItemId()))
                                 .setAmount(itemConfig.getAmount())
                                 .setSlot(0)
                                 .addData(itemConfig)

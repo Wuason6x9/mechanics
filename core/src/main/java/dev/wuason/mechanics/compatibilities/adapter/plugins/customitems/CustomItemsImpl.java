@@ -1,13 +1,14 @@
 package dev.wuason.mechanics.compatibilities.adapter.plugins.customitems;
 
 import com.jojodmo.customitems.api.CustomItemsAPI;
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class CustomItemsImpl extends Implementation {
+public class CustomItemsImpl extends ImplementationAdapter {
     public CustomItemsImpl() {
         super("cui","CustomItems");
     }
@@ -19,7 +20,7 @@ public class CustomItemsImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         if(!isEnabled()) return null;
         if(CustomItemsAPI.isCustomItem(itemStack)){
             return getType().toLowerCase(Locale.ENGLISH) + ":" + CustomItemsAPI.getCustomItemID(itemStack);
@@ -28,7 +29,7 @@ public class CustomItemsImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         if(!isEnabled()) return null;
         String cuiID = CustomItemsAPI.getCustomItemIDAtBlock(block);
         if(cuiID != null){
@@ -42,5 +43,13 @@ public class CustomItemsImpl extends Implementation {
         if(!isEnabled()) return false;
 
         return CustomItemsAPI.getCustomItem(id) != null;
+    }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(!isEnabled()) return null;
+        ItemStack item = getAdapterItem(itemId);
+        if(item == null) return null;
+        return NBT.itemStackToNBT(item).toString();
     }
 }

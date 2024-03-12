@@ -44,7 +44,7 @@ public class ItemBuilderMechanic {
      * This class represents an ItemBuilderMechanic, which is used to build ItemStack objects with specific properties.
      */
     public ItemBuilderMechanic(String adapterId, int amount){
-        this.item = Adapter.getInstance().getItemStack(adapterId);
+        this.item = Adapter.getItemStack(adapterId);
         this.item.setAmount(amount);
         this.meta = this.item.getItemMeta();
     }

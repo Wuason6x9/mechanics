@@ -37,6 +37,6 @@ public class GetAdapterId extends FunctionInternal {
     @Override
     public Object compute(Action action, Object... args) {
         if(args[0] == null) return null;
-        return Adapter.getInstance().getAdapterID((ItemStack) args[0]);
+        return Adapter.getAdapterId((ItemStack) args[0]);
     }
 }

@@ -306,7 +306,7 @@ public class Utils {
     @Deprecated
     public static ItemStack createItemStackByAdapter(String item, String displayName, List<String> lore, int quantity){
 
-        ItemStack itemStack = Adapter.getInstance().getItemStack(item);
+        ItemStack itemStack = Adapter.getItemStack(item);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemStack.setAmount(quantity);
         if(displayName != null){

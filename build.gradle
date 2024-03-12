@@ -6,7 +6,7 @@ plugins {
 allprojects{
 
     group = 'dev.wuason'
-    version = '1.0.1.11'
+    version = '1.0.1.11a'
 
     repositories {
         mavenCentral()

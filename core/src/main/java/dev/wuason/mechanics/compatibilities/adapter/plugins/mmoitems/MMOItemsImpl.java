@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.compatibilities.adapter.plugins.mmoitems;
 
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import dev.wuason.mechanics.utils.Utils;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.ItemTier;
@@ -12,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class MMOItemsImpl extends Implementation {
+public class MMOItemsImpl extends ImplementationAdapter {
     public MMOItemsImpl() {
         super("mmoitems","MMOItems");
     }
@@ -45,7 +46,7 @@ public class MMOItemsImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         if(!isEnabled()) return null;
         Type type = MMOItems.getType(itemStack);
         String mmoItemId = MMOItems.getID(itemStack);
@@ -56,13 +57,13 @@ public class MMOItemsImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         if(!isEnabled()) return null;
         BlockManager blockManager = MMOItems.plugin.getCustomBlocks();
         if(blockManager.isMushroomBlock(block.getType())){
             net.Indyuce.mmoitems.api.block.CustomBlock customBlock = blockManager.getFromBlock(block.getBlockData()).orElse(null);
             if(customBlock != null){
-                return getAdapterID(customBlock.getItem());
+                return getAdapterId(customBlock.getItem());
             }
         }
         return null;
@@ -75,5 +76,13 @@ public class MMOItemsImpl extends Implementation {
         Type type = MMOItems.plugin.getTypes().get(src[0].toUpperCase());
         if(type == null) return false;
         return MMOItems.plugin.getMMOItem(type,src[1]) != null;
+    }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(!isEnabled()) return null;
+        ItemStack item = getAdapterItem(itemId);
+        if(item == null) return null;
+        return NBT.itemStackToNBT(item).toString();
     }
 }

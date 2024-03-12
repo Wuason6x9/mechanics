@@ -25,7 +25,7 @@ public class CommandManager {
         loadCommand();
     }
 
-    public void loadCommand(){
+    public void loadCommand() {
 
         command = new CommandAPICommand("mechanics");
         command.withPermission("mechanics.command.main");
@@ -46,7 +46,6 @@ public class CommandManager {
                             NMSManager.getVersionWrapper().openSing(player, (lines) -> {
 
 
-
                             });
                         })
                 )
@@ -54,8 +53,8 @@ public class CommandManager {
                         .withArguments(new GreedyStringArgument("format"))
                         .executes((sender, args) -> {
                             String format = (String) args.get(0);
-                            sender.sendMessage( "(" + AdventureUtils.deserializeJson(format,null) + ")");
-                            System.out.println(AdventureUtils.deserializeJson(format,null));
+                            sender.sendMessage("(" + AdventureUtils.deserializeJson(format, null) + ")");
+                            System.out.println(AdventureUtils.deserializeJson(format, null));
                         })
                 )
                 .withSubcommands(new CommandAPICommand("openInventoryTestMiniMessage")
@@ -63,8 +62,8 @@ public class CommandManager {
                         .executes((sender, args) -> {
                             Player player = (Player) sender;
                             String format = (String) args.get(0);
-                            System.out.println(AdventureUtils.deserializeLegacy(format,player));
-                            Inventory inventory = Bukkit.createInventory(player,54,AdventureUtils.deserializeLegacy(format,player));
+                            System.out.println(AdventureUtils.deserializeLegacy(format, player));
+                            Inventory inventory = Bukkit.createInventory(player, 54, AdventureUtils.deserializeLegacy(format, player));
                             player.openInventory(inventory);
                         })
                 )
@@ -72,48 +71,81 @@ public class CommandManager {
         command.withSubcommands(new CommandAPICommand("adapter")
                 .withSubcommands(new CommandAPICommand("get")
                         .withArguments(new TextArgument("id"))
-                        .withArguments(new IntegerArgument("amount"))
+                        .withArguments(new IntegerArgument("amount").setOptional(true))
                         .executes((sender, args) -> {
-                            Adapter adapterManager = Adapter.getInstance();
                             String id = (String) args.get(0);
-                            if(!adapterManager.existAdapterID(id)) return;
-                            ItemStack itemStack = adapterManager.getItemStack(id);
-                            int amount = (int) args.get(1);
-                            if(amount>64||amount<1) amount = 64;
+                            if (!Adapter.isValidAdapterId(id)) return;
+                            ItemStack itemStack = Adapter.getItemStack(id);
+                            int amount = (int) args.getOrDefault(1, 1);
+                            if (amount > 64 || amount < 1) amount = 64;
                             itemStack.setAmount(amount);
-                            if(itemStack == null) return;
-                            StorageUtils.addItemToInventoryOrDrop((Player) sender,itemStack);
+                            if (itemStack == null) return;
+                            StorageUtils.addItemToInventoryOrDrop((Player) sender, itemStack);
                         })
                 )
                 .withSubcommands(new CommandAPICommand("give")
                         .withArguments(new EntitySelectorArgument.ManyPlayers("player"))
                         .withArguments(new TextArgument("id"))
-                        .withArguments(new IntegerArgument("amount"))
+                        .withArguments(new IntegerArgument("amount").setOptional(true))
                         .executes((sender, args) -> {
                             Collection<Player> players = (Collection<Player>) args.get(0);
-                            if(players.isEmpty()) return;
-                            Adapter adapterManager = Adapter.getInstance();
+                            if (players.isEmpty()) return;
                             String id = (String) args.get(1);
-                            if(!adapterManager.existAdapterID(id)) return;
-                            ItemStack itemStack = adapterManager.getItemStack(id);
-                            int amount = (int) args.get(2);
-                            if(amount>64||amount<1) amount = 64;
+                            if (!Adapter.isValidAdapterId(id)) return;
+                            ItemStack itemStack = Adapter.getItemStack(id);
+                            int amount = (int) args.getOrDefault(2, 1);
+                            if (amount > 64 || amount < 1) amount = 64;
                             itemStack.setAmount(amount);
-                            if(itemStack == null) return;
-                            for(Player player : players){
-                                StorageUtils.addItemToInventoryOrDrop(player,itemStack);
+                            if (itemStack == null) return;
+                            for (Player player : players) {
+                                StorageUtils.addItemToInventoryOrDrop(player, itemStack);
                             }
                         })
                 )
-                .withSubcommands(new CommandAPICommand("getAdapterID")
+                .withSubcommands(new CommandAPICommand("getAdapterId")
+                        .withArguments(new BooleanArgument("sendToConsole").setOptional(true))
                         .executes((sender, args) -> {
                             Player player = (Player) sender;
-                            if(player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) return;
+                            if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR))
+                                return;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            Adapter adapterManager = Adapter.getInstance();
-                            String adapterId = adapterManager.getAdapterID(itemStack);
-                            player.sendMessage(adapterId);
-                            AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
+                            String adapterId = Adapter.getAdapterId(itemStack);
+
+                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'><click:copy_to_clipboard:%s>%s</click>", adapterId, adapterId));
+                            boolean sendToConsole = (boolean) args.getOrDefault(0, false);
+                            if (sendToConsole) {
+                                AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
+                            }
+                        })
+                )
+                .withSubcommands(new CommandAPICommand("getComputedId")
+                        .withArguments(new BooleanArgument("sendToConsole").setOptional(true))
+                        .executes((sender, args) -> {
+                            Player player = (Player) sender;
+                            if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR))
+                                return;
+                            ItemStack itemStack = player.getInventory().getItemInMainHand();
+                            String adapterId = Adapter.computeAdapterIdByItemStack(itemStack);
+                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'> <click:copy_to_clipboard:%s>%s</click> </hover>", adapterId, adapterId));
+                            boolean sendToConsole = (boolean) args.getOrDefault(0, false);
+                            if (sendToConsole) {
+                                AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
+                            }
+                        })
+                )
+                .withSubcommands(new CommandAPICommand("getAdapterIdBasic")
+                        .withArguments(new BooleanArgument("sendToConsole").setOptional(true))
+                        .executes((sender, args) -> {
+                            Player player = (Player) sender;
+                            if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR))
+                                return;
+                            ItemStack itemStack = player.getInventory().getItemInMainHand();
+                            String adapterId = Adapter.getAdapterIdBasic(itemStack);
+                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'><click:copy_to_clipboard:%s>%s</click>", adapterId, adapterId));
+                            boolean sendToConsole = (boolean) args.getOrDefault(0, false);
+                            if (sendToConsole) {
+                                AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
+                            }
                         })
                 )
         );

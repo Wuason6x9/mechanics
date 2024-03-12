@@ -13,7 +13,6 @@ public class AdapterArg extends Argument {
     }
     @Override
     public Object computeArg(Action action, String line) {
-        Adapter adapter = Adapter.getInstance();
-        return adapter.computeAdapterId(line);
+        return Adapter.computeAdapterIdByString(line);
     }
 }

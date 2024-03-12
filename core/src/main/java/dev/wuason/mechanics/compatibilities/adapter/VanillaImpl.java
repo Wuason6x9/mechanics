@@ -2,14 +2,13 @@ package dev.wuason.mechanics.compatibilities.adapter;
 
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class VanillaImpl extends Implementation {
+public class VanillaImpl extends ImplementationAdapter {
     public VanillaImpl() {
         super("mc","Minecraft");
     }
@@ -22,12 +21,12 @@ public class VanillaImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         return null;
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         return null;
     }
 
@@ -35,4 +34,12 @@ public class VanillaImpl extends Implementation {
     public boolean existItemAdapter(String id) {
         return getAdapterItem(id) != null;
     }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(itemId.contains("{") && itemId.contains("}")) return itemId;
+        return NBT.itemStackToNBT(new ItemStack(Material.valueOf(itemId.toUpperCase(Locale.ENGLISH)))).toString();
+    }
+
+
 }

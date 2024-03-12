@@ -4,13 +4,14 @@ import com.ssomar.executableblocks.api.ExecutableBlocksAPI;
 import com.ssomar.executableblocks.executableblocks.ExecutableBlock;
 import com.ssomar.executableblocks.executableblocks.ExecutableBlocksManager;
 import com.ssomar.executableblocks.executableblocks.placedblocks.ExecutableBlockPlaced;
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class ExecutableBlocksImpl extends Implementation {
+public class ExecutableBlocksImpl extends ImplementationAdapter {
     public ExecutableBlocksImpl() {
         super("eb","ExecutableBlocks");
     }
@@ -27,7 +28,7 @@ public class ExecutableBlocksImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         if(!isEnabled()) return null;
         ExecutableBlock executableBlock = ExecutableBlocksAPI.getExecutableBlocksManager().getExecutableBlock(itemStack).orElse(null);
         if(executableBlock != null) {
@@ -37,7 +38,7 @@ public class ExecutableBlocksImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         if(!isEnabled()) return null;
         ExecutableBlockPlaced executableBlockPlaced = ExecutableBlocksAPI.getExecutableBlocksPlacedManager().getExecutableBlockPlaced(block).orElse(null);
         if(executableBlockPlaced != null){
@@ -50,5 +51,13 @@ public class ExecutableBlocksImpl extends Implementation {
     public boolean existItemAdapter(String id) {
         if(!isEnabled()) return false;
         return ExecutableBlocksAPI.getExecutableBlocksManager().isValidID(id);
+    }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(!isEnabled()) return null;
+        ItemStack item = getAdapterItem(itemId);
+        if(item == null) return null;
+        return NBT.itemStackToNBT(item).toString();
     }
 }

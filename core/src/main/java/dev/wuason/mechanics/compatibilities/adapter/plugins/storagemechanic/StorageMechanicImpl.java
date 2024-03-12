@@ -1,6 +1,7 @@
 package dev.wuason.mechanics.compatibilities.adapter.plugins.storagemechanic;
 
-import dev.wuason.mechanics.compatibilities.adapter.Implementation;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import dev.wuason.storagemechanic.StorageMechanic;
 import dev.wuason.storagemechanic.customitems.CustomItemsManager;
 import org.bukkit.block.Block;
@@ -8,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class StorageMechanicImpl extends Implementation {
+public class StorageMechanicImpl extends ImplementationAdapter {
     public StorageMechanicImpl() {
         super("sm","StorageMechanic");
     }
@@ -25,7 +26,7 @@ public class StorageMechanicImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(ItemStack itemStack) {
+    public String getAdapterId(ItemStack itemStack) {
         if(isEnabled()){
             CustomItemsManager customItemManager = StorageMechanic.getInstance().getManagers().getCustomItemsManager();
             if(customItemManager.isCustomItemItemStack(itemStack)){
@@ -36,7 +37,7 @@ public class StorageMechanicImpl extends Implementation {
     }
 
     @Override
-    public String getAdapterID(Block block) {
+    public String getAdapterId(Block block) {
         if(isEnabled()){
             CustomItemsManager customItemManager = StorageMechanic.getInstance().getManagers().getCustomItemsManager();
             if(customItemManager.isCustomItem(block)){
@@ -49,5 +50,13 @@ public class StorageMechanicImpl extends Implementation {
     @Override
     public boolean existItemAdapter(String id) {
         return StorageMechanic.getInstance().getManagers().getCustomItemsManager().customItemExists(id);
+    }
+
+    @Override
+    public String computeAdapterId(String itemId) {
+        if(!isEnabled()) return null;
+        ItemStack item = getAdapterItem(itemId);
+        if(item == null) return null;
+        return NBT.itemStackToNBT(item).toString();
     }
 }
