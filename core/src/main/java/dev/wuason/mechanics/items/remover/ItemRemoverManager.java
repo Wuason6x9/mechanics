@@ -27,36 +27,18 @@ public class ItemRemoverManager implements Listener {
         this.core = core;
     }
 
-    /**
-     * Adds a check function to the list of checks.
-     *
-     * @param check The function to add as a check.
-     */
     public static void addCheck(Function<ItemStack, Boolean> check) {
         checks.add(check);
     }
 
-    /**
-     * Removes the specified check from the list of checks.
-     *
-     * @param check The function representing the check to remove.
-     */
     public static void removeCheck(Function<ItemStack, Boolean> check) {
         checks.remove(check);
     }
 
-    /**
-     * Clears the list of checks.
-     */
     public static void clearChecks() {
         checks.clear();
     }
 
-    /**
-     * Retrieves the list of checks used for ItemRemoverManager.
-     *
-     * @return The list of checks as a List of Function objects.
-     */
     public static List<Function<ItemStack, Boolean>> getChecks() {
         return checks;
     }

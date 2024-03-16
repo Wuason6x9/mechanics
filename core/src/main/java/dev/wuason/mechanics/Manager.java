@@ -19,6 +19,7 @@ public class Manager {
         invMechanicListeners = new InvMechanicListeners(core);
         core.getServer().getPluginManager().registerEvents(invMechanicListeners, core);
         core.getServer().getPluginManager().registerEvents(itemRemoverManager, core);
+        new Adapter(core);
         commandManager = new CommandManager(core);
     }
     public void stop(){
