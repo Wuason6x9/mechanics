@@ -22,6 +22,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,25 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     @Override
     public AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
         return new AnvilInventoryCustom(player, title, holder);
+    }
+    @Override
+    public Object getNMSItemStack(ItemStack itemStack) {
+        return CraftItemStack.asNMSCopy(itemStack);
+    }
+
+    @Override
+    public ItemStack getBukkitItemStack(Object nmsItemStack) {
+        return CraftItemStack.asBukkitCopy((net.minecraft.world.item.ItemStack) nmsItemStack);
+    }
+
+    @Override
+    public Object getTextComponent(String json) {
+        return Component.Serializer.fromJson(json);
+    }
+
+    @Override
+    public String getJsonFromComponent(Object component) {
+        return Component.Serializer.toJson((Component) component);
     }
 
     public class AnvilInventoryCustom implements dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom {
@@ -170,23 +190,38 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         }
     }
     @Override
-    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType){
-        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
-        DisplayInfo displayInfo = new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon),Component.Serializer.fromJson(titleJson),Component.literal("."),null, FrameType.valueOf(toastType.toString()),true,false,true);
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType) {
+        sendToast(player, icon, titleJson, toastType, "mechanics", "custom_toast");
+    }
+
+    @Override
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType, String namespace, String path) {
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
+        net.minecraft.world.item.ItemStack iconNMS = CraftItemStack.asNMSCopy(new ItemStack(Material.AIR));
+        if (icon != null) {
+            iconNMS = CraftItemStack.asNMSCopy(icon);
+        }
+        DisplayInfo displayInfo = new DisplayInfo(iconNMS, Component.Serializer.fromJson(titleJson), Component.literal("."), null, FrameType.valueOf(toastType.toString()), true, false, true);
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
-        ResourceLocation id = new ResourceLocation("custom","custom");
+        ResourceLocation id = new ResourceLocation(namespace, path);
         Criterion criterion = new Criterion(new ImpossibleTrigger.TriggerInstance());
-        HashMap<String, Criterion> criteria = new HashMap<>(){{put("impossible", criterion);}};
+        HashMap<String, Criterion> criteria = new HashMap<>() {{
+            put("impossible", criterion);
+        }};
         String[][] requirements = {{"impossible"}};
-        Advancement advancement = new Advancement(id,null,displayInfo,advancementRewards,criteria,requirements);
+        Advancement advancement = new Advancement(id, null, displayInfo, advancementRewards, criteria, requirements);
         Map<ResourceLocation, AdvancementProgress> advancementsToGrant = new HashMap<>();
         AdvancementProgress advancementProgress = new AdvancementProgress();
-        advancementProgress.update(criteria,requirements);
+        advancementProgress.update(criteria, requirements);
         advancementProgress.getCriterion("impossible").grant();
         advancementsToGrant.put(id, advancementProgress);
-        ClientboundUpdateAdvancementsPacket packet = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(){{add(advancement);}},new HashSet<>(),advancementsToGrant);
+        ClientboundUpdateAdvancementsPacket packet = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>() {{
+            add(advancement);
+        }}, new HashSet<>(), advancementsToGrant);
         serverPlayer.connection.send(packet);
-        ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(),new HashSet<>(){{add(id);}},new HashMap<>());
+        ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(), new HashSet<>() {{
+            add(id);
+        }}, new HashMap<>());
         serverPlayer.connection.send(packet2);
     }
     @Override

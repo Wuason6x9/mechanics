@@ -3,7 +3,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-allprojects{
+allprojects {
 
     group = 'dev.wuason'
     version = '1.0.1.11a'
@@ -48,6 +48,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
 }
+
 shadowJar {
     relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
     relocate("net.kyori", "dev.wuason.libs.kyori")

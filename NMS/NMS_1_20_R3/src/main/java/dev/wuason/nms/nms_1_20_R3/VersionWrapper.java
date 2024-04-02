@@ -4,6 +4,8 @@ import dev.wuason.nms.wrappers.DataInfo;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.BlockPos;
@@ -26,6 +28,7 @@ import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +46,26 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     @Override
     public dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
         return new AnvilInventoryCustom(player, title, holder);
+    }
+
+    @Override
+    public Object getNMSItemStack(ItemStack itemStack) {
+        return CraftItemStack.asNMSCopy(itemStack);
+    }
+
+    @Override
+    public ItemStack getBukkitItemStack(Object nmsItemStack) {
+        return CraftItemStack.asBukkitCopy((net.minecraft.world.item.ItemStack) nmsItemStack);
+    }
+
+    @Override
+    public Object getTextComponent(String json) {
+        return Component.Serializer.fromJson(json);
+    }
+
+    @Override
+    public String getJsonFromComponent(Object component) {
+        return Component.Serializer.toJson((Component) component);
     }
 
     public class AnvilInventoryCustom implements dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom {
@@ -179,10 +202,19 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
 
     @Override
     public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType) {
+        sendToast(player, icon, titleJson, toastType, "mechanics", "custom_toast");
+    }
+
+    @Override
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType, String namespace, String path) {
         ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-        Optional<DisplayInfo> displayInfo = Optional.of(new DisplayInfo(net.minecraft.world.item.ItemStack.fromBukkitCopy(icon), Component.Serializer.fromJson(titleJson), Component.literal("."), null, AdvancementType.valueOf(toastType.toString()), true, false, true));
+        net.minecraft.world.item.ItemStack iconNMS = CraftItemStack.asNMSCopy(new ItemStack(Material.AIR));
+        if (icon != null) {
+            iconNMS = CraftItemStack.asNMSCopy(icon);
+        }
+        Optional<DisplayInfo> displayInfo = Optional.of(new DisplayInfo(iconNMS, Component.Serializer.fromJson(titleJson), Component.literal("."), Optional.empty(), AdvancementType.valueOf(toastType.toString()), true, false, true));
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
-        Optional<ResourceLocation> id = Optional.of(new ResourceLocation("custom", "custom"));
+        Optional<ResourceLocation> id = Optional.of(new ResourceLocation(namespace, path));
         Criterion<ImpossibleTrigger.TriggerInstance> impossibleTrigger = new Criterion<>(new ImpossibleTrigger(), new ImpossibleTrigger.TriggerInstance());
         HashMap<String, Criterion<?>> criteria = new HashMap<>() {{
             put("impossible", impossibleTrigger);

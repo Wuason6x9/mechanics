@@ -4,10 +4,13 @@ import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentIteratorType;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -15,7 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class AdventureUtils {
 
@@ -144,4 +149,135 @@ public class AdventureUtils {
         consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC","CORE") + message);
 
     }
+
+    /**
+     * This method removes all occurrences of a specified text (placeholder) from a given Component.
+     * It does this by converting the Component into a list of TextComponentReplace objects, each representing a single character in the Component.
+     * It then iterates over this list, checking each character against the characters in the placeholder.
+     * If a sequence of characters matching the placeholder is found, these characters are marked for removal.
+     * After all occurrences of the placeholder have been marked, they are removed from the Component.
+     * Finally, the modified Component is reconstructed and returned.
+     *
+     * @param component The Component from which to remove the placeholder. Must not be null.
+     * @param placeholder The text to remove from the Component. Must not be null.
+     * @return A new Component with all occurrences of the placeholder removed.
+     */
+
+    public static Component removeTextAllComponents(Component component, String placeholder) {
+        List<TextComponentReplace> replaces = convertToTextComponentReplace(component);
+        List<TextComponentReplace> toReplace = new ArrayList<>();
+        List<TextComponentReplace> replaced = new ArrayList<>();
+        for (TextComponentReplace replace : replaces) {
+            if (replace.getChar() == placeholder.charAt(toReplace.size())) {
+                toReplace.add(replace);
+                if (toReplace.size() == placeholder.length()) {
+                    replaced.addAll(toReplace);
+                    toReplace.clear();
+                }
+            }
+            else if (!toReplace.isEmpty()) {
+                toReplace.clear();
+            }
+        }
+        for (int i = replaced.size() - 1; i >= 0; i--) {
+            replaced.get(i).removeCharByIndex();
+        }
+        Iterator<Component> componentIterator = component.iterator(ComponentIteratorType.DEPTH_FIRST);
+        Component cNew = Component.empty();
+        while (componentIterator.hasNext()) {
+            Component c = componentIterator.next();
+            for (TextComponentReplace replace : replaced) {
+                if(replace.getComponent().getUnmodifiedParent() == c) {
+                    c = replace.getComponent().getParent();
+                }
+            }
+            cNew = cNew.append(c.children(new ArrayList<>()));
+        }
+        return cNew;
+    }
+
+
+    public static List<TextComponentReplace> convertToTextComponentReplace(Component component) {
+        List<TextComponentReplace> replaces = new ArrayList<>();
+        component.iterator(ComponentIteratorType.DEPTH_FIRST).forEachRemaining((c) -> {
+            if (c instanceof TextComponent txtC) {
+                ComponentParent parent = new ComponentParent(txtC);
+                char[] chars = txtC.content().toCharArray();
+                for (int i = 0; i < chars.length; i++) {
+                    replaces.add(new TextComponentReplace(parent, chars[i], i));
+                }
+            }
+        });
+        return replaces;
+    }
+
+    public static String getAllTextFromComponent(Component component) {
+        return PlainTextComponentSerializer.plainText().serialize(component);
+    }
+
+
+    public static boolean containsText(Component component, String text) {
+
+        return getAllTextFromComponent(component).contains(text);
+    }
+
+    public static boolean containsTextIgnoreCase(Component component, String text) {
+        return getAllTextFromComponent(component).toUpperCase(Locale.ENGLISH).contains(text.toUpperCase(Locale.ENGLISH));
+    }
+
+    public static class ComponentParent {
+        private TextComponent parent;
+        private final TextComponent unmodifiedParent;
+
+        public ComponentParent(TextComponent parent) {
+            this.parent = parent;
+            this.unmodifiedParent = parent;
+        }
+
+        public TextComponent getParent() {
+            return parent;
+        }
+
+        public void setParent(TextComponent parent) {
+            this.parent = parent;
+        }
+
+        public TextComponent getUnmodifiedParent() {
+            return unmodifiedParent;
+        }
+    }
+
+    public static class TextComponentReplace {
+        private final ComponentParent component;
+        private final char character;
+        private final int characterIndex;
+
+        public TextComponentReplace(ComponentParent component, char character, int characterIndex) {
+            this.component = component;
+            this.character = character;
+            this.characterIndex = characterIndex;
+        }
+
+        public void removeCharByIndex() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(component.getParent().content());
+            builder.deleteCharAt(characterIndex);
+            component.setParent(component.getParent().content(builder.toString()));
+        }
+
+        public char getChar() {
+            return character;
+        }
+
+        public int getCharIndex() {
+            return characterIndex;
+        }
+
+        public ComponentParent getComponent() {
+            return component;
+        }
+    }
+
+
+
 }

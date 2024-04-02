@@ -22,4 +22,16 @@ public class NMSManager {
     public static VersionWrapper getVersionWrapper() {
         return versionWrapper;
     }
+
+    public static String getCraftBukkitClassRoute(String className){
+        return "org.bukkit.craftbukkit." + VersionNMS.getServerVersion().name() + "." + className;
+    }
+
+    public static Class<?> getCraftBukkitClass(String className){
+        try {
+            return Class.forName(getCraftBukkitClassRoute(className));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

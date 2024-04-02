@@ -7,6 +7,7 @@ import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
 import dev.wuason.nms.wrappers.NMSManager;
+import dev.wuason.nms.wrappers.VersionWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,6 +40,16 @@ public class CommandManager {
         );
         command.withSubcommands(new CommandAPICommand("debug")
                 .withPermission("mechanics.command.debug")
+                .withSubcommands(new CommandAPICommand("sendToastPlayer")
+                        .withArguments(new PlayerArgument("player"))
+                        .withArguments(new GreedyStringArgument("message"))
+                        .executes((sender, args) -> {
+                            Player player = (Player) args.get(0);
+                            String message = (String) args.get(1);
+
+                            NMSManager.getVersionWrapper().sendToast(player, new ItemStack(Material.DIAMOND), AdventureUtils.deserializeJson(message, player), VersionWrapper.ToastType.TASK);
+                        })
+                )
                 .withSubcommands(new CommandAPICommand("test")
                         .executes((sender, args) -> {
                             Player player = (Player) sender;

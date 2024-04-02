@@ -45,6 +45,11 @@ public class ItemBuilderMechanic {
      */
     public ItemBuilderMechanic(String adapterId, int amount){
         this.item = Adapter.getItemStack(adapterId);
+        if(this.item == null) {
+            if(!Adapter.isValidAdapterId(adapterId)){
+                throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
+            }
+        }
         this.item.setAmount(amount);
         this.meta = this.item.getItemMeta();
     }

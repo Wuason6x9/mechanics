@@ -61,6 +61,14 @@ public class VersionDetector {
                 return UNSUPPORTED;
             }
         }
+
+        public static ServerVersion fromVersionNumber(int i){
+            for(ServerVersion srv : values()){
+                if(srv.versionNumber == i) return srv;
+            }
+
+            return UNSUPPORTED;
+        }
     }
 
 

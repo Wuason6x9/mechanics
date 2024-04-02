@@ -33,11 +33,16 @@ public interface VersionWrapper {
         TASK,
         CHALLENGE,
         GOAL
-
     }
 
     public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType);
+    public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType, String namespace, String path);
 
     public void openSing(Player player, Consumer<String[]> onSend);
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend);
+
+    public Object getNMSItemStack(ItemStack itemStack);
+    public ItemStack getBukkitItemStack(Object nmsItemStack);
+    public Object getTextComponent(String json);
+    public String getJsonFromComponent(Object component);
 }
