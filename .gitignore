@@ -119,3 +119,5 @@ run/
 !gradle-wrapper.jar
 
 !.idea/icon.png
+dev/*
+target/*

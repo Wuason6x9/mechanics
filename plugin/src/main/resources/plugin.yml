@@ -1,0 +1,23 @@
+name: '${name}'
+version: '${version}'
+main: dev.wuason.mechanics.Mechanics
+api-version: 1.18
+load: STARTUP
+author: Wuason
+description: Add mechanics to your server!
+website: wiki.techmc.es
+softdepend:
+  - PlaceholderAPI
+  - ItemsAdder
+  - Oraxen
+  - MythicMobs
+  - MMOItems
+  - CustomItems
+  - ExecutableBlocks
+  - ExecutableItems
+  - Towny
+  - WorldGuard
+  - Factions
+  - Lands
+  - PlotSquared
+  - CrashClaim
