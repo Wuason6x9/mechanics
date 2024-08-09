@@ -16,7 +16,7 @@ repositories {
 }
 
 group = "dev.wuason"
-version = "1.0.1.11a"
+version = "1.0.1.11b"
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {
