@@ -66,6 +66,19 @@ val LIBS = listOf(
     "dev.jorel:commandapi-bukkit-shade:9.5.0"
 )
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.release = 17
+}
+
 allprojects {
 
     apply(plugin = "java")
@@ -189,6 +202,7 @@ allprojects {
     //prevent errors
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
+
     }
 
     //replace text in all plugin.yml
@@ -204,6 +218,9 @@ allprojects {
     if (project.extra.has("mcVersion")) {
         val mcVersion: MCVersion = project.extra.get("mcVersion") as MCVersion
         val jvmVer: JavaVersion = JavaVersion.valueOf("VERSION_${mcVersion.javaVersion}")
+        tasks.withType<JavaCompile> {
+            options.release = mcVersion.javaVersion
+        }
         java {
             sourceCompatibility = jvmVer
             targetCompatibility = jvmVer
@@ -213,6 +230,9 @@ allprojects {
         }
     }
     else {
+        tasks.withType<JavaCompile> {
+            options.release = 17
+        }
         java {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
