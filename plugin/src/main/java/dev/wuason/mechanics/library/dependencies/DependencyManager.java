@@ -103,7 +103,7 @@ public class DependencyManager {
     }
 
     public void loadDefaultRepositories() {
-        addRepositories(Arrays.asList(Repos.MAVEN_CENTRAL));
+        addRepositories(Arrays.asList(Repos.MAVEN_CENTRAL, Repos.MAVEN_CENTRAL_MIRROR, Repos.MAVEN_CENTRAL_MIRROR2));
     }
 
     public HashMap<Class<?>, Class<?>> inject(Class<?>... classes) {

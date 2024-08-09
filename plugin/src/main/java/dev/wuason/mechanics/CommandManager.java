@@ -1,8 +1,11 @@
 package dev.wuason.mechanics;
 
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
+import dev.wuason.mechanics.items.ItemBuilderMechanic;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
@@ -50,14 +53,24 @@ public class CommandManager {
                             NMSManager.getVersionWrapper().sendToast(player, new ItemStack(Material.DIAMOND), AdventureUtils.deserializeJson(message, player), VersionWrapper.ToastType.TASK);
                         })
                 )
+                .withSubcommands(new CommandAPICommand("getNBT")
+                        .executesPlayer((player, commandArguments) -> {
+                            ItemStack itemStack = player.getInventory().getItemInMainHand();
+                            if (itemStack == null || itemStack.getType().isAir()) return;
+
+                            player.sendMessage(NBT.itemStackToNBT(itemStack).toString());
+
+                        })
+                )
                 .withSubcommands(new CommandAPICommand("test")
                         .executes((sender, args) -> {
                             Player player = (Player) sender;
 
-                            NMSManager.getVersionWrapper().openSing(player, (lines) -> {
-
-
-                            });
+                            player.getInventory().addItem(
+                                    new ItemBuilderMechanic(Material.PLAYER_HEAD)
+                                            .setVoidName()
+                                            .build()
+                            );
                         })
                 )
                 .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")

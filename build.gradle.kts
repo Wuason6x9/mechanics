@@ -103,7 +103,7 @@ allprojects {
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache", "dev.wuason.libs.apache")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
-            //relocate("org.ow2.asm", "dev.wuason.libs.asm")
+
         }
     }
 

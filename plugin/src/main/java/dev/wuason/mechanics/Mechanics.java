@@ -48,12 +48,10 @@ public final class Mechanics extends MechanicAddon {
                         Dependencies.APACHE_COMMONS
                 )
                 .addRepositories(
-                        Repos.MAVEN_CENTRAL,
                         Repos.INVESDWIN,
                         Repos.JITPACK,
                         Repos.CODEMC
-                );
-
+                ).addDefaultRepositories();
         this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
         });

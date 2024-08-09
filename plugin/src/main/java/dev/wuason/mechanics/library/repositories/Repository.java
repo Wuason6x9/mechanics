@@ -30,6 +30,19 @@ public record Repository(String name, String url) {
         return file;
     }
 
+    public long ping() {
+        long start = System.currentTimeMillis();
+        try {
+            URL url = new URL(this.url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            return System.currentTimeMillis() - start;
+        } catch (IOException e) {
+            return -1;
+        }
+    }
+
 
     @Override
     public String url() {

@@ -60,6 +60,11 @@ public class LibraryResolver {
         return this;
     }
 
+    public LibraryResolver addDefaultRepositories() {
+        this.dependencyManager.loadDefaultRepositories();
+        return this;
+    }
+
     public DependencyManager build() {
         if (build) return dependencyManager;
         build = true;

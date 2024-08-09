@@ -1,9 +1,15 @@
 package dev.wuason.mechanics.items;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import dev.wuason.mechanics.utils.AdventureUtils;
+import dev.wuason.mechanics.utils.VersionDetector;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -16,14 +22,20 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ItemBuilderMechanic {
 
     private ItemStack item;
     private ItemMeta meta;
+
     public static ItemBuilderMechanic copyOf(ItemStack item) {
         return new ItemBuilderMechanic(item.clone());
+    }
+
+    public static ItemBuilderMechanic from(ItemStack item) {
+        return new ItemBuilderMechanic(item);
     }
 
     /**
@@ -40,25 +52,27 @@ public class ItemBuilderMechanic {
         this.item = new ItemStack(material, amount);
         this.meta = this.item.getItemMeta();
     }
+
     /**
      * This class represents an ItemBuilderMechanic, which is used to build ItemStack objects with specific properties.
      */
-    public ItemBuilderMechanic(String adapterId, int amount){
+    public ItemBuilderMechanic(String adapterId, int amount) {
         this.item = Adapter.getItemStack(adapterId);
-        if(this.item == null) {
-            if(!Adapter.isValidAdapterId(adapterId)){
+        if (this.item == null) {
+            if (!Adapter.isValidAdapterId(adapterId)) {
                 throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
             }
         }
         this.item.setAmount(amount);
         this.meta = this.item.getItemMeta();
     }
+
     /**
      * Constructs an ItemBuilderMechanic object with the given NBT JSON.
      *
      * @param nbtJson the NBT JSON string representing the item
      */
-    public ItemBuilderMechanic(String nbtJson){
+    public ItemBuilderMechanic(String nbtJson) {
         this.item = NBT.itemStackFromNBT(NBT.parseNBT(nbtJson));
         this.meta = this.item.getItemMeta();
     }
@@ -92,10 +106,24 @@ public class ItemBuilderMechanic {
      * @return the ItemBuilderMechanic object with the updated name
      */
     public ItemBuilderMechanic setName(String name) {
-        if(name == null) return this;
-        this.meta.setDisplayName(name);
+        if (name == null) return this;
+        this.meta.displayName(Component.text(name));
         return this;
     }
+
+    /**
+     * Sets the name of the item.
+     *
+     * @param name the name to set for the item
+     * @return the ItemBuilderMechanic object with the updated name
+     */
+
+    public ItemBuilderMechanic setName(Component name) {
+        if (name == null) return this;
+        this.meta.displayName(name);
+        return this;
+    }
+
     /**
      * Sets the name of the item with a mini message.
      *
@@ -103,24 +131,51 @@ public class ItemBuilderMechanic {
      * @return The current instance of ItemBuilderMechanic.
      */
     public ItemBuilderMechanic setNameWithMiniMessage(String name) {
-        if(name == null) return this;
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.addCompound("display").setString("Name", AdventureUtils.deserializeJson(name,null));
-        item = nbtItem.getItem();
-        meta = item.getItemMeta();
+        if (name == null) return this;
+        setName(AdventureUtils.deserialize(name));
         return this;
     }
+
     /**
      * Sets the skull owner for the item.
      *
      * @param player The player whose skull should be set as the owner.
      * @return This ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic setSkullOwner(Player player){
-        SkullMeta skullMeta = (SkullMeta) meta;
-        skullMeta.setOwningPlayer(player);
+    public ItemBuilderMechanic setSkullOwner(Player player) {
+        if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
+        if (meta instanceof SkullMeta skullMeta) {
+            skullMeta.setOwningPlayer(player);
+        }
         return this;
     }
+
+    public ItemBuilderMechanic setSkullOwner(String texture) {
+        if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
+
+        if(VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) {
+            editNBT(nbt -> {
+                ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
+                skullOwnerCompound.setUUID("Id", UUID.randomUUID());
+                skullOwnerCompound.getOrCreateCompound("Properties")
+                        .getCompoundList("textures")
+                        .addCompound()
+                        .setString("Value", texture);
+            });
+        } else {
+            editNBTComponents(nbt -> {
+                ReadWriteNBT profileNbt = nbt.getOrCreateCompound("minecraft:profile");
+                profileNbt.setUUID("id", UUID.randomUUID());
+                ReadWriteNBT propertiesNbt = profileNbt.getCompoundList("properties").addCompound();
+                propertiesNbt.setString("name", "textures");
+                propertiesNbt.setString("value", texture);
+            });
+        }
+
+
+        return this;
+    }
+
     /**
      * Builds an ItemStack with a void name.
      * Sets the Name attribute of the ItemStack's display compound to an empty string.
@@ -128,12 +183,21 @@ public class ItemBuilderMechanic {
      * @return The ItemStack with a void name
      */
     public ItemStack buildWithVoidName() {
-        item.setItemMeta(meta);
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.addCompound("display").setString("Name", "{\"text\":\"\",\"color\":\"black\",\"strikethrough\":true,\"bold\":true,\"italic\":true,\"underlined\":true}");
-        ItemStack itemStack = nbtItem.getItem();
-        return itemStack;
+        setVoidName();
+        return build();
     }
+
+    /**
+     * Sets the name of the item to an empty string.
+     *
+     * @return the ItemBuilderMechanic object with the updated name
+     */
+
+    public ItemBuilderMechanic setVoidName() {
+        meta.displayName(Component.text(""));
+        return this;
+    }
+
     /**
      * Sets the amount of the item.
      *
@@ -149,7 +213,7 @@ public class ItemBuilderMechanic {
      * Adds an enchantment to the item being built.
      *
      * @param enchantment The enchantment to add.
-     * @param level The level of the enchantment.
+     * @param level       The level of the enchantment.
      * @return The ItemBuilderMechanic instance.
      */
     public ItemBuilderMechanic addEnchantment(Enchantment enchantment, int level) {
@@ -197,7 +261,7 @@ public class ItemBuilderMechanic {
      * @return The ItemBuilderMechanic instance with the updated lore.
      */
     public ItemBuilderMechanic setLore(List<String> lore) {
-        if(lore == null){
+        if (lore == null) {
             lore = new ArrayList<>();
         }
         this.meta.setLore(lore);
@@ -212,21 +276,23 @@ public class ItemBuilderMechanic {
      */
     public ItemBuilderMechanic addLoreLine(String line) {
         List<String> lore = new ArrayList<>();
-        if(this.meta.getLore() != null){
+        if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
         }
         lore.add(line);
         this.meta.setLore(lore);
         return this;
     }
+
     /**
      * Adds the given lines to the lore of the item.
+     *
      * @param lines the lines to be added to the lore (non-null)
      * @return the ItemBuilderMechanic object with the updated lore
      */
     public ItemBuilderMechanic addLoreLines(List<String> lines) {
         List<String> lore = new ArrayList<>();
-        if(this.meta.getLore() != null){
+        if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
         }
         lore.addAll(lines);
@@ -254,10 +320,10 @@ public class ItemBuilderMechanic {
      */
     public ItemBuilderMechanic removeLastLoreLine() {
         List<String> lore = new ArrayList<>();
-        if(this.meta.getLore() != null){
+        if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
         }
-        if(lore.size() == 0) return this;
+        if (lore.size() == 0) return this;
         lore.remove(lore.size() - 1);
         this.meta.setLore(lore);
         return this;
@@ -317,9 +383,9 @@ public class ItemBuilderMechanic {
     /**
      * Sets a potion effect on the item being built.
      *
-     * @param effectType  the type of potion effect to apply
-     * @param duration    the duration of the potion effect in ticks
-     * @param amplifier   the amplifier of the potion effect
+     * @param effectType the type of potion effect to apply
+     * @param duration   the duration of the potion effect in ticks
+     * @param amplifier  the amplifier of the potion effect
      * @return the ItemBuilderMechanic instance with the added potion effect
      */
     public ItemBuilderMechanic setPotionEffect(PotionEffectType effectType, int duration, int amplifier) {
@@ -477,8 +543,8 @@ public class ItemBuilderMechanic {
     /**
      * Replaces a line of lore in the ItemStack being built at the specified index.
      *
-     * @param index    The index of the line to be replaced.
-     * @param newLine  The new lore line to replace the existing line.
+     * @param index   The index of the line to be replaced.
+     * @param newLine The new lore line to replace the existing line.
      * @return The updated ItemBuilderMechanic instance.
      */
     public ItemBuilderMechanic replaceLoreLine(int index, String newLine) {
@@ -494,7 +560,7 @@ public class ItemBuilderMechanic {
      * Sets the lore line at the given index.
      *
      * @param index the index at which the lore line should be set
-     * @param line the lore line to set
+     * @param line  the lore line to set
      * @return the updated ItemBuilderMechanic instance
      */
     public ItemBuilderMechanic setLoreLine(int index, String line) {
@@ -607,7 +673,7 @@ public class ItemBuilderMechanic {
     /**
      * Adds persistent data to the item's metadata.
      *
-     * @param key The key used to store the data in the persistent data container.
+     * @param key   The key used to store the data in the persistent data container.
      * @param value The value of the data to be stored.
      * @return An instance of ItemBuilderMechanic with the persistent data added.
      */
@@ -728,6 +794,34 @@ public class ItemBuilderMechanic {
      */
     public ItemBuilderMechanic edit(Consumer<ItemStack> consumer) {
         consumer.accept(this.item);
+        this.meta = this.item.getItemMeta();
+        return this;
+    }
+
+    /**
+     * Edits the NBT data of the ItemStack using the provided Consumer.
+     *
+     * @param consumer the Consumer used to modify the NBT data
+     * @return the updated ItemBuilderMechanic instance
+     */
+
+    public ItemBuilderMechanic editNBT(Consumer<ReadWriteItemNBT> consumer) {
+        if (this.meta != null) this.item.setItemMeta(this.meta);
+        NBT.modify(this.item, consumer);
+        this.meta = this.item.getItemMeta();
+        return this;
+    }
+
+    /**
+     * Edits the NBT data of the ItemStack using the provided Consumer. 1.20.5+ https://github.com/tr7zw/Item-NBT-API/wiki/Using-the-NBT-API#changing-vanilla-item-nbt-on-1205
+     *
+     * @param consumer the Consumer used to modify the NBT data
+     * @return the updated ItemBuilderMechanic instance
+     */
+
+    public ItemBuilderMechanic editNBTComponents(Consumer<ReadWriteNBT> consumer) {
+        if (this.meta != null) this.item.setItemMeta(this.meta);
+        NBT.modifyComponents(this.item, consumer);
         this.meta = this.item.getItemMeta();
         return this;
     }
