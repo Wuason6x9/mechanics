@@ -1,5 +1,12 @@
 rootProject.name = "Mechanics"
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven("https://repo.papermc.io/repository/maven-public/")
+    }
+}
+
 include(":plugin", ":App", ":lib")
 include(":NMS:NMS_COMMON")
 include(":NMS:WRAPPER")
