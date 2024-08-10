@@ -16,7 +16,7 @@ repositories {
 }
 
 group = "dev.wuason"
-version = "1.0.1.11c"
+version = "1.0.1.11a"
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {
@@ -206,9 +206,7 @@ allprojects {
     if (project.extra.has("mcVersion")) {
         val mcVersion: MCVersion = project.extra.get("mcVersion") as MCVersion
         val jvmVer: JavaVersion = JavaVersion.valueOf("VERSION_${mcVersion.javaVersion}")
-        tasks.withType<JavaCompile> {
-            options.release = mcVersion.javaVersion
-        }
+
         java {
             sourceCompatibility = jvmVer
             targetCompatibility = jvmVer
@@ -218,9 +216,7 @@ allprojects {
         }
     }
     else {
-        tasks.withType<JavaCompile> {
-            options.release = 17
-        }
+
         java {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
