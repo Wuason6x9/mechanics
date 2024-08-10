@@ -57,7 +57,7 @@ val LIBS = listOf(
     "de.tr7zw:item-nbt-api:2.13.1",
     "org.apache.commons:commons-lang3:3.14.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    "com.github.oraxen:protectionlib:1.3.5",
+    "com.github.oraxen:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:9.5.0"
 )
 

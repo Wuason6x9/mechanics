@@ -7,6 +7,7 @@ import dev.wuason.mechanics.library.repositories.Repository;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 
 import java.io.*;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,8 +16,8 @@ public class LibraryResolver {
 
     public static final File LIBRARY_FOLDER = new File("libraries");
 
-    public static LibraryResolver builder(MechanicAddon addon) {
-        return new LibraryResolver(addon);
+    public static LibraryResolver builder(MechanicAddon addon, LibraryLoaderType type) {
+        return new LibraryResolver(addon, type);
     }
 
     private MechanicLibraryLoader libraryLoader;
@@ -24,10 +25,15 @@ public class LibraryResolver {
     private boolean autoInject = true;
     private boolean build = false;
     private final List<Consumer<DependencyResolved>> onResolveAndInjected;
+    private LibraryLoaderType type = LibraryLoaderType.LIBRARY_CLASSPATH;
 
-    protected LibraryResolver(MechanicAddon addon) {
-        this.libraryLoader = new MechanicLibraryLoader(addon);
-        this.dependencyManager = DependencyManager.create(addon, libraryLoader.getClassLoader());
+    protected LibraryResolver(MechanicAddon addon, LibraryLoaderType type) {
+        URLClassLoader classLoader = (URLClassLoader) addon.getClass().getClassLoader();
+        if (type == LibraryLoaderType.LIBRARY_CLASSPATH) {
+            this.libraryLoader = new MechanicLibraryLoader(addon);
+            classLoader = this.libraryLoader.getClassLoader();
+        }
+        this.dependencyManager = DependencyManager.create(addon, classLoader);
         this.onResolveAndInjected = new ArrayList<>();
     }
 
@@ -79,10 +85,9 @@ public class LibraryResolver {
         return dependencyManager;
     }
 
-
-
-
-
-
+    public enum LibraryLoaderType {
+        LIBRARY_CLASSPATH,
+        PLUGIN_CLASSPATH
+    }
 
 }

@@ -37,7 +37,7 @@ public final class Mechanics extends MechanicAddon {
 
     @Override
     public void onLoad() {
-        this.libraryResolver = LibraryResolver.builder(this)
+        this.libraryResolver = LibraryResolver.builder(this, LibraryResolver.LibraryLoaderType.PLUGIN_CLASSPATH)
                 .addDependencies(
                         Dependencies.BOOSTED_YAML,
                         Dependencies.BEAN_SHELL,
