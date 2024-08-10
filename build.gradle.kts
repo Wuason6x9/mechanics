@@ -16,7 +16,7 @@ repositories {
 }
 
 group = "dev.wuason"
-version = "1.0.1.11b"
+version = "1.0.1.11c"
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {
@@ -66,18 +66,6 @@ val LIBS = listOf(
     "dev.jorel:commandapi-bukkit-shade:9.5.0"
 )
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.release = 17
-}
 
 allprojects {
 
