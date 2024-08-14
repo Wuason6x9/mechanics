@@ -236,13 +236,9 @@ subprojects {
         publishing {
             publications {
                 create<MavenPublication>("mavenJava") {
-                    val pubComponent = components.findByName("java") ?: components.findByName("release")
-                    if (pubComponent != null) {
-                        from(pubComponent)
-                    }
-                    groupId = group.toString()
-                    artifactId = name
-                    version = project.version.toString()
+                    groupId = rootProject.group.toString()
+                    artifactId = rootProject.name
+                    version = rootProject.version.toString()
                     artifact(tasks.shadowJar)
                 }
             }
