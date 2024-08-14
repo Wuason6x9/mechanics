@@ -9,7 +9,7 @@ import dev.wuason.mechanics.invmechanic.types.pages.content.anvil.events.NextPag
 import dev.wuason.mechanics.invmechanic.types.pages.content.anvil.events.PreviousPageEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.anvil.items.NextPageItem;
 import dev.wuason.mechanics.invmechanic.types.pages.content.anvil.items.PreviousPageItem;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
+import dev.wuason.mechanics.items.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -49,7 +49,7 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         this.contentList = contentList;
         this.itemNextPage = nextPageItem;
         this.itemPreviousPage = previousPageItem;
-        if(itemStackRename != null) this.itemStackRename = new ItemBuilderMechanic(itemStackRename).buildWithVoidName();
+        if(itemStackRename != null) this.itemStackRename = new ItemBuilder(itemStackRename).buildWithVoidName();
         setMenuAnvilOptions();
         setItem(0, this.itemStackRename, event -> {
             event.setCancelled(true);
@@ -342,7 +342,7 @@ public class InvCustomPagesAnvil<T> extends InvCustomAnvil {
         clearDataSlots();
         for(Map.Entry<Integer, T> entry : getContentPage(page).entrySet()){
             ItemStack itemStack = onContentPage(page, entry.getKey(), entry.getValue());
-            if(itemStack == null || itemStack.getItemMeta() == null) itemStack = new ItemBuilderMechanic(Material.BOOK).setName(entry.getValue().toString()).build();
+            if(itemStack == null || itemStack.getItemMeta() == null) itemStack = new ItemBuilder(Material.BOOK).setName(entry.getValue().toString()).build();
             ItemMeta itemMeta = itemStack.getItemMeta();
             String data = searchList.indexOf(entry.getValue()) + ":" + entry.getKey() + ":" + page;
             itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_CONTENT_KEY), PersistentDataType.STRING, data);

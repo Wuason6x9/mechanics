@@ -1,15 +1,15 @@
 package dev.wuason.mechanics.compatibilities.adapter;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.customitems.CustomItemsImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.executableblocks.ExecutableBlocksImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.executableitems.ExecutableItemsImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.itemsadder.ItemsAdderImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.mmoitems.MMOItemsImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.mythic.MythicImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.mythiccucible.MythicCrucibleImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.oraxen.OraxenImpl;
-import dev.wuason.mechanics.compatibilities.adapter.plugins.storagemechanic.StorageMechanicImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.CustomItemsImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.ExecutableBlocksImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.ExecutableItemsImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.ItemsAdderImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.MMOItemsImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.MythicImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.MythicCrucibleImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.OraxenImpl;
+import dev.wuason.mechanics.compatibilities.adapter.plugins.StorageMechanicImpl;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 

@@ -28,6 +28,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.inventory.view.CraftAnvilView;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -88,22 +89,25 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             int invId = serverPlayer.nextContainerCounter();
             AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()) {
 
-                private CraftInventoryView bukkitEntity;
+                private CraftAnvilView bukkitEntity;
 
                 @Override
-                public CraftInventoryView getBukkitView() {
+                public CraftAnvilView getBukkitView() {
                     if (this.bukkitEntity != null) {
                         return this.bukkitEntity;
                     }
 
-                    CraftInventory inventory = new CraftInventoryAnvil(access.getLocation(), this.inputSlots, this.resultSlots, this) {
+                    org.bukkit.craftbukkit.inventory.CraftInventoryAnvil inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryAnvil(
+                            this.access.getLocation(), this.inputSlots, this.resultSlots)
+                    {
                         @Override
                         public InventoryHolder getHolder() {
                             return holder;
                         }
 
                     };
-                    this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+                    this.bukkitEntity = new CraftAnvilView(this.player.getBukkitEntity(), inventory, this);
+                    this.bukkitEntity.updateFromLegacy(inventory);
                     return this.bukkitEntity;
                 }
 
@@ -140,14 +144,14 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             if (player.equals(anvilMenu.getBukkitView().getPlayer())) open();
             int invId = srvPlayer.nextContainerCounter();
             AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()) {
-                private CraftInventoryView bukkitEntity;
+                private CraftAnvilView bukkitEntity;
 
                 @Override
-                public CraftInventoryView getBukkitView() {
+                public CraftAnvilView getBukkitView() {
                     if (this.bukkitEntity != null) {
                         return this.bukkitEntity;
                     }
-                    this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+                    this.bukkitEntity = new CraftAnvilView(this.player.getBukkitEntity(), inventory, this);
                     return this.bukkitEntity;
                 }
             };

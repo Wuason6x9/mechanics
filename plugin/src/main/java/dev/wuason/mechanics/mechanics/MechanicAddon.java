@@ -20,7 +20,7 @@ public abstract class MechanicAddon extends JavaPlugin {
     }
 
     public Mechanics getMechanics() {
-        return Mechanics.getInstance();
+        return this instanceof Mechanics ? (Mechanics) this : Mechanics.getInstance();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.mythiccucible;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
@@ -14,8 +14,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class MythicCrucibleImpl extends ImplementationAdapter {
+    public final static String PREFIX = "MythicCrucible";
     public MythicCrucibleImpl() {
-        super("MythicCrucible","MythicCrucible");
+        super(PREFIX,"MythicCrucible");
     }
 
     @Override

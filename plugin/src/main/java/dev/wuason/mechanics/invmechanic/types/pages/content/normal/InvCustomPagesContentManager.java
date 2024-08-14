@@ -10,7 +10,7 @@ import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.items.NextPageItem;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.items.PreviousPageItem;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
+import dev.wuason.mechanics.items.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -342,7 +342,7 @@ public class InvCustomPagesContentManager<T> {
         InvCustom inventoryCustom = pages.get(page);
         for(Map.Entry<Integer, T> entry : getContentPage(page).entrySet()){
             ItemStack itemStack = onContentPage(page, entry.getKey(), entry.getValue());
-            if(itemStack == null) itemStack = new ItemBuilderMechanic(Material.BOOK).setName(entry.getValue().toString()).build();
+            if(itemStack == null) itemStack = new ItemBuilder(Material.BOOK).setName(entry.getValue().toString()).build();
             ItemMeta itemMeta = itemStack.getItemMeta();
             String data = contentList.indexOf(entry.getValue()) + ":" + entry.getKey() + ":" + page;
             itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_CONTENT_KEY), PersistentDataType.STRING, data);

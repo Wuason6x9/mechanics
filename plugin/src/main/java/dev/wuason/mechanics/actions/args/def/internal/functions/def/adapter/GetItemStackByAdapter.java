@@ -5,9 +5,7 @@ import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternal
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgument;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgumentProperties;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalProperties;
-import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
+import dev.wuason.mechanics.items.ItemBuilder;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +22,7 @@ public class GetItemStackByAdapter extends FunctionInternal {
             @Override
             public Object computeArg(String line, Action action, Object... args) {
                 if(line == null) return null;
-                return new ItemBuilderMechanic(line, (int)args[0]).build();
+                return new ItemBuilder(line, (int)args[0]).build();
             }
         };
         FunctionInternalArgument amount = new FunctionInternalArgument("amount", 0, new FunctionInternalArgumentProperties.Builder().build()) {
@@ -64,6 +62,6 @@ public class GetItemStackByAdapter extends FunctionInternal {
     @Override
     public Object compute(Action action, Object... args) {
         if(args[2] == null) return args[1];
-        return new ItemBuilderMechanic((ItemStack) args[1]).setNameWithMiniMessage((String) args[2]).build();
+        return new ItemBuilder((ItemStack) args[1]).setNameWithMiniMessage((String) args[2]).build();
     }
 }

@@ -1,9 +1,6 @@
 package dev.wuason.mechanics.items;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
@@ -25,30 +22,30 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ItemBuilderMechanic {
+public class ItemBuilder {
 
     private ItemStack item;
     private ItemMeta meta;
 
-    public static ItemBuilderMechanic copyOf(ItemStack item) {
-        return new ItemBuilderMechanic(item.clone());
+    public static ItemBuilder copyOf(ItemStack item) {
+        return new ItemBuilder(item.clone());
     }
 
-    public static ItemBuilderMechanic from(ItemStack item) {
-        return new ItemBuilderMechanic(item);
+    public static ItemBuilder from(ItemStack item) {
+        return new ItemBuilder(item);
     }
 
     /**
      * A class that represents an ItemBuilderMechanic.
      */
-    public ItemBuilderMechanic(Material material) {
+    public ItemBuilder(Material material) {
         this(material, 1);
     }
 
     /**
      * Represents an item builder mechanic that is used to create ItemStack objects with specified Material and amount.
      */
-    public ItemBuilderMechanic(Material material, int amount) {
+    public ItemBuilder(Material material, int amount) {
         this.item = new ItemStack(material, amount);
         this.meta = this.item.getItemMeta();
     }
@@ -56,7 +53,7 @@ public class ItemBuilderMechanic {
     /**
      * This class represents an ItemBuilderMechanic, which is used to build ItemStack objects with specific properties.
      */
-    public ItemBuilderMechanic(String adapterId, int amount) {
+    public ItemBuilder(String adapterId, int amount) {
         this.item = Adapter.getItemStack(adapterId);
         if (this.item == null) {
             if (!Adapter.isValidAdapterId(adapterId)) {
@@ -72,7 +69,7 @@ public class ItemBuilderMechanic {
      *
      * @param nbtJson the NBT JSON string representing the item
      */
-    public ItemBuilderMechanic(String nbtJson) {
+    public ItemBuilder(String nbtJson) {
         this.item = NBT.itemStackFromNBT(NBT.parseNBT(nbtJson));
         this.meta = this.item.getItemMeta();
     }
@@ -82,7 +79,7 @@ public class ItemBuilderMechanic {
      *
      * @param item the ItemStack to be used
      */
-    public ItemBuilderMechanic(ItemStack item) {
+    public ItemBuilder(ItemStack item) {
         this.item = item;
         this.meta = item.getItemMeta();
     }
@@ -93,7 +90,7 @@ public class ItemBuilderMechanic {
      * @param item   The item to be built.
      * @param amount The amount of the item.
      */
-    public ItemBuilderMechanic(ItemStack item, int amount) {
+    public ItemBuilder(ItemStack item, int amount) {
         this.item = item;
         this.meta = item.getItemMeta();
         this.item.setAmount(amount);
@@ -105,7 +102,7 @@ public class ItemBuilderMechanic {
      * @param name the name to set for the item
      * @return the ItemBuilderMechanic object with the updated name
      */
-    public ItemBuilderMechanic setName(String name) {
+    public ItemBuilder setName(String name) {
         if (name == null) return this;
         this.meta.displayName(Component.text(name));
         return this;
@@ -118,7 +115,7 @@ public class ItemBuilderMechanic {
      * @return the ItemBuilderMechanic object with the updated name
      */
 
-    public ItemBuilderMechanic setName(Component name) {
+    public ItemBuilder setName(Component name) {
         if (name == null) return this;
         this.meta.displayName(name);
         return this;
@@ -130,7 +127,7 @@ public class ItemBuilderMechanic {
      * @param name The name of the item, represented as a mini message. If null, the method returns the current instance of ItemBuilderMechanic.
      * @return The current instance of ItemBuilderMechanic.
      */
-    public ItemBuilderMechanic setNameWithMiniMessage(String name) {
+    public ItemBuilder setNameWithMiniMessage(String name) {
         if (name == null) return this;
         setName(AdventureUtils.deserialize(name));
         return this;
@@ -142,7 +139,7 @@ public class ItemBuilderMechanic {
      * @param player The player whose skull should be set as the owner.
      * @return This ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic setSkullOwner(Player player) {
+    public ItemBuilder setSkullOwner(Player player) {
         if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
         if (meta instanceof SkullMeta skullMeta) {
             skullMeta.setOwningPlayer(player);
@@ -150,7 +147,7 @@ public class ItemBuilderMechanic {
         return this;
     }
 
-    public ItemBuilderMechanic setSkullOwner(String texture) {
+    public ItemBuilder setSkullOwner(String texture) {
         if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
 
         if(VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) {
@@ -193,7 +190,7 @@ public class ItemBuilderMechanic {
      * @return the ItemBuilderMechanic object with the updated name
      */
 
-    public ItemBuilderMechanic setVoidName() {
+    public ItemBuilder setVoidName() {
         meta.displayName(Component.text(""));
         return this;
     }
@@ -204,7 +201,7 @@ public class ItemBuilderMechanic {
      * @param amount the amount to set for the item
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setAmount(int amount) {
+    public ItemBuilder setAmount(int amount) {
         this.item.setAmount(amount);
         return this;
     }
@@ -216,7 +213,7 @@ public class ItemBuilderMechanic {
      * @param level       The level of the enchantment.
      * @return The ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic addEnchantment(Enchantment enchantment, int level) {
+    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
         this.meta.addEnchant(enchantment, level, true);
         return this;
     }
@@ -227,7 +224,7 @@ public class ItemBuilderMechanic {
      * @param enchantment The enchantment to remove from the item.
      * @return The ItemBuilderMechanic object with the updated meta.
      */
-    public ItemBuilderMechanic removeEnchantment(Enchantment enchantment) {
+    public ItemBuilder removeEnchantment(Enchantment enchantment) {
         this.meta.removeEnchant(enchantment);
         return this;
     }
@@ -238,7 +235,7 @@ public class ItemBuilderMechanic {
      * @param flag The flag to add.
      * @return This ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic addFlag(ItemFlag flag) {
+    public ItemBuilder addFlag(ItemFlag flag) {
         this.meta.addItemFlags(flag);
         return this;
     }
@@ -249,7 +246,7 @@ public class ItemBuilderMechanic {
      * @param flag the flag to be removed from the item
      * @return the ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic removeFlag(ItemFlag flag) {
+    public ItemBuilder removeFlag(ItemFlag flag) {
         this.meta.removeItemFlags(flag);
         return this;
     }
@@ -260,7 +257,7 @@ public class ItemBuilderMechanic {
      * @param lore The list of lore strings to set. If null, an empty list will be used.
      * @return The ItemBuilderMechanic instance with the updated lore.
      */
-    public ItemBuilderMechanic setLore(List<String> lore) {
+    public ItemBuilder setLore(List<String> lore) {
         if (lore == null) {
             lore = new ArrayList<>();
         }
@@ -274,7 +271,7 @@ public class ItemBuilderMechanic {
      * @param line The line to be added to the lore
      * @return The ItemBuilderMechanic instance with the new lore line added
      */
-    public ItemBuilderMechanic addLoreLine(String line) {
+    public ItemBuilder addLoreLine(String line) {
         List<String> lore = new ArrayList<>();
         if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
@@ -290,7 +287,7 @@ public class ItemBuilderMechanic {
      * @param lines the lines to be added to the lore (non-null)
      * @return the ItemBuilderMechanic object with the updated lore
      */
-    public ItemBuilderMechanic addLoreLines(List<String> lines) {
+    public ItemBuilder addLoreLines(List<String> lines) {
         List<String> lore = new ArrayList<>();
         if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
@@ -306,7 +303,7 @@ public class ItemBuilderMechanic {
      * @param line the line to be removed from the lore
      * @return the ItemBuilderMechanic object with the updated lore
      */
-    public ItemBuilderMechanic removeLoreLine(String line) {
+    public ItemBuilder removeLoreLine(String line) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         lore.remove(line);
         this.meta.setLore(lore);
@@ -318,7 +315,7 @@ public class ItemBuilderMechanic {
      *
      * @return The ItemBuilderMechanic object with the updated lore.
      */
-    public ItemBuilderMechanic removeLastLoreLine() {
+    public ItemBuilder removeLastLoreLine() {
         List<String> lore = new ArrayList<>();
         if (this.meta.getLore() != null) {
             lore = new ArrayList<>(this.meta.getLore());
@@ -334,7 +331,7 @@ public class ItemBuilderMechanic {
      *
      * @return The ItemBuilderMechanic instance with the first line of lore removed.
      */
-    public ItemBuilderMechanic removeFirstLoreLine() {
+    public ItemBuilder removeFirstLoreLine() {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         lore.remove(0);
         this.meta.setLore(lore);
@@ -347,7 +344,7 @@ public class ItemBuilderMechanic {
      * @param index the index of the line to remove
      * @return the ItemBuilderMechanic instance with the updated lore
      */
-    public ItemBuilderMechanic removeLoreLine(int index) {
+    public ItemBuilder removeLoreLine(int index) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         if (index >= 0 && index < lore.size()) {
             lore.remove(index);
@@ -362,7 +359,7 @@ public class ItemBuilderMechanic {
      * @param unbreakable true if the item should be unbreakable, false otherwise.
      * @return the ItemBuilderMechanic instance with the updated unbreakable state.
      */
-    public ItemBuilderMechanic setUnbreakable(boolean unbreakable) {
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
         this.meta.setUnbreakable(unbreakable);
         return this;
     }
@@ -373,7 +370,7 @@ public class ItemBuilderMechanic {
      * @param color the color to set for the item
      * @return the ItemBuilderMechanic object with the updated color
      */
-    public ItemBuilderMechanic setColor(Color color) {
+    public ItemBuilder setColor(Color color) {
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
         }
@@ -388,7 +385,7 @@ public class ItemBuilderMechanic {
      * @param amplifier  the amplifier of the potion effect
      * @return the ItemBuilderMechanic instance with the added potion effect
      */
-    public ItemBuilderMechanic setPotionEffect(PotionEffectType effectType, int duration, int amplifier) {
+    public ItemBuilder setPotionEffect(PotionEffectType effectType, int duration, int amplifier) {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).addCustomEffect(new PotionEffect(effectType, duration, amplifier), true);
         }
@@ -401,7 +398,7 @@ public class ItemBuilderMechanic {
      * @param color The color to set for the potion.
      * @return The ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic setPotionColor(Color color) {
+    public ItemBuilder setPotionColor(Color color) {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).setColor(color);
         }
@@ -413,7 +410,7 @@ public class ItemBuilderMechanic {
      *
      * @return The updated ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic clearPotionEffects() {
+    public ItemBuilder clearPotionEffects() {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).clearCustomEffects();
         }
@@ -426,7 +423,7 @@ public class ItemBuilderMechanic {
      * @param material the material to set for the item
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setMaterial(Material material) {
+    public ItemBuilder setMaterial(Material material) {
         this.item.setType(material);
         return this;
     }
@@ -437,7 +434,7 @@ public class ItemBuilderMechanic {
      * @param durability the durability to set for the item
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setDurability(short durability) {
+    public ItemBuilder setDurability(short durability) {
         ((Damageable) this.meta).setDamage(durability);
         return this;
     }
@@ -448,7 +445,7 @@ public class ItemBuilderMechanic {
      * @param glowing true if the item should have the glowing effect, false otherwise
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setGlowing(boolean glowing) {
+    public ItemBuilder setGlowing(boolean glowing) {
         if (glowing) {
             this.meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
             this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -465,7 +462,7 @@ public class ItemBuilderMechanic {
      * @param invisible true to make the item invisible, false otherwise
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setInvisible(boolean invisible) {
+    public ItemBuilder setInvisible(boolean invisible) {
         if (invisible) {
             this.meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         } else {
@@ -480,7 +477,7 @@ public class ItemBuilderMechanic {
      * @param data the custom model data value to set
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setCustomModelData(int data) {
+    public ItemBuilder setCustomModelData(int data) {
         this.meta.setCustomModelData(data);
         return this;
     }
@@ -491,7 +488,7 @@ public class ItemBuilderMechanic {
      * @param name the localized name to set for the item
      * @return the ItemBuilderMechanic object with the updated localized name
      */
-    public ItemBuilderMechanic setLocalizedName(String name) {
+    public ItemBuilder setLocalizedName(String name) {
         this.meta.setLocalizedName(name);
         return this;
     }
@@ -502,7 +499,7 @@ public class ItemBuilderMechanic {
      * @param color the color to set for the leather armor
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setLeatherArmorColor(Color color) {
+    public ItemBuilder setLeatherArmorColor(Color color) {
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
         }
@@ -514,7 +511,7 @@ public class ItemBuilderMechanic {
      *
      * @return The updated ItemBuilderMechanic object.
      */
-    public ItemBuilderMechanic clearMeta() {
+    public ItemBuilder clearMeta() {
         this.meta = this.item.getItemMeta();
         return this;
     }
@@ -522,9 +519,9 @@ public class ItemBuilderMechanic {
     /**
      * Removes the lore of the item.
      *
-     * @return The updated {@link ItemBuilderMechanic} instance with the lore removed.
+     * @return The updated {@link ItemBuilder} instance with the lore removed.
      */
-    public ItemBuilderMechanic removeLore() {
+    public ItemBuilder removeLore() {
         this.meta.setLore(new ArrayList<>());
         return this;
     }
@@ -535,7 +532,7 @@ public class ItemBuilderMechanic {
      * @param damage the damage value to set for the item
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setDamage(int damage) {
+    public ItemBuilder setDamage(int damage) {
         this.item.setDurability((short) damage);
         return this;
     }
@@ -547,7 +544,7 @@ public class ItemBuilderMechanic {
      * @param newLine The new lore line to replace the existing line.
      * @return The updated ItemBuilderMechanic instance.
      */
-    public ItemBuilderMechanic replaceLoreLine(int index, String newLine) {
+    public ItemBuilder replaceLoreLine(int index, String newLine) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         if (index >= 0 && index < lore.size()) {
             lore.set(index, newLine);
@@ -563,7 +560,7 @@ public class ItemBuilderMechanic {
      * @param line  the lore line to set
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setLoreLine(int index, String line) {
+    public ItemBuilder setLoreLine(int index, String line) {
         List<String> lore = new ArrayList<>(this.meta.getLore());
         lore.set(index, line);
         this.meta.setLore(lore);
@@ -576,7 +573,7 @@ public class ItemBuilderMechanic {
      * @param effect the firework effect to set
      * @return the updated ItemBuilderMechanic
      */
-    public ItemBuilderMechanic setFireworkEffect(FireworkEffect effect) {
+    public ItemBuilder setFireworkEffect(FireworkEffect effect) {
         if (meta instanceof FireworkEffectMeta) {
             ((FireworkEffectMeta) meta).setEffect(effect);
         }
@@ -584,12 +581,12 @@ public class ItemBuilderMechanic {
     }
 
     /**
-     * Adds a page to the book meta of the {@link ItemBuilderMechanic}.
+     * Adds a page to the book meta of the {@link ItemBuilder}.
      *
      * @param page the page to be added to the book
-     * @return the {@link ItemBuilderMechanic} object
+     * @return the {@link ItemBuilder} object
      */
-    public ItemBuilderMechanic addPage(String page) {
+    public ItemBuilder addPage(String page) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.addPage(page);
@@ -604,7 +601,7 @@ public class ItemBuilderMechanic {
      * @param author the author of the item
      * @return the ItemBuilderMechanic object with the author set
      */
-    public ItemBuilderMechanic setAuthor(String author) {
+    public ItemBuilder setAuthor(String author) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setAuthor(author);
@@ -619,7 +616,7 @@ public class ItemBuilderMechanic {
      * @param title the title to be set
      * @return the updated ItemBuilderMechanic object
      */
-    public ItemBuilderMechanic setTitle(String title) {
+    public ItemBuilder setTitle(String title) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setTitle(title);
@@ -634,7 +631,7 @@ public class ItemBuilderMechanic {
      * @param generation the generation to be set for the book metadata
      * @return the ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic setGeneration(BookMeta.Generation generation) {
+    public ItemBuilder setGeneration(BookMeta.Generation generation) {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) this.meta;
             bookMeta.setGeneration(generation);
@@ -649,7 +646,7 @@ public class ItemBuilderMechanic {
      * @param power the power level to set
      * @return the item builder mechanic instance
      */
-    public ItemBuilderMechanic setPower(int power) {
+    public ItemBuilder setPower(int power) {
         if (item.getType() == Material.FIREWORK_ROCKET) {
             FireworkMeta fireworkMeta = (FireworkMeta) this.meta;
             fireworkMeta.setPower(power);
@@ -665,7 +662,7 @@ public class ItemBuilderMechanic {
      * @param value The value for the persistent data.
      * @return The ItemBuilderMechanic instance with the persistent data added.
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, String value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, String value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, value);
         return this;
     }
@@ -677,7 +674,7 @@ public class ItemBuilderMechanic {
      * @param value The value of the data to be stored.
      * @return An instance of ItemBuilderMechanic with the persistent data added.
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, int value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, int value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, value);
         return this;
     }
@@ -689,7 +686,7 @@ public class ItemBuilderMechanic {
      * @param value the double value to be stored
      * @return the ItemBuilderMechanic instance with the persistent data added
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, double value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, double value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, value);
         return this;
     }
@@ -701,7 +698,7 @@ public class ItemBuilderMechanic {
      * @param value the float value to be set for the persistent data
      * @return the updated ItemBuilderMechanic object for method chaining
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, float value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, float value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.FLOAT, value);
         return this;
     }
@@ -713,7 +710,7 @@ public class ItemBuilderMechanic {
      * @param value the value of the persistent data, represented by a {@code long}
      * @return an instance of {@code ItemBuilderMechanic} to enable method chaining
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, long value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, long value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, value);
         return this;
     }
@@ -725,7 +722,7 @@ public class ItemBuilderMechanic {
      * @param value The byte array value to be added.
      * @return An instance of `ItemBuilderMechanic` with the persistent data added.
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, byte[] value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, byte[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE_ARRAY, value);
         return this;
     }
@@ -737,7 +734,7 @@ public class ItemBuilderMechanic {
      * @param value the integer array value to be stored
      * @return the ItemBuilderMechanic object with the added persistent data
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, int[] value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, int[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER_ARRAY, value);
         return this;
     }
@@ -749,7 +746,7 @@ public class ItemBuilderMechanic {
      * @param value The long array value to be added.
      * @return The ItemBuilderMechanic object with the persistent data added.
      */
-    public ItemBuilderMechanic addPersistentData(NamespacedKey key, long[] value) {
+    public ItemBuilder addPersistentData(NamespacedKey key, long[] value) {
         this.meta.getPersistentDataContainer().set(key, PersistentDataType.LONG_ARRAY, value);
         return this;
     }
@@ -760,7 +757,7 @@ public class ItemBuilderMechanic {
      * @param key the namespaced key of the persistent data to remove
      * @return the current ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic removePersistentData(NamespacedKey key) {
+    public ItemBuilder removePersistentData(NamespacedKey key) {
         this.meta.getPersistentDataContainer().remove(key);
         return this;
     }
@@ -781,7 +778,7 @@ public class ItemBuilderMechanic {
      * @param consumer the function that accepts an ItemMeta and applies changes to it
      * @return the ItemBuilderMechanic object with the updated ItemMeta
      */
-    public ItemBuilderMechanic meta(Consumer<ItemMeta> consumer) {
+    public ItemBuilder meta(Consumer<ItemMeta> consumer) {
         consumer.accept(this.meta);
         return this;
     }
@@ -792,7 +789,7 @@ public class ItemBuilderMechanic {
      * @param consumer the Consumer used to modify the ItemStack
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilderMechanic edit(Consumer<ItemStack> consumer) {
+    public ItemBuilder edit(Consumer<ItemStack> consumer) {
         consumer.accept(this.item);
         this.meta = this.item.getItemMeta();
         return this;
@@ -805,7 +802,7 @@ public class ItemBuilderMechanic {
      * @return the updated ItemBuilderMechanic instance
      */
 
-    public ItemBuilderMechanic editNBT(Consumer<ReadWriteItemNBT> consumer) {
+    public ItemBuilder editNBT(Consumer<ReadWriteItemNBT> consumer) {
         if (this.meta != null) this.item.setItemMeta(this.meta);
         NBT.modify(this.item, consumer);
         this.meta = this.item.getItemMeta();
@@ -819,7 +816,7 @@ public class ItemBuilderMechanic {
      * @return the updated ItemBuilderMechanic instance
      */
 
-    public ItemBuilderMechanic editNBTComponents(Consumer<ReadWriteNBT> consumer) {
+    public ItemBuilder editNBTComponents(Consumer<ReadWriteNBT> consumer) {
         if (this.meta != null) this.item.setItemMeta(this.meta);
         NBT.modifyComponents(this.item, consumer);
         this.meta = this.item.getItemMeta();

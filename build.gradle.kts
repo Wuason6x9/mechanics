@@ -8,10 +8,31 @@ plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7" apply false
     id("io.papermc.paperweight.userdev") version "1.7.1" apply false
+    id("org.gradle.maven-publish")
 }
 
 group = "dev.wuason"
 version = "1.0.1.12"
+
+val ver: String = version.toString()
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            val pubComponent = components.findByName("java") ?: components.findByName("release")
+            if (pubComponent != null) {
+                from(pubComponent)
+            }
+            groupId = group.toString()
+            artifactId = name
+            version = ver
+        }
+    }
+}
+
+tasks.named("publishToMavenLocal").configure {
+    dependsOn("assemble")
+}
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {

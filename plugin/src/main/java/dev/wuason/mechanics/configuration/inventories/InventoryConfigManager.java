@@ -24,13 +24,14 @@ public class InventoryConfigManager {
     /**
      * The InventoryConfigManager class manages the inventory configurations for a MechanicAddon.
      *
-     * @param core The MechanicAddon implementation that this manager is associated with.
+     * @param core      The MechanicAddon implementation that this manager is associated with.
      * @param directory The directory where the inventory configuration files are located. Can be null.
      */
     public InventoryConfigManager(@NotNull MechanicAddon core, @Nullable File directory) {
         this.core = core;
         this.directory = directory;
     }
+
     /**
      * The InventoryConfigManager class manages the inventory configurations for a MechanicAddon.
      *
@@ -41,35 +42,34 @@ public class InventoryConfigManager {
     }
 
 
-
-    public void load(){
+    public void load() {
         load(this.directory);
     }
 
-    public void load(File dir){
+    public void load(File dir) {
         inventories.clear();
         dir.mkdirs();
         File[] files = Arrays.stream(dir.listFiles()).filter(f -> {
 
-            if(f.getName().contains(".yml")) return true;
+            if (f.getName().contains(".yml")) return true;
 
             return false;
 
         }).toArray(File[]::new);
-        if(files == null) return;
+        if (files == null) return;
 
-        for(File file : files){
+        for (File file : files) {
 
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
             ConfigurationSection sectionInventories = config.getConfigurationSection("inventories");
 
-            if(sectionInventories != null){
-                for(String key : sectionInventories.getKeys(false)){
+            if (sectionInventories != null) {
+                for (String key : sectionInventories.getKeys(false)) {
 
                     ConfigurationSection sectionInventory = sectionInventories.getConfigurationSection(key);
 
-                    if(sectionInventory != null){
+                    if (sectionInventory != null) {
                         inventories.put(key.toUpperCase(Locale.ENGLISH), sectionInventory);
                     }
 
@@ -81,31 +81,31 @@ public class InventoryConfigManager {
     /**
      * Creates an InventoryConfig object based on the specified id, onLoad consumer, and onItemLoad tri-consumer.
      *
-     * @param id The id of the inventory configuration.
-     * @param onLoad A consumer to be called when the inventory configuration is loaded.
+     * @param id         The id of the inventory configuration.
+     * @param onLoad     A consumer to be called when the inventory configuration is loaded.
      * @param onItemLoad A tri-consumer to be called when an item in the inventory configuration is loaded.
      * @return The created InventoryConfig object, or null if the id is not found in the inventories map.
      */
-    public InventoryConfig createInventoryConfig(String id, Consumer<InventoryConfig> onLoad, TriConsumer<InventoryConfig, ConfigurationSection, ItemConfig> onItemLoad, @Nullable BiConsumer<ItemInterface, ItemConfig> itemBlockedConsumer){
-        if(inventories.containsKey(id.toUpperCase(Locale.ENGLISH))){
+    public InventoryConfig createInventoryConfig(String id, Consumer<InventoryConfig> onLoad, TriConsumer<InventoryConfig, ConfigurationSection, ItemConfig> onItemLoad, @Nullable BiConsumer<ItemInterface, ItemConfig> itemBlockedConsumer) {
+        if (inventories.containsKey(id.toUpperCase(Locale.ENGLISH))) {
             return new InventoryConfig(inventories.get(id.toUpperCase(Locale.ENGLISH)), this, onLoad, onItemLoad, itemBlockedConsumer);
         }
         return null;
     }
 
     //bybuilder
-    public InventoryConfig createInventoryConfig(Consumer<InventoryConfig.Builder> invBuilder){
+    public InventoryConfig createInventoryConfig(Consumer<InventoryConfig.Builder> invBuilder) {
         InventoryConfig.Builder builder = new InventoryConfig.Builder();
         invBuilder.accept(builder);
         builder.setManager(this);
         ConfigurationSection section = inventories.get(builder.getId());
-        if(section == null) return null;
+        if (section == null) return null;
         builder.setSection(section);
         InventoryConfig inv = builder.build();
         return inv;
     }
 
-    public boolean existInventoryConfig(String id){
+    public boolean existInventoryConfig(String id) {
         return inventories.containsKey(id.toUpperCase(Locale.ENGLISH));
     }
 
@@ -115,7 +115,7 @@ public class InventoryConfigManager {
         return this.core;
     }
 
-    public HashMap<String, ConfigurationSection> getInventories()    {
+    public HashMap<String, ConfigurationSection> getInventories() {
         return this.inventories;
     }
 
