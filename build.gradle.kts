@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7" apply false
-    id("io.papermc.paperweight.userdev") version "1.7.1" apply false
+    id("io.papermc.paperweight.userdev") version "1.7.1"
     id("org.gradle.maven-publish")
 }
 
@@ -26,6 +26,7 @@ publishing {
             groupId = group.toString()
             artifactId = name
             version = ver
+            artifact(tasks.getByName(":plugin:shadowJar"))
         }
     }
 }
@@ -86,6 +87,8 @@ val LIBS = listOf(
 allprojects {
 
     apply(plugin = "java")
+    apply(plugin = "org.gradle.maven-publish")
+    apply(plugin = "io.papermc.paperweight.userdev")
 
     repositories {
         mavenCentral()

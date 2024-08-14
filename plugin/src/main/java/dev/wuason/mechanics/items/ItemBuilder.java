@@ -266,6 +266,38 @@ public class ItemBuilder {
     }
 
     /**
+     * Sets the lore of the item with mini message.
+     *
+     * @param lore The list of lore strings to set. If null, an empty list will be used.
+     * @return The ItemBuilderMechanic instance with the updated lore.
+     */
+
+    public ItemBuilder setLoreWithMiniMessage(List<String> lore) {
+        if (lore == null) {
+            lore = new ArrayList<>();
+        }
+        this.meta.lore(AdventureUtils.deserialize(lore));
+        return this;
+    }
+
+    /**
+     * Adds a new line to the lore of the item.
+     *
+     * @param line The line to be added to the lore
+     * @return The ItemBuilderMechanic instance with the new lore line added
+     */
+
+    public ItemBuilder addLoreWithMiniMessage(String line) {
+        List<Component> lore = new ArrayList<>();
+        if (this.meta.lore() != null) {
+            lore = new ArrayList<>(this.meta.lore());
+        }
+        lore.add(AdventureUtils.deserialize(line));
+        this.meta.lore(lore);
+        return this;
+    }
+
+    /**
      * Adds a new line to the lore of the item.
      *
      * @param line The line to be added to the lore

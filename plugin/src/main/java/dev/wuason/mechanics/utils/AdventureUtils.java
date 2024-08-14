@@ -31,23 +31,26 @@ public class AdventureUtils {
      *
      * @param text The text of the message to send. Must not be null.
      */
-    public static void consoleMessage(String text){
-        if(text == null) return;
+    public static void consoleMessage(String text) {
+        if (text == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
         Bukkit.getConsoleSender().sendMessage(mm.deserialize(text));
     }
+
     /**
      * Sends a message to a player.
      *
      * @param text   the text to be sent
      * @param player the player to whom the message is sent
      */
-    public static void playerMessage(String text, Player player){
-        if(text == null || player == null) return;
+    public static void playerMessage(String text, Player player) {
+        if (text == null || player == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
-        if(player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
+        if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            text = PlaceholderAPI.setPlaceholders(player, text);
         player.sendMessage(mm.deserialize(text));
     }
+
     /**
      * Deserializes a JSON string into a serialized Adventure component.
      *
@@ -55,28 +58,32 @@ public class AdventureUtils {
      * @param player The player associated with the text. Can be null.
      * @return The deserialized Adventure component as a string. Returns null if the input text is null.
      */
-    public static String deserializeJson(String text, Player player){
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
-        if(text != null) return GsonComponentSerializer.gson().serialize(AdventureUtils.deserialize(text));
+    public static String deserializeJson(String text, Player player) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        if (text != null) return GsonComponentSerializer.gson().serialize(AdventureUtils.deserialize(text));
         return null;
     }
-    public static String deserializeJson(String text){
-        return deserializeJson(text,null);
+
+    public static String deserializeJson(String text) {
+        return deserializeJson(text, null);
     }
+
     /**
      * Sends a message to the specified CommandSender.
      *
      * @param sender the CommandSender to send the message to
      * @param text   the text of the message
      */
-    public static void sendMessage(CommandSender sender, String text){
-        if(text == null || sender == null) return;
+    public static void sendMessage(CommandSender sender, String text) {
+        if (text == null || sender == null) return;
         MiniMessage mm = MiniMessage.miniMessage();
-        if(sender instanceof Player player) {
-            if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
+        if (sender instanceof Player player) {
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+                text = PlaceholderAPI.setPlaceholders(player, text);
             player.sendMessage(mm.deserialize(text));
         }
-        if(sender instanceof ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage(mm.deserialize(text));
+        if (sender instanceof ConsoleCommandSender) Bukkit.getConsoleSender().sendMessage(mm.deserialize(text));
     }
 
     /**
@@ -85,37 +92,50 @@ public class AdventureUtils {
      * @param text the text to be deserialized
      * @return the deserialized Component object
      */
-    public static Component deserialize(String text){
+    public static Component deserialize(String text) {
         return MiniMessage.miniMessage().deserialize(text);
     }
+
+    public static List<Component> deserialize(List<String> list) {
+        List<Component> components = new ArrayList<>();
+        for (String s : list) {
+            components.add(deserialize(s));
+        }
+        return components;
+    }
+
     /**
      * Deserializes a legacy text string into a modern Adventure Component.
      *
-     * @param text The legacy text string to deserialize
+     * @param text   The legacy text string to deserialize
      * @param player The player associated with the deserialization process
      * @return The deserialized Adventure Component, or null if the input text is null or cannot be deserialized
      */
-    public static String deserializeLegacy(String text, Player player){
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) text = PlaceholderAPI.setPlaceholders(player, text);
-        if(text != null) return LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(text));
+    public static String deserializeLegacy(String text, Player player) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        if (text != null)
+            return LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(text));
         return null;
     }
-    public static String deserializeLegacy(String text){
-        return deserializeLegacy(text,null);
+
+    public static String deserializeLegacy(String text) {
+        return deserializeLegacy(text, null);
     }
 
     /**
      * Deserialize a list of legacy formatted strings into a list of serialized adventure components.
      *
      * @param listText The list of legacy formatted strings to deserialize.
-     * @param player The player whose placeholders need to be resolved. Can be null if no placeholders are used.
+     * @param player   The player whose placeholders need to be resolved. Can be null if no placeholders are used.
      * @return The list of serialized adventure components after deserialization.
      */
-    public static List<String> deserializeLegacyList(List<String> listText, Player player){
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) listText = PlaceholderAPI.setPlaceholders(player, listText);
+    public static List<String> deserializeLegacyList(List<String> listText, Player player) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            listText = PlaceholderAPI.setPlaceholders(player, listText);
         List<String> deserialized = new ArrayList<>();
 
-        for(String s : listText){
+        for (String s : listText) {
 
             deserialized.add(LegacyComponentSerializer.builder().hexColors().build().serialize(AdventureUtils.deserialize(s)));
 
@@ -124,29 +144,31 @@ public class AdventureUtils {
         return deserialized;
 
     }
-    public static List<String> deserializeLegacyList(List<String> listText){
-        return deserializeLegacyList(listText,null);
+
+    public static List<String> deserializeLegacyList(List<String> listText) {
+        return deserializeLegacyList(listText, null);
     }
 
     /**
      * Sends a message to the plugin console.
      *
-     * @param addon the mechanic addon
+     * @param addon   the mechanic addon
      * @param message the message to send
      */
-    public static void sendMessagePluginConsole(MechanicAddon addon, String message){
+    public static void sendMessagePluginConsole(MechanicAddon addon, String message) {
 
-        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC",((Plugin)addon).getDescription().getName()) + message);
+        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC", ((Plugin) addon).getDescription().getName()) + message);
 
     }
+
     /**
      * Sends a message to the plugin console.
      *
      * @param message the message to send
      */
-    public static void sendMessagePluginConsole(String message){
+    public static void sendMessagePluginConsole(String message) {
 
-        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC","CORE") + message);
+        consoleMessage(PREFIX.replace("$NAME", Mechanics.getInstance().getDescription().getName()).replace("$MECHANIC", "CORE") + message);
 
     }
 
@@ -158,7 +180,7 @@ public class AdventureUtils {
      * After all occurrences of the placeholder have been marked, they are removed from the Component.
      * Finally, the modified Component is reconstructed and returned.
      *
-     * @param component The Component from which to remove the placeholder. Must not be null.
+     * @param component   The Component from which to remove the placeholder. Must not be null.
      * @param placeholder The text to remove from the Component. Must not be null.
      * @return A new Component with all occurrences of the placeholder removed.
      */
@@ -174,8 +196,7 @@ public class AdventureUtils {
                     replaced.addAll(toReplace);
                     toReplace.clear();
                 }
-            }
-            else if (!toReplace.isEmpty()) {
+            } else if (!toReplace.isEmpty()) {
                 toReplace.clear();
             }
         }
@@ -187,7 +208,7 @@ public class AdventureUtils {
         while (componentIterator.hasNext()) {
             Component c = componentIterator.next();
             for (TextComponentReplace replace : replaced) {
-                if(replace.getComponent().getUnmodifiedParent() == c) {
+                if (replace.getComponent().getUnmodifiedParent() == c) {
                     c = replace.getComponent().getParent();
                 }
             }
@@ -277,7 +298,6 @@ public class AdventureUtils {
             return component;
         }
     }
-
 
 
 }
