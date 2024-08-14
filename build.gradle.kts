@@ -233,7 +233,7 @@ allprojects {
 }
 
 subprojects {
-    if (project.name == "plugin") {
+    if (project.name == "lib") {
         publishing {
             publications {
                 create<MavenPublication>("mavenJava") {
