@@ -16,9 +16,9 @@ version = "1.0.1.12"
 
 val ver: String = version.toString()
 
-tasks.named("publishToMavenLocal").configure {
+/*tasks.named("publishToMavenLocal").configure {
     dependsOn("assemble")
-}
+}*/
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {
