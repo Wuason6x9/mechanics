@@ -11,15 +11,6 @@ plugins {
     id("org.gradle.maven-publish")
 }
 
-group = "dev.wuason"
-version = "1.0.1.12"
-
-val ver: String = version.toString()
-
-/*tasks.named("publishToMavenLocal").configure {
-    dependsOn("assemble")
-}*/
-
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
     fun getApiVersion(): String {
         return "${vsr}-R0.1-SNAPSHOT"
@@ -71,6 +62,9 @@ val LIBS = listOf(
 
 allprojects {
 
+    project.group = "dev.wuason"
+    project.version = "1.0.1.12"
+
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
     apply(plugin = "io.github.goooler.shadow")
@@ -95,7 +89,7 @@ allprojects {
 
         tasks.withType<ShadowJar> {
             destinationDirectory.set(file("$rootDir/target"))
-            archiveBaseName.set("${rootProject.name}-${rootProject.version}" + if (project.name == "plugin") "" else "-lib")
+            archiveBaseName.set("${rootProject.name}-${project.version}" + if (project.name == "plugin") "" else "-lib")
             archiveClassifier.set("")
             archiveVersion.set("")
             manifest {
@@ -233,6 +227,11 @@ allprojects {
 }
 
 subprojects {
+
+    tasks.shadowJar {
+        archiveClassifier.set("")
+    }
+
     if (project.name == "lib") {
         publishing {
             publications {
@@ -243,7 +242,7 @@ subprojects {
                     }
                     groupId = group.toString()
                     artifactId = name
-                    version = ver
+                    version = project.version.toString()
                     artifact(tasks.shadowJar)
                 }
             }
