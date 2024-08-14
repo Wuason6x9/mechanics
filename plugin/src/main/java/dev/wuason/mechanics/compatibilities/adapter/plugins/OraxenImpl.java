@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.oraxen;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
@@ -10,8 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class OraxenImpl extends ImplementationAdapter {
+    public final static String PREFIX = "or";
     public OraxenImpl() {
-        super("or","Oraxen");
+        super(PREFIX,"Oraxen");
     }
 
     @Override

@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.mmoitems;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
@@ -14,8 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class MMOItemsImpl extends ImplementationAdapter {
+    public final static String PREFIX = "mmoitems";
+
     public MMOItemsImpl() {
-        super("mmoitems","MMOItems");
+        super(PREFIX,"MMOItems");
     }
 
     @Override

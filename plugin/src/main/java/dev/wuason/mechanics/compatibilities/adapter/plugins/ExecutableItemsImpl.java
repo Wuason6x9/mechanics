@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.executableitems;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import com.ssomar.score.api.executableitems.ExecutableItemsAPI;
 import com.ssomar.score.api.executableitems.config.ExecutableItemInterface;
@@ -12,8 +12,9 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class ExecutableItemsImpl extends ImplementationAdapter {
+    public final static String PREFIX = "ei";
     public ExecutableItemsImpl() {
-        super("ei","ExecutableItems");
+        super(PREFIX,"ExecutableItems");
     }
 
     @Override

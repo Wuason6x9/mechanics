@@ -5,7 +5,7 @@ import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.events.ContentMultipleClickEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.events.NextPageMultipleEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.events.PreviousPageMultipleEvent;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
+import dev.wuason.mechanics.items.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -87,7 +87,7 @@ public class InvCustomPagesContentMultiple extends InvCustom {
         for(Map.Entry<Integer, ?> entry : page.getActualPageContent().entrySet()){
             Content content = new Content(entry.getValue(), page);
             ItemStack item = onContentPage(content);
-            if(item == null) item = new ItemBuilderMechanic(Material.BOOK).setName(entry.getValue().toString()).build();
+            if(item == null) item = new ItemBuilder(Material.BOOK).setName(entry.getValue().toString()).build();
             ItemMeta itemMeta = item.getItemMeta();
             String data = page.getContentList().indexOf(entry.getValue()) + ":" + page.getId().toString() + ":" + page.getActualPage() + ":" + entry.getKey();
             itemMeta.getPersistentDataContainer().set(new NamespacedKey(Mechanics.getInstance(), NAMESPACED_CONTENT_KEY), PersistentDataType.STRING, data);

@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.storagemechanic;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
@@ -10,8 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class StorageMechanicImpl extends ImplementationAdapter {
+    public final static String PREFIX = "sm";
     public StorageMechanicImpl() {
-        super("sm","StorageMechanic");
+        super(PREFIX,"StorageMechanic");
     }
 
     @Override

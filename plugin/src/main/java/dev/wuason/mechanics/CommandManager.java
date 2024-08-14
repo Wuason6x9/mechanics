@@ -1,11 +1,10 @@
 package dev.wuason.mechanics;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
-import dev.wuason.mechanics.items.ItemBuilderMechanic;
+import dev.wuason.mechanics.items.ItemBuilder;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
@@ -67,7 +66,7 @@ public class CommandManager {
                             Player player = (Player) sender;
 
                             player.getInventory().addItem(
-                                    new ItemBuilderMechanic(Material.PLAYER_HEAD)
+                                    new ItemBuilder(Material.PLAYER_HEAD)
                                             .setVoidName()
                                             .build()
                             );

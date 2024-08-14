@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.executableblocks;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import com.ssomar.executableblocks.api.ExecutableBlocksAPI;
 import com.ssomar.executableblocks.executableblocks.ExecutableBlock;
@@ -12,8 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class ExecutableBlocksImpl extends ImplementationAdapter {
+    public final static String PREFIX = "eb";
+
     public ExecutableBlocksImpl() {
-        super("eb","ExecutableBlocks");
+        super(PREFIX,"ExecutableBlocks");
     }
 
     @Override

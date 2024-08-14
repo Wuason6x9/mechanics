@@ -78,7 +78,10 @@ public final class Mechanics extends MechanicAddon {
         AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");
         AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNMS.getServerVersion());
         AdventureUtils.sendMessagePluginConsole("<gold>Server version: <aqua>" + VersionDetector.getServerVersion().getVersionName());
-        AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon).map(plugin -> plugin.getName()).toList().toString().replace("[", "").replace("]", ""));
+        AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon).map(plugin -> {
+            if (plugin instanceof Mechanics) return plugin.getName() + " (Core)";
+            return plugin.getName();
+        }).toList().toString().replace("[", "").replace("]", ""));
         //load managers
         CommandAPI.onEnable();
         ProtectionLib.init(this);

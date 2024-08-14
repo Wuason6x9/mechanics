@@ -1,29 +1,34 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.customitems;
-import de.tr7zw.changeme.nbtapi.NBT;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
-import dev.wuason.customItemsAPI.CustomItemsAPI;
+import de.tr7zw.changeme.nbtapi.NBT;
+import dev.lone.itemsadder.api.CustomBlock;
+import dev.lone.itemsadder.api.CustomStack;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class CustomItemsImpl extends ImplementationAdapter {
-    public CustomItemsImpl() {
-        super("cui","CustomItems");
+public class ItemsAdderImpl extends ImplementationAdapter {
+
+    public final static String PREFIX = "ia";
+
+    public ItemsAdderImpl() {
+        super(PREFIX,"ItemsAdder");
     }
 
     @Override
     public ItemStack getAdapterItem(String id) {
         if(!isEnabled()) return null;
-        return CustomItemsAPI.Companion.getCustomItem(id) == null ? null : CustomItemsAPI.Companion.getCustomItem(id);
+        CustomStack customStack = CustomStack.getInstance(id);
+        return customStack != null ? customStack.getItemStack() : null;
     }
 
     @Override
     public String getAdapterId(ItemStack itemStack) {
         if(!isEnabled()) return null;
-        if(CustomItemsAPI.Companion.isCustomItem(itemStack)){
-            return getType().toLowerCase(Locale.ENGLISH) + ":" + CustomItemsAPI.Companion.getCustomItemID(itemStack);
+        if(CustomStack.byItemStack(itemStack) != null){
+            return getType().toLowerCase(Locale.ENGLISH) + ":" + CustomStack.byItemStack(itemStack).getNamespacedID();
         }
         return null;
     }
@@ -31,18 +36,15 @@ public class CustomItemsImpl extends ImplementationAdapter {
     @Override
     public String getAdapterId(Block block) {
         if(!isEnabled()) return null;
-        String cuiID = CustomItemsAPI.Companion.getCustomItemIDAtBlock(block);
-        if(cuiID != null){
-            return getType().toLowerCase(Locale.ENGLISH) + ":" + cuiID;
+        if(CustomBlock.byAlreadyPlaced(block) != null){
+            return getType().toLowerCase(Locale.ENGLISH) + ":" + CustomBlock.byAlreadyPlaced(block).getNamespacedID();
         }
         return null;
     }
 
     @Override
     public boolean existItemAdapter(String id) {
-        if(!isEnabled()) return false;
-
-        return CustomItemsAPI.Companion.getCustomItem(id) != null;
+        return getAdapterItem(id) != null;
     }
 
     @Override

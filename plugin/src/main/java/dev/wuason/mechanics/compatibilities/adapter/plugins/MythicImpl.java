@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.compatibilities.adapter.plugins.mythic;
+package dev.wuason.mechanics.compatibilities.adapter.plugins;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.wuason.mechanics.compatibilities.adapter.ImplementationAdapter;
@@ -11,8 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Locale;
 
 public class MythicImpl extends ImplementationAdapter {
+    public final static String PREFIX = "mythic";
     public MythicImpl(){
-        super("mythic","MythicMobs");
+        super(PREFIX,"MythicMobs");
     }
 
     @Override
