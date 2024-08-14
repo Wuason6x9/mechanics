@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.7" apply false
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.github.goooler.shadow") version "8.1.7"
+    id("io.papermc.paperweight.userdev") version "1.7.1" apply false
     id("org.gradle.maven-publish")
 }
 
@@ -15,21 +15,6 @@ group = "dev.wuason"
 version = "1.0.1.12"
 
 val ver: String = version.toString()
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            val pubComponent = components.findByName("java") ?: components.findByName("release")
-            if (pubComponent != null) {
-                from(pubComponent)
-            }
-            groupId = group.toString()
-            artifactId = name
-            version = ver
-            artifact(tasks.getByName(":plugin:shadowJar"))
-        }
-    }
-}
 
 tasks.named("publishToMavenLocal").configure {
     dependsOn("assemble")
@@ -88,7 +73,7 @@ allprojects {
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
-    apply(plugin = "io.papermc.paperweight.userdev")
+    apply(plugin = "io.github.goooler.shadow")
 
     repositories {
         mavenCentral()
@@ -245,6 +230,25 @@ allprojects {
         }
     }
 
+}
+
+subprojects {
+    if (project.name == "plugin") {
+        publishing {
+            publications {
+                create<MavenPublication>("mavenJava") {
+                    val pubComponent = components.findByName("java") ?: components.findByName("release")
+                    if (pubComponent != null) {
+                        from(pubComponent)
+                    }
+                    groupId = group.toString()
+                    artifactId = name
+                    version = ver
+                    artifact(tasks.shadowJar)
+                }
+            }
+        }
+    }
 }
 
 
