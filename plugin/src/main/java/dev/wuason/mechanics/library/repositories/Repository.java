@@ -6,10 +6,20 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public record Repository(String name, String url) {
+public class Repository {
+
+    //private final RemoteRepository repository;
+    private final String name;
+    private final String url;
+
+    public Repository(String name, String url) {
+        this.name = name;
+        this.url = url;
+        //this.repository = new RemoteRepository.Builder(name, "default", url).setPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS, RepositoryPolicy.CHECKSUM_POLICY_FAIL)).build();
+    }
 
     public InputStream downloadDependency(Dependency dependency, DownloadType type) throws IOException {
-        String jarUrl = jarUrl = url() + dependency.getGroupId().replace(".", "/") + "/" + dependency.getArtifactId() + "/" + dependency.getVersion() + "/" + dependency.getArtifactId() + "-" + dependency.getVersion() + "." + type.name().toLowerCase();
+        String jarUrl = jarUrl = getUrl() + dependency.getGroupId().replace(".", "/") + "/" + dependency.getArtifactId() + "/" + dependency.getVersion() + "/" + dependency.getArtifactId() + "-" + dependency.getVersion() + "." + type.name().toLowerCase();
         URL url = new URL(jarUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -43,18 +53,24 @@ public record Repository(String name, String url) {
         }
     }
 
+    public enum DownloadType {
+        JAR,
+        POM
+    }
 
-    @Override
-    public String url() {
+    /*public RemoteRepository getRemoteRepository() {
+        return repository;
+    }*/
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUrl() {
         if (url.endsWith("/")) {
             return url;
         } else {
             return url + "/";
         }
-    }
-
-    public enum DownloadType {
-        JAR,
-        POM
     }
 }
