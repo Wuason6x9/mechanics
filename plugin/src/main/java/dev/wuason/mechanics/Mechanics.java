@@ -39,7 +39,29 @@ public final class Mechanics extends MechanicAddon {
 
     @Override
     public void onLoad() {
-        loadLibraries();
+        this.libraryResolver = LibraryResolver.builder(this, LibraryResolver.LibraryLoaderType.PLUGIN_CLASSPATH)
+                .addDependencies(
+                        Dependencies.BOOSTED_YAML,
+                        Dependencies.BEAN_SHELL,
+                        Dependencies.NBT_API,
+                        Dependencies.PROTECTION_LIB,
+                        Dependencies.APACHE_COMMONS,
+                        Dependencies.GSON,
+                        Dependencies.GOOGLE_ERROR_PRONE_ANNOTATIONS
+                )
+                .addRepositories(
+                        Repos.INVESDWIN,
+                        Repos.JITPACK,
+                        Repos.CODEMC
+                ).addDefaultRepositories();
+        this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
+            getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
+        });
+
+        if (VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) this.libraryResolver.addDependencies(Dependencies.COMMAND_API); else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
+
+        this.libraryResolver.build().resolve(); //resolves all
+
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
     }
 
@@ -49,8 +71,6 @@ public final class Mechanics extends MechanicAddon {
         NMSManager = new NMSManager();
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
-        AdventureUtils.sendMessagePluginConsole("<gold>                        Mechanics");
-        AdventureUtils.sendMessagePluginConsole("");
         AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");
         AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNMS.getServerVersion());
         AdventureUtils.sendMessagePluginConsole("<gold>Server version: <aqua>" + VersionDetector.getServerVersion().getVersionName());
@@ -89,45 +109,16 @@ public final class Mechanics extends MechanicAddon {
         return manager;
     }
 
-    private void loadLibraries() {
-
-        this.libraryResolver = LibraryResolver.builder(this, LibraryResolver.LibraryLoaderType.PLUGIN_CLASSPATH)
-                .addDependencies(
-                        Dependencies.BOOSTED_YAML,
-                        Dependencies.BEAN_SHELL,
-                        Dependencies.NBT_API,
-                        Dependencies.PROTECTION_LIB,
-                        Dependencies.APACHE_COMMONS,
-                        Dependencies.GSON,
-                        Dependencies.GOOGLE_ERROR_PRONE_ANNOTATIONS,
-                        Dependencies.MORE_PERSISTENT_DATA_TYPES,
-                        Dependencies.CUSTOM_BLOCK_DATA
-                        )
-                .addRepositories(
-                        Repos.INVESDWIN,
-                        Repos.JITPACK,
-                        Repos.CODEMC
-                ).addDefaultRepositories();
-        this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
-            getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
-        });
-
-        if (VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) this.libraryResolver.addDependencies(Dependencies.COMMAND_API); else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
-
-        this.libraryResolver.build().resolve(); //resolves all
-
-    }
-
-    private void printMechanics(){
+    public void printMechanics(){
         AdventureUtils.sendMessagePluginConsole("<gold>" + AsciiUtils.convertToAscii(AsciiUtils.createTextImage("Mechanics", new Font("Arial", Font.BOLD, 25), Color.BLACK)));
     }
 
-    private boolean checkVersion(){
+    public boolean checkVersion(){
         if(VersionNMS.getServerVersion().equals(VersionNMS.ServerVersionNMS.UNSUPPORTED)){
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("                 Unsupported version minecraft ");
-            core.getLogger().severe("                     Actual version: " + VersionNMS.getServerVersion());
+            core.getLogger().severe("                     Actual version: " + VersionNMS.getNMSVersion());
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(core);
@@ -136,7 +127,7 @@ public final class Mechanics extends MechanicAddon {
         return false;
     }
 
-    private void metrics() {
+    public void metrics() {
         Metrics metrics = new Metrics(this, 23026);
         metrics.addCustomChart(new Metrics.DrilldownPie("addons", () -> {
             Map<String, Map<String, Integer>> map = new HashMap<>();
@@ -151,7 +142,7 @@ public final class Mechanics extends MechanicAddon {
         }));
     }
 
-    private boolean errorLoadingLibraries(){
+    public boolean errorLoadingLibraries(){
         if (libraryResolver.build().allResolved()) return false;
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
@@ -168,7 +159,7 @@ public final class Mechanics extends MechanicAddon {
         return true;
     }
 
-    private boolean checkPaper(){
+    public boolean checkPaper(){
         if(!ServerUtils.isPaperServer()){
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
@@ -186,12 +177,12 @@ public final class Mechanics extends MechanicAddon {
     public boolean checkUpdate() {
         if(!SpigotUtils.isOnline()) return false;
         String version = SpigotUtils.getLastVersionByResourceId(SPIGOT_ID);
-        if (getDescription().getVersion().equals(version)) return false;
+        if (getDescription().getVersion() == version) return false;
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("                     New version available                 ");
         core.getLogger().severe("               Actual version: " + getDescription().getVersion());
-        core.getLogger().severe("               New version: " + version );
+        core.getLogger().severe("               New version: " + version + "      -");
         core.getLogger().severe("  Download from https://www.spigotmc.org/resources/" + SPIGOT_ID);
         core.getLogger().severe("                 that if it is not updated                 ");
         core.getLogger().severe("    The plugin has been stopped because it is possible     ");

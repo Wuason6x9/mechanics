@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "dev.wuason"
-version = "1.0.1.12a"
+version = "1.0.1.12"
 
 val ver: String = version.toString()
 
@@ -80,9 +80,7 @@ val LIBS = listOf(
     "org.apache-extras.beanshell:bsh:2.1.1",
     "com.github.oraxen:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:9.5.0",
-    "com.google.code.gson:gson:2.11.0",
-    "com.jeff-media:MorePersistentDataTypes:2.4.0",
-    "com.jeff-media:custom-block-data:2.2.2"
+    "com.google.code.gson:gson:2.11.0"
 )
 
 
@@ -123,10 +121,8 @@ allprojects {
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
-            relocate("com.google.code.gson", "dev.wuason.libs.google.gson")
-            relocate("com.google.errorprone", "dev.wuason.libs.google.errorprone")
-            relocate("com.jeff_media.morepersistentdatatypes", "dev.wuason.libs.jeffmedia.morepersistentdatatypes")
-            relocate("com.jeff_media.customblockdata", "dev.wuason.libs.jeffmedia.customblockdata")
+            relocate("com.google", "dev.wuason.libs.google")
+
         }
     }
 
