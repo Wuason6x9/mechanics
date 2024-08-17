@@ -1,7 +1,5 @@
 package dev.wuason.mechanics.library.dependencies;
 
-import dev.wuason.mechanics.library.repositories.Repository;
-
 import java.io.*;
 import java.util.HashMap;
 
@@ -12,31 +10,40 @@ public class Dependency {
     private final String version;
     private final Remap[] remaps;
     private final File jarFile;
+    private final boolean useAdvancedDependencyResolver;
 
     public Dependency(String name, String groupId, String artifactId, String version, Remap... remaps) {
-        this.name = name;
-        this.groupId = groupId.replace(':', '.');
-        this.artifactId = artifactId;
-        this.version = version;
-        if (remaps == null) {
-            this.remaps = new Remap[0];
-        } else {
-            this.remaps = remaps;
-        }
-        this.jarFile = null;
+        this(name, groupId, artifactId, version, remaps, null, false);
+    }
+
+    public Dependency(String name, String groupId, String artifactId, String version, boolean useAdvancedDependencyResolver, Remap... remaps) {
+        this(name, groupId, artifactId, version, remaps, null, useAdvancedDependencyResolver);
     }
 
     public Dependency(String groupId, String artifactId, String version, Remap... remaps) {
         this(artifactId, groupId, artifactId, version, remaps);
     }
 
+    public Dependency(String groupId, String artifactId, String version, boolean useAdvancedDependencyResolver, Remap... remaps) {
+        this(artifactId, groupId, artifactId, version, useAdvancedDependencyResolver, remaps);
+    }
+
     public Dependency(File jar) {
-        this.jarFile = jar;
-        this.name = jar.getName();
-        this.groupId = "";
-        this.artifactId = jar.getName().split("-")[0];
-        this.version = jar.getName().split("-")[1].replace(".jar", "");
-        this.remaps = new Remap[0];
+        this(jar.getName(), "", jar.getName().split("-")[0], jar.getName().split("-")[1].replace(".jar", ""), new Remap[0], jar, false);
+    }
+
+    public Dependency(String name, String groupId, String artifactId, String version, Remap[] remaps, File jarFile, boolean useAdvancedDependencyResolver) {
+        this.name = name;
+        this.groupId = groupId.replace(':', '.');
+        this.artifactId = artifactId;
+        this.version = version;
+        this.useAdvancedDependencyResolver = useAdvancedDependencyResolver;
+        if (remaps == null) {
+            this.remaps = new Remap[0];
+        } else {
+            this.remaps = remaps;
+        }
+        this.jarFile = jarFile;
     }
 
     public String getName() {
@@ -80,36 +87,27 @@ public class Dependency {
         return jarFile;
     }
 
-    /*public File getJarFile() throws IOException {
-        File jar = getJarFileLocally();
-        if (jar.exists()) {
-            return jar;
-        }
-        return download();
+    public boolean useAdvancedDependencyResolver() {
+        return useAdvancedDependencyResolver;
     }
 
-    public File getJarFileLocally() {
-        if (jarFile != null) return jarFile;
-        return new File(LIBRARY_FOLDER, String.join("/", getGroupPath()) + "/" + artifactId + "/" + version + "/" + getJarName());
+    @Override
+    public String toString() {
+        return toMavenString(groupId, artifactId, version);
     }
 
-    public File download() throws IOException {
-        File jar = getJarFileLocally();
-        if (!jar.exists()) {
-            jar.getParentFile().mkdirs();
-            jar.createNewFile();
-        }
-        BufferedInputStream in = new BufferedInputStream(repo.downloadDependency(this));
-        FileOutputStream fileOutputStream = new FileOutputStream(jar);
-        byte[] dataBuffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-            fileOutputStream.write(dataBuffer, 0, bytesRead);
-        }
-        fileOutputStream.close();
-        in.close();
-        return jar;
-    }*/
+    public static String toMavenString(String groupId, String artifactId, String version) {
+        return groupId + ":" + artifactId + ":" + version;
+    }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DependencyResolved) {
+            return ((DependencyResolved) obj).getDependency().equals(this);
+        }
+        if (obj instanceof Dependency) {
+            return ((Dependency) obj).getArtifactId().equals(artifactId) && ((Dependency) obj).getVersion().equals(version) && ((Dependency) obj).getGroupId().equals(groupId);
+        }
+        return super.equals(obj);
+    }
 }

@@ -56,7 +56,8 @@ val LIBS = listOf(
     "org.apache.commons:commons-lang3:3.14.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "com.github.oraxen:protectionlib:1.5.1",
-    "dev.jorel:commandapi-bukkit-shade:9.5.0"
+    "dev.jorel:commandapi-bukkit-shade:9.5.0",
+    "com.google.code.gson:gson:2.11.0"
 )
 
 
@@ -100,8 +101,9 @@ allprojects {
             relocate("de.tr7zw.changeme.nbtapi","dev.wuason.libs.nbtapi")
             relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
             relocate("bsh", "dev.wuason.libs.bsh")
-            relocate("org.apache", "dev.wuason.libs.apache")
+            relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
+            relocate("com.google", "dev.wuason.libs.google")
 
         }
     }
@@ -148,6 +150,9 @@ allprojects {
             for (lib in LIBS) {
                 compileOnly(lib)
             }
+
+            compileOnly("org.apache.httpcomponents:httpclient:4.5.14")
+
         }
     }
 
