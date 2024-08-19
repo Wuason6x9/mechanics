@@ -6,9 +6,32 @@ import java.util.concurrent.ThreadPoolExecutor
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("io.github.goooler.shadow") version "8.1.7" apply false
     id("io.papermc.paperweight.userdev") version "1.7.1" apply false
     id("org.gradle.maven-publish")
+}
+
+group = "dev.wuason"
+version = "1.0.1.12a"
+
+val ver: String = version.toString()
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            val pubComponent = components.findByName("java") ?: components.findByName("release")
+            if (pubComponent != null) {
+                from(pubComponent)
+            }
+            groupId = group.toString()
+            artifactId = name
+            version = ver
+        }
+    }
+}
+
+tasks.named("publishToMavenLocal").configure {
+    dependsOn("assemble")
 }
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
@@ -57,18 +80,15 @@ val LIBS = listOf(
     "org.apache-extras.beanshell:bsh:2.1.1",
     "com.github.oraxen:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:9.5.0",
-    "com.google.code.gson:gson:2.11.0"
+    "com.google.code.gson:gson:2.11.0",
+    "com.jeff-media:MorePersistentDataTypes:2.4.0",
+    "com.jeff-media:custom-block-data:2.2.2"
 )
 
 
 allprojects {
 
-    project.group = "dev.wuason"
-    project.version = "1.0.1.12"
-
     apply(plugin = "java")
-    apply(plugin = "org.gradle.maven-publish")
-    apply(plugin = "io.github.goooler.shadow")
 
     repositories {
         mavenCentral()
@@ -90,7 +110,7 @@ allprojects {
 
         tasks.withType<ShadowJar> {
             destinationDirectory.set(file("$rootDir/target"))
-            archiveBaseName.set("${rootProject.name}-${project.version}" + if (project.name == "plugin") "" else "-lib")
+            archiveBaseName.set("${rootProject.name}-${rootProject.version}" + if (project.name == "plugin") "" else "-lib")
             archiveClassifier.set("")
             archiveVersion.set("")
             manifest {
@@ -103,8 +123,10 @@ allprojects {
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
-            relocate("com.google", "dev.wuason.libs.google")
-
+            relocate("com.google.code.gson", "dev.wuason.libs.google.gson")
+            relocate("com.google.errorprone", "dev.wuason.libs.google.errorprone")
+            relocate("com.jeff_media.morepersistentdatatypes", "dev.wuason.libs.jeffmedia.morepersistentdatatypes")
+            relocate("com.jeff_media.customblockdata", "dev.wuason.libs.jeffmedia.customblockdata")
         }
     }
 
@@ -229,26 +251,6 @@ allprojects {
         }
     }
 
-}
-
-subprojects {
-
-    tasks.shadowJar {
-        archiveClassifier.set("")
-    }
-
-    if (project.name == "lib") {
-        publishing {
-            publications {
-                create<MavenPublication>("mavenJava") {
-                    groupId = rootProject.group.toString()
-                    artifactId = rootProject.name
-                    version = rootProject.version.toString()
-                    artifact(tasks.shadowJar)
-                }
-            }
-        }
-    }
 }
 
 

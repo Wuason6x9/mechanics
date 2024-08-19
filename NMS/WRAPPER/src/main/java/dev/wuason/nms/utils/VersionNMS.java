@@ -40,11 +40,6 @@ public class VersionNMS {
         v1_21_R1(new VersionDetector.ServerVersion[] {
                 VersionDetector.ServerVersion.v1_21
         }),
-        PAPER_CUSTOM(new VersionDetector.ServerVersion[] {
-                VersionDetector.ServerVersion.v1_20_5,
-                VersionDetector.ServerVersion.v1_20_6,
-                VersionDetector.ServerVersion.v1_21
-        }),
         UNSUPPORTED(new VersionDetector.ServerVersion[] {VersionDetector.ServerVersion.UNSUPPORTED});
 
         private final VersionDetector.ServerVersion[] versions;
@@ -72,22 +67,8 @@ public class VersionNMS {
 
     public static ServerVersionNMS getServerVersion() {
         if (serverVersionNMS == null) {
-            String versionName = getNMSVersion();
-            try {
-                serverVersionNMS = ServerVersionNMS.valueOf(versionName);
-            } catch (IllegalArgumentException e) {
-                serverVersionNMS = ServerVersionNMS.UNSUPPORTED;
-            }
+            serverVersionNMS = ServerVersionNMS.getServerVersion(VersionDetector.getServerVersion());
         }
         return serverVersionNMS;
-    }
-
-    public static String getNMSVersion() {
-        String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        if (packageName.split("\\.").length == 3) {
-            return "PAPER_CUSTOM";
-        }
-        String versionName = packageName.substring(packageName.lastIndexOf('.') + 1);
-        return versionName;
     }
 }

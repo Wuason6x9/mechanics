@@ -85,6 +85,14 @@ public class ItemBuilder {
     }
 
     /**
+     * Constructs a new ItemBuilderMechanic object
+     */
+
+    protected ItemBuilder() {
+        this(new ItemStack(Material.AIR));
+    }
+
+    /**
      * Constructor for creating an ItemBuilderMechanic object.
      *
      * @param item   The item to be built.
@@ -94,6 +102,23 @@ public class ItemBuilder {
         this.item = item;
         this.meta = item.getItemMeta();
         this.item.setAmount(amount);
+    }
+
+    public ItemBuilder adapter(String adapterId) {
+        this.item = Adapter.getItemStack(adapterId);
+        if (this.item == null) {
+            if (!Adapter.isValidAdapterId(adapterId)) {
+                throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
+            }
+        }
+        this.meta = this.item.getItemMeta();
+        return this;
+    }
+
+    public ItemBuilder replaceItem(ItemStack item) {
+        this.item = item;
+        this.meta = item.getItemMeta();
+        return this;
     }
 
     /**
@@ -466,7 +491,7 @@ public class ItemBuilder {
      * @param durability the durability to set for the item
      * @return the updated ItemBuilderMechanic instance
      */
-    public ItemBuilder setDurability(short durability) {
+    public ItemBuilder setDurability(int durability) {
         ((Damageable) this.meta).setDamage(durability);
         return this;
     }
