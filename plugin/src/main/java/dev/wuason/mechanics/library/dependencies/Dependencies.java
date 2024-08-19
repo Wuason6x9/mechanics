@@ -44,12 +44,21 @@ public class Dependencies {
     );
 
     public static final Dependency GSON = new Dependency("com:google:code:gson", "gson", "2.11.0",
-            Remap.of("com:google", "dev:wuason:libs:google")
+            Remap.of("com:google:code:gson", "dev:wuason:libs:google:gson")
     );
 
     public static final Dependency GOOGLE_ERROR_PRONE_ANNOTATIONS = new Dependency("com:google:errorprone", "error_prone_annotations", "2.30.0",
-            Remap.of("com:google", "dev:wuason:libs:google")
+            Remap.of("com:google:errorprone", "dev:wuason:libs:google:errorprone")
     );
+
+    public static final Dependency MORE_PERSISTENT_DATA_TYPES = new Dependency("com.jeff-media", "MorePersistentDataTypes", "2.4.0",
+            Remap.of("com:jeff_media:morepersistentdatatypes", "dev:wuason:libs:jeffmedia:morepersistentdatatypes")
+    );
+
+    public static final Dependency CUSTOM_BLOCK_DATA = new Dependency("com.jeff-media", "custom-block-data", "2.2.2",
+            Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
+    );
+
 
     static {
         addDependency(
