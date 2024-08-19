@@ -24,7 +24,7 @@ public class SpigotUtils {
                 if (response.getStatusLine().getStatusCode() != 200) return null;
                 Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(EntityUtils.toString(response.getEntity()), JsonObject.class);
-                return jsonObject.get("name").getAsString();
+                return jsonObject.get("name").getAsString().trim();
             }
             catch (IOException e) {
                 throw new RuntimeException(e);
