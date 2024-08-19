@@ -51,6 +51,9 @@ public class DependencyResolved {
         if (obj instanceof DependencyResolved) {
             return ((DependencyResolved) obj).getDependency().equals(dependency) || (((DependencyResolved) obj).getDependency().getArtifactId().equals(dependency.getArtifactId()) && ((DependencyResolved) obj).getDependency().getVersion().equals(dependency.getVersion()) && ((DependencyResolved) obj).getDependency().getGroupId().equals(dependency.getGroupId()));
         }
+        if (obj instanceof Dependency) {
+            return ((Dependency) obj).equals(dependency) || (((Dependency) obj).getArtifactId().equals(dependency.getArtifactId()) && ((Dependency) obj).getVersion().equals(dependency.getVersion()) && ((Dependency) obj).getGroupId().equals(dependency.getGroupId()));
+        }
         return super.equals(obj);
     }
 

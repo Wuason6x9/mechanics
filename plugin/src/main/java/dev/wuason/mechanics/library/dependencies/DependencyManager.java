@@ -9,10 +9,7 @@ import dev.wuason.mechanics.mechanics.MechanicAddon;
 
 import java.io.*;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DependencyManager {
@@ -23,9 +20,8 @@ public class DependencyManager {
     private final File dependenciesFolder = new File("libraries");
     private final ClassLoaderInjector injector;
     private final ArrayList<Repository> repositories = new ArrayList<>();
-    private final ArrayList<Dependency> dependencies = new ArrayList<>();
+    private final Map<String, Dependency> dependencies = new HashMap<>();
     private final List<Consumer<DependencyResolved>> onResolve = new ArrayList<>();
-    private final List<Consumer<List<DependencyResolved>>> onAllResolved = new ArrayList<>();
     private JarRemapperHelper jarRemapperHelper;
 
     public static DependencyManager create(MechanicAddon core, URLClassLoader classLoader) {
@@ -69,7 +65,9 @@ public class DependencyManager {
     }
 
     public void addDependency(Dependency dependency) {
-        if (!dependencies.contains(dependency)) dependencies.add(dependency);
+        if (!dependencies.containsKey(dependency.toString())) {
+            dependencies.put(dependency.toString(), dependency);
+        }
     }
 
     public void addDependencies(List<Dependency> dependencies) {
@@ -135,11 +133,9 @@ public class DependencyManager {
     public List<DependencyResolved> resolve() {
         //resolve dependencies
         List<DependencyResolved> resolved = new ArrayList<>();
-        for (Dependency dependency : dependencies) {
-            DependencyResolved dependencyResolved = resolve(dependency);
-            if (dependencyResolved != null) {
-                resolved.add(dependencyResolved);
-            }
+        for (Dependency dependency : dependencies.values()) {
+            List<DependencyResolved> dependencyResolved = resolve(dependency);
+            resolved.addAll(dependencyResolved);
         }
         return resolved;
     }
@@ -147,12 +143,6 @@ public class DependencyManager {
     private void onResolve(DependencyResolved dependency) {
         for (Consumer<DependencyResolved> consumer : onResolve) {
             consumer.accept(dependency);
-        }
-    }
-
-    private void onAllResolved(List<DependencyResolved> dependencies) {
-        for (Consumer<List<DependencyResolved>> consumer : onAllResolved) {
-            consumer.accept(dependencies);
         }
     }
 
@@ -170,7 +160,7 @@ public class DependencyManager {
 
     public List<DependencyResolved> resolve(boolean isToIgnore, String... regex) {
         List<DependencyResolved> resolvedList = new ArrayList<>();
-        for (Dependency dependency : dependencies) {
+        for (Dependency dependency : dependencies.values()) {
             if(isToIgnore){
                 if (Arrays.stream(regex).anyMatch(dependency.getArtifactId()::matches)) {
                     continue;
@@ -180,18 +170,23 @@ public class DependencyManager {
                     continue;
                 }
             }
-            DependencyResolved resolved = resolve(dependency);
-            if (resolved != null) {
-                resolvedList.add(resolved);
-            }
+            List<DependencyResolved> resolved = resolve(dependency);
+            resolvedList.addAll(resolved);
         }
         return resolvedList;
     }
 
-    private DependencyResolved resolve(Dependency dependency) {
+    private List<DependencyResolved> resolve(Dependency dependency) {
         if (dependenciesResolved.contains(dependency)) {
-            return dependenciesResolved.stream().filter(dependencyResolved -> dependencyResolved.getDependency().equals(dependency)).findFirst().orElse(null);
+            return dependenciesResolved.stream().filter(dependencyResolved -> dependencyResolved.equals(dependency)).findFirst().map(Collections::singletonList).orElse(Collections.emptyList());
         }
+        /*if (dependency.useAdvancedDependencyResolver()) {
+            List<DependencyResolved> resolved = advancedDependencyResolver.resolveDependency(dependency);
+            dependenciesResolved.addAll(resolved);
+            resolved.forEach(this::onResolve);
+            System.out.println("Resolved " + resolved.size() + " dependencies in " + dependency.getArtifactId());
+            return Collections.unmodifiableList(resolved);
+        }*/
         long start = System.currentTimeMillis();
         DependencyResolved resolved = null;
         File jar = getJarFileLocally(dependency);
@@ -217,11 +212,9 @@ public class DependencyManager {
         if (resolved != null) {
             onResolve(resolved);
             dependenciesResolved.add(resolved);
-            if (this.dependenciesResolved.size() == dependencies.size()) {
-                onAllResolved(this.dependenciesResolved);
-            }
+            return Collections.singletonList(resolved);
         }
-        return resolved;
+        return Collections.emptyList();
     }
 
 
@@ -265,7 +258,7 @@ public class DependencyManager {
         return repositories;
     }
 
-    public ArrayList<Dependency> getDependencies() {
+    public Map<String, Dependency> getDependencies() {
         return dependencies;
     }
 
@@ -281,16 +274,67 @@ public class DependencyManager {
         this.onResolve.add(onResolve);
     }
 
-    public void addOnAllResolved(Consumer<List<DependencyResolved>> onAllResolved) {
-        this.onAllResolved.add(onAllResolved);
-    }
-
     public void close() {
         try {
             classLoader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isResolved(Dependency dependency) {
+        return dependenciesResolved.stream().anyMatch(dependencyResolved -> dependencyResolved.equals(dependency));
+    }
+
+    /*public Dependency getDependency(Artifact artifact) {
+        return dependencies.get(Dependency.toMavenString(artifact));
+    }*/
+
+    public Dependency getDependency(String artifact) {
+        return dependencies.get(artifact);
+    }
+
+    public Dependency getDependency(String groupId, String artifactId, String version) {
+        return dependencies.get(Dependency.toMavenString(groupId, artifactId, version));
+    }
+
+    public Dependency getOrCreateDependency(String groupId, String artifactId, String version) {
+        Dependency dependency = getDependency(groupId, artifactId, version);
+        if (dependency == null) {
+            dependency = new Dependency(groupId, artifactId, version);
+            addDependency(dependency);
+        }
+        return dependency;
+    }
+
+    /*public Dependency getOrCreateDependency(Artifact artifact) {
+        Dependency dependency = getDependency(artifact);
+        if (dependency == null) {
+            dependency = new Dependency(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+            addDependency(dependency);
+        }
+        return dependency;
+    }*/
+
+    public boolean allResolved() {
+        boolean resolved = true;
+        for (Dependency dependency : dependencies.values()) {
+            if (!isResolved(dependency)) {
+                resolved = false;
+                break;
+            }
+        }
+        return resolved;
+    }
+
+    public List<Dependency> getDependenciesNotResolved() {
+        List<Dependency> notResolved = new ArrayList<>();
+        for (Dependency dependency : dependencies.values()) {
+            if (!isResolved(dependency)) {
+                notResolved.add(dependency);
+            }
+        }
+        return notResolved;
     }
 
 }
