@@ -1,37 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.ThreadPoolExecutor
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.7" apply false
+    id("io.github.goooler.shadow") version "8.1.7"
     id("io.papermc.paperweight.userdev") version "1.7.1" apply false
     id("org.gradle.maven-publish")
-}
-
-group = "dev.wuason"
-version = "1.0.1.12a"
-
-val ver: String = version.toString()
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            val pubComponent = components.findByName("java") ?: components.findByName("release")
-            if (pubComponent != null) {
-                from(pubComponent)
-            }
-            groupId = group.toString()
-            artifactId = name
-            version = ver
-        }
-    }
-}
-
-tasks.named("publishToMavenLocal").configure {
-    dependsOn("assemble")
 }
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
@@ -88,7 +62,12 @@ val LIBS = listOf(
 
 allprojects {
 
+    project.group = "dev.wuason"
+    project.version = "1.0.1.12"
+
     apply(plugin = "java")
+    apply(plugin = "org.gradle.maven-publish")
+    apply(plugin = "io.github.goooler.shadow")
 
     repositories {
         mavenCentral()
@@ -251,6 +230,26 @@ allprojects {
         }
     }
 
+}
+
+subprojects {
+
+    tasks.shadowJar {
+        archiveClassifier.set("")
+    }
+
+    if (project.name == "lib") {
+        publishing {
+            publications {
+                create<MavenPublication>("mavenJava") {
+                    groupId = rootProject.group.toString()
+                    artifactId = rootProject.name
+                    version = rootProject.version.toString()
+                    artifact(tasks.shadowJar)
+                }
+            }
+        }
+    }
 }
 
 
