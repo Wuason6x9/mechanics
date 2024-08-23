@@ -20,7 +20,7 @@ Add the dependency:
     <groupId>com.github.Wuason6x9</groupId>
     <artifactId>mechanics</artifactId>
     <version>RELEASE-VERSION</version>
-    <scope>compile</scope>
+    <scope>provided</scope>
 </dependency>
 ```
 
