@@ -63,7 +63,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.1.12"
+    project.version = "1.0.1.13"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -102,7 +102,7 @@ allprojects {
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
-            relocate("com.google.code.gson", "dev.wuason.libs.google.gson")
+            relocate("com.google.gson", "dev.wuason.libs.google.gson")
             relocate("com.google.errorprone", "dev.wuason.libs.google.errorprone")
             relocate("com.jeff_media.morepersistentdatatypes", "dev.wuason.libs.jeffmedia.morepersistentdatatypes")
             relocate("com.jeff_media.customblockdata", "dev.wuason.libs.jeffmedia.customblockdata")

@@ -1,5 +1,6 @@
 package dev.wuason.mechanics;
 
+import com.jeff_media.customblockdata.CustomBlockData;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.wuason.libs.bstats.Metrics;
@@ -45,7 +46,8 @@ public final class Mechanics extends MechanicAddon {
 
     @Override
     public void onEnable() {
-        if(checkUpdate() || errorLoadingLibraries() || checkVersion() || checkPaper()) return;
+        if(errorLoadingLibraries() || checkVersion() || checkPaper()) return;
+        checkUpdate();
         NMSManager = new NMSManager();
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
@@ -111,6 +113,8 @@ public final class Mechanics extends MechanicAddon {
         this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
         });
+
+
 
         if (VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) this.libraryResolver.addDependencies(Dependencies.COMMAND_API); else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
 
@@ -198,7 +202,7 @@ public final class Mechanics extends MechanicAddon {
         core.getLogger().severe("       a serious error may occur in the mechanics data.    ");
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
-        Bukkit.getPluginManager().disablePlugin(core);
+        //Bukkit.getPluginManager().disablePlugin(core);
         return true;
     }
 

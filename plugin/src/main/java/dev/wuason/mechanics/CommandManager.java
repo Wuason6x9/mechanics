@@ -63,13 +63,6 @@ public class CommandManager {
                 )
                 .withSubcommands(new CommandAPICommand("test")
                         .executes((sender, args) -> {
-                            Player player = (Player) sender;
-
-                            player.getInventory().addItem(
-                                    new ItemBuilder(Material.PLAYER_HEAD)
-                                            .setVoidName()
-                                            .build()
-                            );
                         })
                 )
                 .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")
@@ -149,7 +142,7 @@ public class CommandManager {
                                 return;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
                             String adapterId = Adapter.computeAdapterIdByItemStack(itemStack);
-                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'> <click:copy_to_clipboard:%s>%s</click> </hover>", adapterId, adapterId));
+                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'> <click:copy_to_clipboard:%s> %s </click> </hover>", adapterId, adapterId));
                             boolean sendToConsole = (boolean) args.getOrDefault(0, false);
                             if (sendToConsole) {
                                 AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);

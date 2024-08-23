@@ -44,7 +44,7 @@ public class Dependencies {
     );
 
     public static final Dependency GSON = new Dependency("com:google:code:gson", "gson", "2.11.0",
-            Remap.of("com:google:code:gson", "dev:wuason:libs:google:gson")
+            Remap.of("com:google:gson", "dev:wuason:libs:google:gson")
     );
 
     public static final Dependency GOOGLE_ERROR_PRONE_ANNOTATIONS = new Dependency("com:google:errorprone", "error_prone_annotations", "2.30.0",
