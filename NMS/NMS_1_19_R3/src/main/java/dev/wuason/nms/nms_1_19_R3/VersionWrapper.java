@@ -1,6 +1,8 @@
 package dev.wuason.nms.nms_1_19_R3;
 
-import dev.wuason.nms.wrappers.DataInfo;
+import dev.wuason.nms.nms_1_19_R3.network.SimpleProtocolHandler;
+import dev.wuason.nms.wrappers.AnvilInventoryHolder;
+import dev.wuason.nms.wrappers.Constants;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -26,20 +28,33 @@ import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
+
+    public final Plugin plugin;
+
+    public final SimpleProtocolHandler simpleProtocolHandler;
+
+    public VersionWrapper(Plugin plugin) {
+        this.plugin = plugin;
+        this.simpleProtocolHandler = new SimpleProtocolHandler(plugin);
+    }
+
     public String getVersion() {
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
         return craftServer.getServer().getServerVersion();
     }
 
     @Override
-    public dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
+    public dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom createAnvilInventory(Player player, String title, AnvilInventoryHolder holder) {
         return new AnvilInventoryCustom(player, title, holder);
     }
 
@@ -57,9 +72,14 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         return (((CraftServer) Bukkit.getServer())).getHandle();
     }
 
-    public Object getDedicatedServer(){
+    public Object getDedicatedServer() {
         DedicatedServer dedicatedServer = ((DedicatedPlayerList) getServerHandle()).getServer();
         return dedicatedServer;
+    }
+
+    @Override
+    public dev.wuason.nms.wrappers.SimpleProtocolHandler getSimpleProtocolHandler() {
+        return simpleProtocolHandler;
     }
 
     @Override
@@ -76,10 +96,10 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         private final AnvilInventory inventory;
         private final AnvilMenu anvilMenu;
         private final ServerPlayer serverPlayer;
-        private final InventoryHolder holder;
+        private final AnvilInventoryHolder holder;
         private final InventoryView inventoryView;
 
-        public AnvilInventoryCustom(Player player, String title, InventoryHolder holder) {
+        public AnvilInventoryCustom(Player player, String title, AnvilInventoryHolder holder) {
             //DEF VARS
             serverPlayer = ((CraftPlayer) player).getHandle();
             this.holder = holder;
@@ -124,6 +144,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
 
         @Override
@@ -132,6 +153,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
 
         @Override
@@ -156,6 +178,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             srvPlayer.connection.send(packet);
             srvPlayer.containerMenu = anvilMenu;
             srvPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
 
         @Override
@@ -169,7 +192,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         }
 
         @Override
-        public InventoryHolder getHolder() {
+        public AnvilInventoryHolder getHolder() {
             return holder;
         }
 
@@ -275,19 +298,11 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
         serverPlayer.connection.send(signBlock.getUpdatePacket());
         serverPlayer.connection.send(new ClientboundOpenSignEditorPacket(blockPos));
-        ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
-        pipeline.addBefore("packet_handler", DataInfo.NAMESPACE_SIGN, new ChannelInboundHandlerAdapter() {
-                    @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        if (msg instanceof ServerboundSignUpdatePacket packet) {
-                            onSend.accept(packet.getLines());
-                            player.sendBlockChange(loc, loc.getBlock().getBlockData());
-                            pipeline.remove(DataInfo.NAMESPACE_SIGN);
-                        }
-                        super.channelRead(ctx, msg);
-                    }
-                }
-        );
+        simpleProtocolHandler.addPacketListener(player, ServerboundSignUpdatePacket.class, true, true, packet -> {
+            onSend.accept(((ServerboundSignUpdatePacket) packet).getLines());
+            player.sendBlockChange(loc, loc.getBlock().getBlockData());
+            return packet;
+        });
     }
 
     @Override

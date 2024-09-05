@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-include(":plugin", ":App", ":lib")
+include(":App", ":lib")
 include(":NMS:NMS_COMMON")
 include(":NMS:WRAPPER")
 include(
@@ -20,4 +20,12 @@ include(
     ":NMS:NMS_1_20_R3",
     ":NMS:NMS_1_20_R4",
     ":NMS:NMS_1_21_R1"
+)
+
+include(
+    ":plugin",
+    ":plugin:compatibilities",
+    ":plugin:compatibilities:common",
+    ":plugin:compatibilities:oraxen2",
+    ":plugin:core",
 )

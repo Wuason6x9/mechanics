@@ -1,6 +1,8 @@
 package dev.wuason.nms.nms_1_19_R1;
 
-import dev.wuason.nms.wrappers.DataInfo;
+import dev.wuason.nms.nms_1_19_R1.network.SimpleProtocolHandler;
+import dev.wuason.nms.wrappers.AnvilInventoryHolder;
+import dev.wuason.nms.wrappers.Constants;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -26,23 +28,37 @@ import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
 public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
-    public String getVersion(){
+
+    public final Plugin plugin;
+
+    public final SimpleProtocolHandler simpleProtocolHandler;
+
+    public VersionWrapper(Plugin plugin) {
+        this.plugin = plugin;
+        this.simpleProtocolHandler = new SimpleProtocolHandler(plugin);
+    }
+
+    public String getVersion() {
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
         return craftServer.getServer().getServerVersion();
     }
 
     @Override
-    public AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder) {
+    public AnvilInventoryCustom createAnvilInventory(Player player, String title, AnvilInventoryHolder holder) {
         return new AnvilInventoryCustom(player, title, holder);
     }
+
     @Override
     public Object getNMSItemStack(ItemStack itemStack) {
         return CraftItemStack.asNMSCopy(itemStack);
@@ -52,9 +68,14 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         return (((CraftServer) Bukkit.getServer())).getHandle();
     }
 
-    public Object getDedicatedServer(){
+    public Object getDedicatedServer() {
         DedicatedServer dedicatedServer = ((DedicatedPlayerList) getServerHandle()).getServer();
         return dedicatedServer;
+    }
+
+    @Override
+    public dev.wuason.nms.wrappers.SimpleProtocolHandler getSimpleProtocolHandler() {
+        return simpleProtocolHandler;
     }
 
     @Override
@@ -76,10 +97,11 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         private final AnvilInventory inventory;
         private final AnvilMenu anvilMenu;
         private final ServerPlayer serverPlayer;
-        private final InventoryHolder holder;
+        private final AnvilInventoryHolder holder;
         private final InventoryView inventoryView;
+        
 
-        public AnvilInventoryCustom(Player player, String title, InventoryHolder holder) {
+        public AnvilInventoryCustom(Player player, String title, AnvilInventoryHolder holder) {
             //DEF VARS
             serverPlayer = ((CraftPlayer) player).getHandle();
             this.holder = holder;
@@ -124,6 +146,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
 
         @Override
@@ -132,14 +155,17 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
             serverPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
+
         @Override
-        public void open(Player player){
-            ServerPlayer srvPlayer = ((CraftPlayer)player).getHandle();
-            if(player.equals(anvilMenu.getBukkitView().getPlayer())) open();
+        public void open(Player player) {
+            ServerPlayer srvPlayer = ((CraftPlayer) player).getHandle();
+            if (player.equals(anvilMenu.getBukkitView().getPlayer())) open();
             int invId = srvPlayer.nextContainerCounter();
-            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()){
+            AnvilMenu anvilMenu = new AnvilMenu(invId, serverPlayer.getInventory()) {
                 private CraftInventoryView bukkitEntity;
+
                 @Override
                 public CraftInventoryView getBukkitView() {
                     if (this.bukkitEntity != null) {
@@ -154,10 +180,11 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
             srvPlayer.connection.send(packet);
             srvPlayer.containerMenu = anvilMenu;
             srvPlayer.initMenu(anvilMenu);
+            Bukkit.getPluginManager().callEvent(new InventoryOpenEvent(anvilMenu.getBukkitView()));
         }
 
         @Override
-        public void setCheckReachable(boolean r){
+        public void setCheckReachable(boolean r) {
             anvilMenu.checkReachable = r;
         }
 
@@ -167,7 +194,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         }
 
         @Override
-        public InventoryHolder getHolder() {
+        public AnvilInventoryHolder getHolder() {
             return holder;
         }
 
@@ -180,26 +207,28 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         public InventoryView getInventoryView() {
             return inventoryView;
         }
+
         @Override
-        public void setMaxRepairCost(int cost){
+        public void setMaxRepairCost(int cost) {
             anvilMenu.maximumRepairCost = cost;
         }
 
         @Override
-        public void setRepairItemCountCost(int cost){
+        public void setRepairItemCountCost(int cost) {
             anvilMenu.repairItemCountCost = cost;
         }
 
         @Override
-        public void setRenameText(String renameText){
+        public void setRenameText(String renameText) {
             anvilMenu.itemName = renameText;
         }
 
         @Override
-        public void setTitle(String title){
+        public void setTitle(String title) {
             anvilMenu.setTitle(Component.nullToEmpty(title));
         }
     }
+
     @Override
     public void sendToast(Player player, ItemStack icon, String titleJson, ToastType toastType) {
         sendToast(player, icon, titleJson, toastType, "mechanics", "custom_toast");
@@ -235,12 +264,13 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         }}, new HashMap<>());
         serverPlayer.connection.send(packet2);
     }
+
     @Override
-    public void updateCurrentInventoryTitle(String jsonTitle, Player player){
-        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+    public void updateCurrentInventoryTitle(String jsonTitle, Player player) {
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
         MenuType<?> menuType = serverPlayer.containerMenu.getType();
         int invId = serverPlayer.containerMenu.containerId;
-        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId,menuType,Component.Serializer.fromJson(jsonTitle));
+        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId, menuType, Component.Serializer.fromJson(jsonTitle));
         serverPlayer.connection.send(packetOpen);
         serverPlayer.initMenu(serverPlayer.containerMenu);
     }
@@ -252,14 +282,15 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     }
 
     @Override
-    public void openSing(Player player, String[] defLines, Consumer<String[]> onSend){
-        if(defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
-        ServerPlayer serverPlayer = (ServerPlayer)((CraftPlayer)player).getHandle();
+    public void openSing(Player player, String[] defLines, Consumer<String[]> onSend) {
+        if (defLines.length != 4) throw new IllegalArgumentException("The length of the lines must be 4");
+        ServerPlayer serverPlayer = (ServerPlayer) ((CraftPlayer) player).getHandle();
         Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getWorld().getMinHeight(), player.getLocation().getBlockZ());
-        while (!loc.getBlock().getType().isAir() && !loc.getBlock().getType().equals(Material.BEDROCK)) loc.add(0,1,0);
+        while (!loc.getBlock().getType().isAir() && !loc.getBlock().getType().equals(Material.BEDROCK))
+            loc.add(0, 1, 0);
         BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
-        for(int i = 0; i < defLines.length; i++){
+        for (int i = 0; i < defLines.length; i++) {
             if (defLines[i] == null) {
                 signBlock.setMessage(i, Component.literal(""));
                 continue;
@@ -269,24 +300,15 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
         serverPlayer.connection.send(signBlock.getUpdatePacket());
         serverPlayer.connection.send(new ClientboundOpenSignEditorPacket(blockPos));
-        ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
-        pipeline.addBefore("packet_handler", DataInfo.NAMESPACE_SIGN, new ChannelInboundHandlerAdapter()
-                {
-                    @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        if(msg instanceof ServerboundSignUpdatePacket){
-                            ServerboundSignUpdatePacket packet = (ServerboundSignUpdatePacket) msg;
-                            onSend.accept(packet.getLines());
-                            player.sendBlockChange(loc, loc.getBlock().getBlockData());
-                            pipeline.remove(DataInfo.NAMESPACE_SIGN);
-                        }
-                        super.channelRead(ctx, msg);
-                    }
-                }
-        );
+        simpleProtocolHandler.addPacketListener(player, ServerboundSignUpdatePacket.class, true, true, packet -> {
+            onSend.accept(((ServerboundSignUpdatePacket) packet).getLines());
+            player.sendBlockChange(loc, loc.getBlock().getBlockData());
+            return packet;
+        });
     }
+
     @Override
-    public void openSing(Player player, Consumer<String[]> onSend){
+    public void openSing(Player player, Consumer<String[]> onSend) {
         openSing(player, new String[4], onSend);
     }
 }

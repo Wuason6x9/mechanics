@@ -4,12 +4,13 @@ package dev.wuason.nms.wrappers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface VersionWrapper {
     public String getVersion();
 
-    public AnvilInventoryCustom createAnvilInventory(Player player, String title, InventoryHolder holder);
+    public AnvilInventoryCustom createAnvilInventory(Player player, String title, AnvilInventoryHolder holder);
 
     public interface AnvilInventoryCustom {
         public void open();
@@ -20,7 +21,7 @@ public interface VersionWrapper {
 
         public Object getAnvilMenuNMS();
 
-        public InventoryHolder getHolder();
+        public AnvilInventoryHolder getHolder();
 
         public AnvilInventory getInventory();
 
@@ -66,4 +67,6 @@ public interface VersionWrapper {
     public Object getServerHandle();
 
     public Object getDedicatedServer();
+
+    public SimpleProtocolHandler getSimpleProtocolHandler();
 }
