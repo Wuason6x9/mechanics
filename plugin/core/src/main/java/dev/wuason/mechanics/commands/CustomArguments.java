@@ -4,7 +4,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import dev.wuason.nms.wrappers.VersionWrapper;
+import dev.wuason.mechanics.nms.wrappers.VersionWrapper;
 
 import java.util.Arrays;
 

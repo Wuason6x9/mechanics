@@ -8,44 +8,6 @@ plugins {
     id("org.gradle.maven-publish")
 }
 
-class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
-    fun getApiVersion(): String {
-        return "${vsr}-R0.1-SNAPSHOT"
-    }
-
-    fun isLessThan(mcVersion: MCVersion): Boolean {
-        return order < mcVersion.order
-    }
-
-    fun isGreaterThan(mcVersion: MCVersion): Boolean {
-        return order > mcVersion.order
-    }
-
-}
-
-val MC_VERSIONS = mapOf(
-    "1.18.2" to MCVersion("1.18.2", "1_18_R2", 17, 0),
-    "1.19" to MCVersion("1.19", "1_19_R1", 17, 1),
-    "1.19.1" to MCVersion("1.19.1", "1_19_R1", 17, 2),
-    "1.19.2" to MCVersion("1.19.2", "1_19_R1", 17, 3),
-    "1.19.3" to MCVersion("1.19.3", "1_19_R2", 17, 4),
-    "1.19.4" to MCVersion("1.19.4", "1_19_R3", 17, 5),
-    "1.20" to MCVersion("1.20", "1_20_R1", 17, 6),
-    "1.20.1" to MCVersion("1.20.1", "1_20_R1", 17, 7),
-    "1.20.2" to MCVersion("1.20.2", "1_20_R2", 17, 8),
-    "1.20.4" to MCVersion("1.20.4", "1_20_R3", 17, 9),
-    "1.20.5" to MCVersion("1.20.5", "1_20_R4", 21, 10),
-    "1.20.6" to MCVersion("1.20.6", "1_20_R4", 21, 11),
-    "1.21" to MCVersion("1.21", "1_21_R1", 21, 12)
-)
-
-val NMS_MAP = mutableMapOf<String, MCVersion>()
-val DEF_VERSION = MC_VERSIONS["1.18.2"]!!
-
-for ((_, mcVersion) in MC_VERSIONS) {
-    NMS_MAP["NMS_${mcVersion.nmsVersion}"] = mcVersion
-}
-
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
@@ -68,7 +30,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.1.13"
+    project.version = "1.0.2"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -91,21 +53,9 @@ allprojects {
         maven("https://repo.oraxen.com/snapshots")
     }
 
-    //nms projects
-    if (project.name in NMS_MAP) {
-        val vrs = NMS_MAP[project.name]!!
-        project.extra.set("mcVersion", vrs)
-        project.extra.set("apiVersion", vrs.getApiVersion())
-
-        dependencies {
-            compileOnly(project(":NMS:NMS_COMMON"))
-        }
-    }
-
     //prevent errors
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-
     }
 
     //replace text in all plugin.yml
@@ -116,30 +66,6 @@ allprojects {
             expand(vars)
         }
     }
-
-    //select java version
-    if (project.extra.has("mcVersion")) {
-        val mcVersion: MCVersion = project.extra.get("mcVersion") as MCVersion
-        val jvmVer: JavaVersion = JavaVersion.valueOf("VERSION_${mcVersion.javaVersion}")
-
-        java {
-            sourceCompatibility = jvmVer
-            targetCompatibility = jvmVer
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(mcVersion.javaVersion))
-            }
-        }
-    } else {
-
-        java {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(17))
-            }
-        }
-    }
-
 }
 
 subprojects {
@@ -148,19 +74,15 @@ subprojects {
         archiveClassifier.set("")
     }
 
-    println(project.path)
-
     //apply default version
     if (project.path in arrayOf(
             ":plugin:core",
-            ":NMS:NMS_COMMON",
-            ":NMS:WRAPPER",
             ":plugin:compatibilities:common",
             ":plugin:compatibilities"
         )
     ) {
         dependencies {
-            compileOnly("io.papermc.paper:paper-api:${DEF_VERSION.getApiVersion()}")
+            compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
         }
     }
 
@@ -205,21 +127,13 @@ subprojects {
             relocate("com.saicone.rtag", "dev.wuason.libs.saicone.rtag")
         }
     }
-}
 
-project(":NMS:WRAPPER") {
-    dependencies {
-        //NMS COMMON
-        implementation(project(":NMS:NMS_COMMON"))
-
-        for ((nms, mc) in NMS_MAP) {
-            if (mc.isLessThan(MC_VERSIONS["1.20.5"]!!)) {
-                implementation(project(":NMS:$nms", configuration = "reobf"))
-            } else {
-                implementation(project(":NMS:$nms"))
-            }
+    if (":nms:v" in project.path) {
+        dependencies {
+            compileOnly(project(":plugin:core"))
         }
     }
+
 }
 
 project(":lib") {
@@ -247,22 +161,20 @@ project(":plugin") {
         implementation(project(":App"))
         implementation(project(":plugin:core"))
         implementation(project(":plugin:compatibilities"))
+        rootProject.subprojects.filter { it.path.contains(":nms:v") }.forEach {
+            implementation(project(it.path, configuration = "reobf"))
+        }
     }
 }
 
 project(":plugin:core") {
     dependencies {
 
-        //NMS
-        implementation(project(":NMS:WRAPPER"))
-
         //PlaceholderAPI
         compileOnly("me.clip:placeholderapi:2.11.3")
 
         //WorldGuard
         compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
-
-        compileOnly(project(":NMS:NMS_COMMON"))
 
         //ASM
         compileOnly("org.ow2.asm:asm-commons:9.7")
@@ -287,7 +199,7 @@ project(":plugin:compatibilities:oraxen2") {
     dependencies {
         compileOnly(project(":plugin:compatibilities:common"))
         compileOnly(fileTree("libs") { include("*.jar") })
-        compileOnly("io.papermc.paper:paper-api:${MC_VERSIONS["1.20.6"]!!.getApiVersion()}")
+        compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
         compileOnly("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
         compileOnly("io.lumine:Mythic-Dist:5.3.5")
         compileOnly("io.lumine:MythicCrucible:1.7.0-20230723.171823-33")
@@ -308,8 +220,6 @@ project(":plugin:compatibilities") {
 
         implementation(project(":plugin:compatibilities:common"))
         implementation(project(":plugin:compatibilities:oraxen2"))
-
-        compileOnly(project(":NMS:WRAPPER"))
 
         compileOnly(fileTree("libs") { include("*.jar") })
 

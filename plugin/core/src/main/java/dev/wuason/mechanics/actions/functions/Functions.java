@@ -12,7 +12,7 @@ import dev.wuason.mechanics.actions.functions.def.vars.Vars;
 import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.PlayerUtils;
-import dev.wuason.nms.wrappers.NMSManager;
+import dev.wuason.mechanics.nms.NMSManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

@@ -5,7 +5,7 @@ import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import dev.wuason.mechanics.utils.AdventureUtils;
-import dev.wuason.mechanics.utils.VersionDetector;
+import dev.wuason.mechanics.utils.version.MinecraftVersion;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -179,7 +179,7 @@ public class ItemBuilder {
     public ItemBuilder setSkullOwner(String texture) {
         if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
 
-        if(VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) {
+        if(MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.v1_20_5)) {
             editNBT(nbt -> {
                 ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
                 skullOwnerCompound.setUUID("Id", UUID.randomUUID());

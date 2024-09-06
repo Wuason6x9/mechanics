@@ -2,7 +2,7 @@ package dev.wuason.mechanics.mechanics;
 
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.Mechanics;
-import dev.wuason.mechanics.utils.VersionDetector;
+import dev.wuason.mechanics.utils.version.MinecraftVersion;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Locale;
@@ -30,7 +30,7 @@ public abstract class MechanicAddon extends JavaPlugin {
         this.metricsPluginId = metricsPluginId;
     }
 
-    public void onVersion(VersionDetector.ServerVersion version) {
+    public void onVersion(MinecraftVersion version) {
     }
 
     public void onMetricsEnable(Metrics metrics) {

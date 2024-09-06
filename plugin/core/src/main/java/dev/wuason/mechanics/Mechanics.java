@@ -9,8 +9,8 @@ import dev.wuason.mechanics.library.repositories.ChecksumResult;
 import dev.wuason.mechanics.library.repositories.Repos;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.*;
-import dev.wuason.nms.utils.VersionNMS;
-import dev.wuason.nms.wrappers.NMSManager;
+import dev.wuason.mechanics.nms.NMSManager;
+import dev.wuason.mechanics.utils.version.MinecraftVersion;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -28,7 +28,7 @@ public final class Mechanics extends MechanicAddon {
     private LibraryResolver libraryResolver;
     public static final int SPIGOT_ID = 111934;
 
-    public Mechanics(){
+    public Mechanics() {
         super("Mechanics");
         if (core != null) {
             throw new IllegalStateException("Mechanics already initialized");
@@ -44,7 +44,7 @@ public final class Mechanics extends MechanicAddon {
 
     @Override
     public void onEnable() {
-        if(errorLoadingLibraries() || checkVersion() || checkPaper()) return;
+        if (errorLoadingLibraries() || checkVersion() || checkPaper()) return;
         checkUpdate();
         NMSManager = new NMSManager(this);
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
@@ -52,9 +52,9 @@ public final class Mechanics extends MechanicAddon {
         AdventureUtils.sendMessagePluginConsole("<gold>                        Mechanics");
         AdventureUtils.sendMessagePluginConsole("");
         AdventureUtils.sendMessagePluginConsole("<gold>Starting mechanics plugin!");
-        AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + VersionNMS.getServerVersion());
-        AdventureUtils.sendMessagePluginConsole("<gold>Server version: <aqua>" + VersionDetector.getServerVersion().getVersionName());
-        AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon && !( plugin instanceof Mechanics)).map(Plugin::getName).toList().toString().replace("[", "").replace("]", ""));
+        AdventureUtils.sendMessagePluginConsole("<gold>NMS: <aqua>" + MinecraftVersion.getServerVersionSelected().getNMSVersion().getVersionName());
+        AdventureUtils.sendMessagePluginConsole("<gold>Server version: <aqua>" + MinecraftVersion.getServerVersionSelected().getVersionName());
+        AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon && !(plugin instanceof Mechanics)).map(Plugin::getName).toList().toString().replace("[", "").replace("]", ""));
         //load managers
         metrics();
         CommandAPI.onEnable();
@@ -106,7 +106,7 @@ public final class Mechanics extends MechanicAddon {
                         Dependencies.RTAG_BLOCK,
                         Dependencies.RTAG_ENTITY,
                         Dependencies.RTAG_ITEM
-                        )
+                )
                 .addRepositories(
                         Repos.INVESDWIN,
                         Repos.JITPACK,
@@ -117,23 +117,25 @@ public final class Mechanics extends MechanicAddon {
         });
 
 
-
-        if (VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5)) this.libraryResolver.addDependencies(Dependencies.COMMAND_API); else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
+        if (MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.v1_20_5))
+            this.libraryResolver.addDependencies(Dependencies.COMMAND_API);
+        else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
 
         this.libraryResolver.build().resolve(); //resolves all
 
     }
 
-    private void printMechanics(){
+    private void printMechanics() {
         AdventureUtils.sendMessagePluginConsole("<gold>" + AsciiUtils.convertToAscii(AsciiUtils.createTextImage("Mechanics", new Font("Arial", Font.BOLD, 25), Color.BLACK)));
     }
 
-    private boolean checkVersion(){
-        if(VersionNMS.getServerVersion().equals(VersionNMS.ServerVersionNMS.UNSUPPORTED)){
+    private boolean checkVersion() {
+        if (MinecraftVersion.getServerVersionSelected() == MinecraftVersion.UNSUPPORTED) {
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("                 Unsupported version minecraft ");
-            core.getLogger().severe("                     Actual version: " + VersionNMS.getServerVersion());
+            core.getLogger().severe("                     Actual version: " + MinecraftVersion.getServerVersionBukkit());
+            core.getLogger().severe("                     Last supported: " + MinecraftVersion.getLastSupportedVersion().getVersionName());
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             Bukkit.getPluginManager().disablePlugin(core);
@@ -157,7 +159,7 @@ public final class Mechanics extends MechanicAddon {
         }));
     }
 
-    private boolean errorLoadingLibraries(){
+    private boolean errorLoadingLibraries() {
         if (libraryResolver.build().allResolved()) return false;
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
@@ -174,8 +176,8 @@ public final class Mechanics extends MechanicAddon {
         return true;
     }
 
-    private boolean checkPaper(){
-        if(!ServerUtils.isPaperServer()){
+    private boolean checkPaper() {
+        if (!ServerUtils.isPaperServer()) {
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("                 Unsupported server version minecraft ");
@@ -190,14 +192,14 @@ public final class Mechanics extends MechanicAddon {
     }
 
     public boolean checkUpdate() {
-        if(!SpigotUtils.isOnline()) return false;
+        if (!SpigotUtils.isOnline()) return false;
         String version = SpigotUtils.getLastVersionByResourceId(SPIGOT_ID);
         if (getDescription().getVersion().equals(version)) return false;
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("                     New version available                 ");
         core.getLogger().severe("               Actual version: " + getDescription().getVersion());
-        core.getLogger().severe("               New version: " + version );
+        core.getLogger().severe("               New version: " + version);
         core.getLogger().severe("  Download from https://www.spigotmc.org/resources/" + SPIGOT_ID);
         core.getLogger().severe("                 that if it is not updated                 ");
         core.getLogger().severe("    The plugin has been stopped because it is possible     ");

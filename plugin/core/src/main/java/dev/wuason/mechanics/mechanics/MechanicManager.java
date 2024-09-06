@@ -3,7 +3,7 @@ package dev.wuason.mechanics.mechanics;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.library.classpath.MechanicClassLoader;
-import dev.wuason.mechanics.utils.VersionDetector;
+import dev.wuason.mechanics.utils.version.MinecraftVersion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -26,7 +26,7 @@ public class MechanicManager implements Listener {
     public void onEnable(PluginEnableEvent event) {
         if (!(event.getPlugin() instanceof Mechanics) && event.getPlugin() instanceof MechanicAddon addon) {
             addons.add(addon);
-            addon.onVersion(VersionDetector.getServerVersion());
+            addon.onVersion(MinecraftVersion.getServerVersionSelected());
             if(addon.getMetricsPluginId() != -1) {
                 Metrics metrics = new Metrics(addon, addon.getMetricsPluginId());
                 addon.onMetricsEnable(metrics);
