@@ -49,7 +49,7 @@ for ((_, mcVersion) in MC_VERSIONS) {
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.13.1",
+    "de.tr7zw:item-nbt-api:2.13.2",
     "org.apache.commons:commons-lang3:3.14.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "com.github.oraxen:protectionlib:1.5.1",
@@ -63,7 +63,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.1.13b"
+    project.version = "1.0.1.13c"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")

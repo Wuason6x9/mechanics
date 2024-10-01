@@ -22,7 +22,7 @@ public class Dependencies {
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.13.1",
+    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.13.2",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
