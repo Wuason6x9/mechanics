@@ -27,6 +27,7 @@ public final class Mechanics extends MechanicAddon {
     private NMSManager NMSManager;
     private LibraryResolver libraryResolver;
     public static final int SPIGOT_ID = 111934;
+    private boolean disabled = false;
 
     public Mechanics() {
         super("Mechanics");
@@ -38,13 +39,20 @@ public final class Mechanics extends MechanicAddon {
 
     @Override
     public void onLoad() {
+        if (checkVersion() || checkPaper()) {
+            disabled = true;
+            return;
+        }
         loadLibraries();
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
     }
 
     @Override
     public void onEnable() {
-        if (errorLoadingLibraries() || checkVersion() || checkPaper()) return;
+        if (disabled || errorLoadingLibraries()) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
         checkUpdate();
         NMSManager = new NMSManager(this);
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
@@ -117,11 +125,11 @@ public final class Mechanics extends MechanicAddon {
         });
 
 
-        if (MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.v1_20_5))
+        if (MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.V1_20_5))
             this.libraryResolver.addDependencies(Dependencies.COMMAND_API);
         else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
 
-        this.libraryResolver.build().resolve(); //resolves all
+        this.libraryResolver.build().resolve();
 
     }
 
@@ -136,9 +144,9 @@ public final class Mechanics extends MechanicAddon {
             core.getLogger().severe("                 Unsupported version minecraft ");
             core.getLogger().severe("                     Actual version: " + MinecraftVersion.getServerVersionBukkit());
             core.getLogger().severe("                     Last supported: " + MinecraftVersion.getLastSupportedVersion().getVersionName());
+            core.getLogger().severe("                    Report this error to the developer in discord :>)");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
-            Bukkit.getPluginManager().disablePlugin(core);
             return true;
         }
         return false;
@@ -172,7 +180,6 @@ public final class Mechanics extends MechanicAddon {
         });
         core.getLogger().severe("-----------------------------------------------------------");
         core.getLogger().severe("-----------------------------------------------------------");
-        Bukkit.getPluginManager().disablePlugin(core);
         return true;
     }
 
@@ -185,7 +192,6 @@ public final class Mechanics extends MechanicAddon {
             core.getLogger().severe("     Download paper from https://papermc.io/downloads/paper");
             core.getLogger().severe("-----------------------------------------------------------");
             core.getLogger().severe("-----------------------------------------------------------");
-            Bukkit.getPluginManager().disablePlugin(core);
             return true;
         }
         return false;

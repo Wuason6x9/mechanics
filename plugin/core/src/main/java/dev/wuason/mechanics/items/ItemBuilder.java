@@ -179,7 +179,7 @@ public class ItemBuilder {
     public ItemBuilder setSkullOwner(String texture) {
         if (!this.item.getType().equals(Material.PLAYER_HEAD)) return this;
 
-        if(MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.v1_20_5)) {
+        if(MinecraftVersion.getServerVersionSelected().isLessThan(MinecraftVersion.V1_20_5)) {
             editNBT(nbt -> {
                 ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
                 skullOwnerCompound.setUUID("Id", UUID.randomUUID());

@@ -23,11 +23,11 @@ public abstract class FunctionArgument {
         this.properties = properties;
     }
 
-    public Object computeArgInit(String line, Action action, Object... args){
-        if(line == null && properties.isAutoGetNull()) return null;
-        if(properties.isAutoGetPlaceholder()){
+    public Object computeArgInit(String line, Action action, Object... args) {
+        if (line == null && properties.isAutoGetNull()) return null;
+        if (properties.isAutoGetPlaceholder()) {
             Object placeholder = ArgumentUtils.getArgumentPlaceHolder(line, action);
-            if(placeholder != null) return placeholder;
+            if (placeholder != null) return placeholder;
         }
         return computeArg(line, action, args);
 
@@ -55,10 +55,10 @@ public abstract class FunctionArgument {
         private HashMap<Integer, FunctionArgumentProperties.Builder> propertiesList = new HashMap<>();
         private HashSet<Integer> args = new HashSet<>();
 
-        public Builder(){
+        public Builder() {
         }
 
-        public FunctionArgument.Builder addArgument(int order, String name, TriFunction<String, Action, Object[], Object> computeArg, Consumer<FunctionArgumentProperties.Builder> argPropertiesBuilder){
+        public FunctionArgument.Builder addArgument(int order, String name, TriFunction<String, Action, Object[], Object> computeArg, Consumer<FunctionArgumentProperties.Builder> argPropertiesBuilder) {
             args.add(order);
             names.put(order, name);
             consumers.put(order, computeArg);
@@ -69,29 +69,31 @@ public abstract class FunctionArgument {
         }
 
         public FunctionArgument.Builder addArgument(int order, String name, Consumer<FunctionArgumentProperties.Builder> argPropertiesBuilder) {
-            addArgument(order,name, (s, action, objects) -> null, argPropertiesBuilder);
+            addArgument(order, name, (s, action, objects) -> null, argPropertiesBuilder);
             return this;
         }
 
         public FunctionArgument.Builder addArgument(int order, String name, TriFunction<String, Action, Object[], Object> computeArg) {
-            addArgument(order,name, computeArg, builder -> {});
+            addArgument(order, name, computeArg, builder -> {
+            });
             return this;
         }
 
         public FunctionArgument.Builder addArgument(int order, String name) {
-            addArgument(order,name,builder -> {});
+            addArgument(order, name, builder -> {
+            });
             return this;
         }
 
-        public HashMap<String, FunctionArgument> build(){
+        public HashMap<String, FunctionArgument> build() {
             HashMap<String, FunctionArgument> args = new HashMap<>();
 
             Integer[] order = this.args.toArray(Integer[]::new);
-            for(int i = 0; i<order.length; i++){
+            for (int i = 0; i < order.length; i++) {
 
                 String name = names.get(order[i]);
 
-                if(name == null) continue;
+                if (name == null) continue;
 
                 TriFunction<String, Action, Object[], Object> computeArg = consumers.getOrDefault(order[i], (s, action, objects) -> null);
 

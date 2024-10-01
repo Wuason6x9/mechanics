@@ -103,12 +103,12 @@ public class ExecuteCommand extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
-        boolean asConsole = (boolean)Args[0];
-        Player player = (Player)Args[1];
-        boolean asOp = (boolean)Args[2];
-        String command = (String)Args[3];
-        long delay = (long)Args[4];
+    public boolean execute(Action action, Object... args) {
+        boolean asConsole = (boolean) args[0];
+        Player player = (Player) args[1];
+        boolean asOp = (boolean) args[2];
+        String command = (String) args[3];
+        long delay = (long) args[4];
         if(asConsole) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             return false;

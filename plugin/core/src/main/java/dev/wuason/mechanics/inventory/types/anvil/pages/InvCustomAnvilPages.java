@@ -1,27 +1,27 @@
-package dev.wuason.mechanics.inventory.types.anvil.multipage;
+package dev.wuason.mechanics.inventory.types.anvil.pages;
 
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import dev.wuason.mechanics.inventory.addons.pages.ContentItem;
-import dev.wuason.mechanics.inventory.addons.pages.PageButton;
-import dev.wuason.mechanics.inventory.addons.pages.PageContent;
-import dev.wuason.mechanics.inventory.addons.pages.SlotsData;
+import dev.wuason.mechanics.inventory.items.def.pages.ContentItem;
+import dev.wuason.mechanics.inventory.items.def.pages.PageButton;
+import dev.wuason.mechanics.inventory.pages.PageContent;
+import dev.wuason.mechanics.inventory.pages.SlotsData;
 import dev.wuason.mechanics.inventory.events.InventoryCloseEvent;
+import dev.wuason.mechanics.inventory.types.PlayerMenu;
 import dev.wuason.mechanics.inventory.types.anvil.InvCustomAnvil;
 import dev.wuason.mechanics.items.ItemBuilder;
 import dev.wuason.mechanics.items.save.ItemSaver;
-import dev.wuason.mechanics.items.save.ItemsSaverManager;
-import dev.wuason.mechanics.utils.StorageUtils;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageContent<T>, SlotsData {
+public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageContent<T>, SlotsData, PlayerMenu {
 
     private volatile int currentPage = 0;
 
@@ -34,6 +34,12 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
     private final Player player;
     private final ItemSaver itemSaver = new ItemSaver();
     private ItemStack contentItemDefault = new ItemStack(Material.STONE);
+    private boolean autoLoadItems = true;
+
+    private final List<Consumer<PageButton>> pageButtonListeners = new ArrayList<>();
+    private final List<BiConsumer<InventoryClickEvent, ContentItem<T>>> contentClickListeners = new ArrayList<>();
+    private final List<TriFunction<Integer, Integer, T, ItemStack>> contentPageListeners = new ArrayList<>();
+    private final List<BiConsumer<Boolean, Boolean>> updateListeners = new ArrayList<>();
 
     // ############################# CONSTRUCTORS #############################
 
@@ -41,7 +47,6 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
         super(title, player);
         addCloseEventsListeners(this::handleClose1);
         this.player = player;
-
     }
 
     public InvCustomAnvilPages(Component title, Player player) {
@@ -66,6 +71,24 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
     }
 
     public void onUpdate(boolean hasNext, boolean hasPrevious) {
+    }
+
+    // ############################# LISTENERS #############################
+
+    public void addPageButtonListener(Consumer<PageButton> listener) {
+        pageButtonListeners.add(listener);
+    }
+
+    public void addContentClickListener(BiConsumer<InventoryClickEvent, ContentItem<T>> listener) {
+        contentClickListeners.add(listener);
+    }
+
+    public void addContentPageListener(TriFunction<Integer, Integer, T, ItemStack> listener) {
+        contentPageListeners.add(listener);
+    }
+
+    public void addUpdateListener(BiConsumer<Boolean, Boolean> listener) {
+        updateListeners.add(listener);
     }
 
     // ############################# PAGEABLE #############################
@@ -98,17 +121,21 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
     }
 
     @Override
-    public void nextPage() {
+    public boolean nextPage() {
         if (currentPage + 1 < getMaxPage()) {
             setCurrentPage(currentPage + 1);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void previousPage() {
+    public boolean previousPage() {
         if (currentPage - 1 >= getMinPage()) {
             setCurrentPage(currentPage - 1);
+            return true;
         }
+        return false;
     }
 
     // ############################# CONTENT #############################
@@ -148,33 +175,33 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
     // ############################# SLOTS #############################
 
     @Override
-    public List<Integer> getSlots() {
+    public List<Integer> getSlotsData() {
         return slots;
     }
 
     @Override
-    public void setSlots(List<Integer> slots) {
+    public void setSlotsData(List<Integer> slots) {
         Objects.requireNonNull(slots, "Slots cannot be null");
         this.slots = slots;
     }
 
     @Override
-    public void addSlot(int slot) {
+    public void addSlotData(int slot) {
         slots.add(slot);
     }
 
     @Override
-    public void removeSlot(int slot) {
+    public void removeSlotData(int slot) {
         slots.remove(slot);
     }
 
     @Override
-    public void clearSlots() {
+    public void clearSlotsData() {
         slots.clear();
     }
 
     @Override
-    public void addSlots(List<Integer> slots) {
+    public void addSlotsData(List<Integer> slots) {
         Objects.requireNonNull(slots, "Slots cannot be null");
         this.slots.addAll(slots);
     }
@@ -182,7 +209,7 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
     // ############################# PRIVATE METHODS #############################
 
     protected final void handleClose1(InventoryCloseEvent event) {
-        returnItems();
+        if (autoLoadItems) returnItems();
     }
 
     private void resetContent() {
@@ -197,6 +224,10 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
             T content = contentList.get(i);
             int slot = slots.get(i - start);
             ItemStack itemStack = handleContentPage(slot, page, content);
+            if (itemStack.getType() == Material.AIR) {
+                setPlayerItem(player, slot, null);
+                return;
+            }
             ContentItem<T> contentItem = new ContentItem<>(slot, itemStack, content, page);
             setPlayerItemInterface(player, contentItem);
         }
@@ -204,27 +235,44 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
 
     @Override
     public final void handlePreviousPage(PageButton pageButton) {
-        onPreviousPage(pageButton);
-        previousPage();
+        pageButtonListeners.forEach(c -> c.accept(pageButton));
+        if (previousPage()) {
+            onPreviousPage(pageButton);
+        }
     }
 
     @Override
     public final void handleNextPage(PageButton pageButton) {
-        onNextPage(pageButton);
-        nextPage();
+        pageButtonListeners.forEach(c -> c.accept(pageButton));
+        if (nextPage()) {
+            onNextPage(pageButton);
+        }
     }
 
+    @Override
     public final void handleClickContent(InventoryClickEvent event, ContentItem<T> contentItem) {
+        contentClickListeners.forEach(c -> c.accept(event, contentItem));
         onContentClick(event, contentItem);
     }
 
-    protected ItemStack handleContentPage(int slot, int page, T content) {
+    @Override
+    public final ItemStack handleContentPage(int slot, int page, T content) {
         ItemStack itemStack = onContentPage(slot, page, content);
+        for (TriFunction<Integer, Integer, T, ItemStack> listener : contentPageListeners) {
+            ItemStack contentItem = listener.apply(slot, page, content);
+            if (contentItem != null) {
+                itemStack = contentItem;
+            }
+        }
         return itemStack == null ? ItemBuilder.copyOf(contentItemDefault).setName(content.toString()).build() : itemStack;
     }
 
-    protected void handleUpdate() {
-        onUpdate(hasNextPage(), hasPreviousPage());
+    @Override
+    public final void handleUpdate() {
+        boolean hasNext = hasNextPage();
+        boolean hasPrevious = hasPreviousPage();
+        onUpdate(hasNext, hasPrevious);
+        updateListeners.forEach(c -> c.accept(hasNext, hasPrevious));
     }
 
     // ############################# PUBLIC METHODS #############################
@@ -290,9 +338,22 @@ public class InvCustomAnvilPages<T> extends InvCustomAnvil implements PageConten
 
     public void setHotBarSelectNull() {
         for (int i = 0; i < 9; i++) {
-            if(player.getInventory().getItem(i) == null) {
+            if (player.getInventory().getItem(i) == null) {
                 player.getInventory().setHeldItemSlot(i);
             }
         }
+    }
+
+    public void setAutoLoadItems(boolean autoLoadItems) {
+        this.autoLoadItems = autoLoadItems;
+    }
+
+    public boolean isAutoLoadItems() {
+        return autoLoadItems;
+    }
+
+    @Override
+    public Player getPlayer() {
+        return player;
     }
 }

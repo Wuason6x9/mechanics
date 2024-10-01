@@ -49,7 +49,7 @@ public abstract class Function {
         return properties;
     }
 
-    public abstract boolean execute(Action action, Object... Args);
+    public abstract boolean execute(Action action, Object... args);
 
 
     public static class Builder {
@@ -91,8 +91,8 @@ public abstract class Function {
             if(execute == null) throw new RuntimeException("Execute cannot be null!");
             return new Function(name, argumentBuilder.build(), properties.build()) {
                 @Override
-                public boolean execute(Action action, Object... Args) {
-                    return execute.apply(action, Args);
+                public boolean execute(Action action, Object... args) {
+                    return execute.apply(action, args);
                 }
             };
         }

@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 public class NMSManager {
     private static VersionWrapper versionWrapper;
 
-    public final static String CLASS_WRAPPER = "dev.wuason.mechanics.nms.{version}.Version";
+    public final static String CLASS_WRAPPER = "dev.wuason.mechanics.nms.v{version}.Version";
 
     public NMSManager(Mechanics plugin) {
         if (versionWrapper != null) throw new IllegalStateException("NMSManager already initialized");
@@ -22,6 +22,7 @@ public class NMSManager {
             throw new RuntimeException(e);
         }
     }
+
 
     public static VersionWrapper getVersionWrapper() {
         return versionWrapper;

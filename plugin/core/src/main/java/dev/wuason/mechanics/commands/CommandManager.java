@@ -6,10 +6,10 @@ import dev.jorel.commandapi.arguments.*;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import dev.wuason.mechanics.compatibilities.adapter.plugins.ImplAdapter;
-import dev.wuason.mechanics.inventory.addons.pages.BackPageButton;
-import dev.wuason.mechanics.inventory.addons.pages.ContentItem;
-import dev.wuason.mechanics.inventory.addons.pages.NextPageButton;
-import dev.wuason.mechanics.inventory.types.anvil.multipage.InvCustomAnvilPages;
+import dev.wuason.mechanics.inventory.items.def.pages.BackPageButton;
+import dev.wuason.mechanics.inventory.items.def.pages.ContentItem;
+import dev.wuason.mechanics.inventory.items.def.pages.NextPageButton;
+import dev.wuason.mechanics.inventory.types.anvil.pages.InvCustomAnvilPages;
 import dev.wuason.mechanics.items.ItemBuilder;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
@@ -84,13 +84,13 @@ public class CommandManager {
 
                                 @Override
                                 public void onUpdate(boolean hasNext, boolean hasPrevious) {
-                                    setPlayerItem(player, 0, null);
-                                    setPlayerItem(player, 8, null);
+                                    setPlayerItem(0, null);
+                                    setPlayerItem(8, null);
                                     if (hasPrevious) {
-                                        setPlayerItemInterface(player, new BackPageButton(0, ItemBuilder.of(Material.ARROW).setNameWithMiniMessage("<gold>Back page").build()));
+                                        setPlayerItemInterface(new BackPageButton(0, ItemBuilder.of(Material.ARROW).setNameWithMiniMessage("<gold>Back page").build()));
                                     }
                                     if (hasNext) {
-                                        setPlayerItemInterface(player, new NextPageButton(8, ItemBuilder.of(Material.ARROW).setNameWithMiniMessage("<gold>Next page").build()));
+                                        setPlayerItemInterface(new NextPageButton(8, ItemBuilder.of(Material.ARROW).setNameWithMiniMessage("<gold>Next page").build()));
                                     }
                                 }
 
@@ -98,12 +98,17 @@ public class CommandManager {
                                 public ItemStack onContentPage(int slot, int page, Material content) {
                                     return ItemBuilder.of(content).build();
                                 }
+
+
+                                @Override
+                                public void onRenameTextAsync(String before, String now) {
+                                    setContent(Arrays.stream(Material.values()).filter(material -> !material.isLegacy() && !material.isAir() && material.toString().contains(now)).toList());
+                                    setCurrentPage(0);
+                                }
+
                             };
-                            invCustomAnvilPages.setContent(Arrays.stream(Material.values()).filter(material -> !material.isLegacy() && material.isBlock() && !material.isAir() && material.toString().contains("STAIRS")).toList());
-                            invCustomAnvilPages.saveItems();
-                            invCustomAnvilPages.updatePage();
                             invCustomAnvilPages.setRenameItem(ItemBuilder.of(Material.SPONGE).build(), true);
-                            invCustomAnvilPages.open(false);
+                            invCustomAnvilPages.open(true);
 
                         })
                 )

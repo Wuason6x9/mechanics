@@ -1,10 +1,11 @@
-package dev.wuason.mechanics.inventory.addons.pages;
+package dev.wuason.mechanics.inventory.items.def.pages;
 
 import dev.wuason.mechanics.inventory.InvCustom;
+import dev.wuason.mechanics.inventory.pages.MultiPages;
+import dev.wuason.mechanics.inventory.pages.Page;
+import dev.wuason.mechanics.inventory.pages.Pageable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
 
 public final class NextPageButton extends PageButton {
 
@@ -27,6 +28,12 @@ public final class NextPageButton extends PageButton {
 
     @Override
     public void onClick(InventoryClickEvent event, InvCustom invCustom) {
+        if (invCustom instanceof MultiPages pages) {
+            for (Page<?> page : pages.getPages()) {
+                if (page.getAreaSlots().contains(event.getRawSlot())) page.handleNextPage(this);
+                return;
+            }
+        }
         if (invCustom instanceof Pageable) {
             ((Pageable) invCustom).handleNextPage(this);
         }

@@ -47,10 +47,10 @@ public class ExecuteAction extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
-        ActionConfig actionConfig = (ActionConfig) Args[0];
-        HashMap<String, Object> placeholders = (HashMap<String, Object>) Args[1];
-        String namespace = (String) Args[2];
+    public boolean execute(Action action, Object... args) {
+        ActionConfig actionConfig = (ActionConfig) args[0];
+        HashMap<String, Object> placeholders = (HashMap<String, Object>) args[1];
+        String namespace = (String) args[2];
         ActionCreateEvent event = new ActionCreateEvent(action);
         Action actionExe = action.getActionManager().createAction(actionConfig, placeholders, namespace, event);
         actionExe.load().run();

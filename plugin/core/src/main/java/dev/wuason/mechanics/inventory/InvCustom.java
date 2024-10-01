@@ -3,6 +3,8 @@ package dev.wuason.mechanics.inventory;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.inventory.events.InventoryCloseEvent;
 import dev.wuason.mechanics.inventory.events.ItemInterfaceClickEvent;
+import dev.wuason.mechanics.inventory.types.PlayerMenu;
+import dev.wuason.mechanics.utils.StorageUtils;
 import dev.wuason.mechanics.utils.TimeUnitsUtils;
 import dev.wuason.mechanics.inventory.items.ItemInterface;
 import dev.wuason.mechanics.utils.AdventureUtils;
@@ -47,6 +49,9 @@ public class InvCustom implements InventoryHolder {
     //player apply items
 
     private final HashMap<Integer, ItemStack> playerApplyItems = new HashMap<>();
+
+    //player give items on close
+    private final List<ItemStack> playerGiveItems = new ArrayList<>();
 
 
     //Events listeners
@@ -198,7 +203,8 @@ public class InvCustom implements InventoryHolder {
      * @param e InventoryClickEvent
      */
 
-    public void onClick(InventoryClickEvent e) {}
+    public void onClick(InventoryClickEvent e) {
+    }
 
     /**
      * Handle the open event
@@ -206,7 +212,8 @@ public class InvCustom implements InventoryHolder {
      * @param e InventoryOpenEvent
      */
 
-    public void onOpen(InventoryOpenEvent e) {}
+    public void onOpen(InventoryOpenEvent e) {
+    }
 
     /**
      * Handle the close event
@@ -214,7 +221,8 @@ public class InvCustom implements InventoryHolder {
      * @param e InventoryCloseEvent
      */
 
-    public void onClose(InventoryCloseEvent e) {}
+    public void onClose(InventoryCloseEvent e) {
+    }
 
     /**
      * Handle the drag event
@@ -222,7 +230,8 @@ public class InvCustom implements InventoryHolder {
      * @param e InventoryDragEvent
      */
 
-    public void onDrag(InventoryDragEvent e) {}
+    public void onDrag(InventoryDragEvent e) {
+    }
 
     /**
      * Handle the item interface click event
@@ -230,7 +239,8 @@ public class InvCustom implements InventoryHolder {
      * @param e ItemInterfaceClickEvent
      */
 
-    public void onItemInterfaceClick(ItemInterfaceClickEvent e) {}
+    public void onItemInterfaceClick(ItemInterfaceClickEvent e) {
+    }
 
 
     //*************************HANDLE EVENTS*************************
@@ -283,6 +293,9 @@ public class InvCustom implements InventoryHolder {
         closeEventsListeners.forEach(consumer -> consumer.accept(event));
 
         onClose(event);
+
+        playerGiveItems.forEach(item -> StorageUtils.addItemToInventoryOrDrop((Player) event.getPlayer(), item));
+
     }
 
     final void handleDrag(InventoryDragEvent event) {
@@ -294,6 +307,16 @@ public class InvCustom implements InventoryHolder {
 
     public void open(Player player) {
         player.openInventory(inventory);
+    }
+
+    //*************************PLAYER GIVE ITEMS*************************
+
+    public void addPlayerGiveItem(ItemStack item) {
+        playerGiveItems.add(item);
+    }
+
+    public void removePlayerGiveItem(ItemStack item) {
+        playerGiveItems.remove(item);
     }
 
     //*************************EVENTS LISTENERS*************************
@@ -396,7 +419,7 @@ public class InvCustom implements InventoryHolder {
      * @param consumer Consumer to handle the click event
      */
     public void setItem(int slot, ItemStack item, Consumer<InventoryClickEvent> consumer) {
-        if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
             String id = ItemInterface.getId(inventory.getItem(slot));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -410,14 +433,14 @@ public class InvCustom implements InventoryHolder {
     /**
      * Set an item in multiple slots with a consumer
      *
-     * @param slots     Slots to set the item
+     * @param slots    Slots to set the item
      * @param item     Item to set
      * @param consumer Consumer to handle the click event
      */
     public void setItem(int[] slots, ItemStack item, Consumer<InventoryClickEvent> consumer) {
         if (item == null) return;
         for (int slot : slots) {
-            if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+            if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
                 String id = ItemInterface.getId(inventory.getItem(slot));
                 if (itemInterfaces.containsKey(id)) {
                     unRegisterItemInterface(id);
@@ -434,7 +457,7 @@ public class InvCustom implements InventoryHolder {
      * @param slot Slot to remove the item
      */
     public void removeItem(int slot) {
-        if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
             String id = ItemInterface.getId(inventory.getItem(slot));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -499,7 +522,7 @@ public class InvCustom implements InventoryHolder {
     //******* Set & Remove ********
 
     public void setItemInterface(ItemInterface itemInterface) {
-        if ( inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
+        if (inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
             String id = ItemInterface.getId(inventory.getItem(itemInterface.getSlot()));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -518,7 +541,7 @@ public class InvCustom implements InventoryHolder {
     }
 
     public void setItemInterface(ItemInterface item, int slot) {
-        if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
             String id = ItemInterface.getId(inventory.getItem(slot));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -562,7 +585,7 @@ public class InvCustom implements InventoryHolder {
 
     public void updateItemInterface(ItemInterface itemInterface) {
         if (itemInterface == null) return;
-        if ( inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
+        if (inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
             String id = ItemInterface.getId(inventory.getItem(itemInterface.getSlot()));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -623,8 +646,10 @@ public class InvCustom implements InventoryHolder {
         }
     }
 
+    //*******************PLAYER ITEMS***********************
+
     public void setPlayerItem(Player player, int slot, ItemStack itemStack) {
-        if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
             String id = ItemInterface.getId(inventory.getItem(slot));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -635,7 +660,7 @@ public class InvCustom implements InventoryHolder {
 
     public void setPlayerItemInterface(Player player, ItemInterface itemInterface) {
         Inventory inventory = player.getInventory();
-        if ( inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
+        if (inventory.getItem(itemInterface.getSlot()) != null && ItemInterface.isItemInterface(inventory.getItem(itemInterface.getSlot()))) {
             String id = ItemInterface.getId(inventory.getItem(itemInterface.getSlot()));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);
@@ -651,6 +676,141 @@ public class InvCustom implements InventoryHolder {
         }
     }
 
+    public void clearPlayerItem(Player player, int slot) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+            String id = ItemInterface.getId(inventory.getItem(slot));
+            if (itemInterfaces.containsKey(id)) {
+                unRegisterItemInterface(id);
+            }
+        }
+        player.getInventory().clear(slot);
+    }
+
+    public void clearPlayerItems(Player player) {
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            clearPlayerItem(player, i);
+        }
+    }
+
+    public void setPlayerItem(int slot, ItemStack itemStack) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setPlayerItem(player, slot, itemStack);
+        }
+    }
+
+    public void setPlayerItemInterface(ItemInterface itemInterface) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setPlayerItemInterface(player, itemInterface);
+        }
+    }
+
+    public void setPlayerItemsInterface(ItemInterface... interfaces) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setPlayerItemsInterface(player, interfaces);
+        }
+    }
+
+    public void clearPlayerItem(int slot) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            clearPlayerItem(player, slot);
+        }
+    }
+
+    public void clearPlayerItems() {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            clearPlayerItems(player);
+        }
+    }
+
+    public ItemStack getPlayerItem(Player player, int slot) {
+        return player.getInventory().getItem(slot);
+    }
+
+    public ItemStack getPlayerItem(int slot) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            return getPlayerItem(player, slot);
+        }
+        return null;
+    }
+
+    //Inventory view
+
+    public void setInventoryViewItem(Player player, int slot, ItemStack itemStack) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+            String id = ItemInterface.getId(inventory.getItem(slot));
+            if (itemInterfaces.containsKey(id)) {
+                unRegisterItemInterface(id);
+            }
+        }
+        player.getOpenInventory().setItem(slot, itemStack);
+    }
+
+    public void setInventoryViewItemInterface(Player player, ItemInterface itemInterface) {
+        setInventoryViewItem(player, itemInterface.getSlot(), itemInterface.getItemModified());
+        registerItemInterface(itemInterface);
+    }
+
+    public void setInventoryViewItemsInterface(Player player, ItemInterface... interfaces) {
+        for (ItemInterface itemInterface : interfaces) {
+            setInventoryViewItemInterface(player, itemInterface);
+        }
+    }
+
+    public void clearInventoryViewItem(Player player, int slot) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+            String id = ItemInterface.getId(inventory.getItem(slot));
+            if (itemInterfaces.containsKey(id)) {
+                unRegisterItemInterface(id);
+            }
+        }
+        player.getOpenInventory().setItem(slot, null);
+    }
+
+    public ItemStack getInventoryViewItem(Player player, int slot) {
+        return player.getOpenInventory().getItem(slot);
+    }
+
+    public void setInventoryViewItem(int slot, ItemStack itemStack) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setInventoryViewItem(player, slot, itemStack);
+        }
+    }
+
+    public void setInventoryViewItemInterface(ItemInterface itemInterface) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setInventoryViewItemInterface(player, itemInterface);
+        }
+    }
+
+    public void setInventoryViewItemsInterface(ItemInterface... interfaces) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            setInventoryViewItemsInterface(player, interfaces);
+        }
+    }
+
+    public void clearInventoryViewItem(int slot) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            clearInventoryViewItem(player, slot);
+        }
+    }
+
+    public ItemStack getInventoryViewItem(int slot) {
+        if (this instanceof PlayerMenu playerMenu) {
+            Player player = playerMenu.getPlayer();
+            return getInventoryViewItem(player, slot);
+        }
+        return null;
+    }
 
     //*******************EVENTS CANCEL***********************
     public boolean isDamageCancel() {
@@ -743,7 +903,6 @@ public class InvCustom implements InventoryHolder {
             }
         }
     }
-
 
 
     public int getItemCount(ItemStack item) {
@@ -917,7 +1076,7 @@ public class InvCustom implements InventoryHolder {
     //others
 
     public void setItem(int slot, ItemStack item) {
-        if ( inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
+        if (inventory.getItem(slot) != null && ItemInterface.isItemInterface(inventory.getItem(slot))) {
             String id = ItemInterface.getId(inventory.getItem(slot));
             if (itemInterfaces.containsKey(id)) {
                 unRegisterItemInterface(id);

@@ -41,11 +41,11 @@ public class ExecuteFunctions extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
+    public boolean execute(Action action, Object... args) {
 
-        List<String> functionsLines = (List<String>) Args[0];
-        List<String> conditionsLines = (List<String>) Args[1];
-        Run runType = (Run) Args[2];
+        List<String> functionsLines = (List<String>) args[0];
+        List<String> conditionsLines = (List<String>) args[1];
+        Run runType = (Run) args[2];
 
         List<FunctionConfig> functions = new ArrayList<>();
         List<ConditionConfig> conditions = new ArrayList<>();

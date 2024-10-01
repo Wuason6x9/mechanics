@@ -25,9 +25,9 @@ public class CancelEventFunction extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
+    public boolean execute(Action action, Object... args) {
         Cancellable event = (Cancellable) action.getPlaceholder("$bukkitEvent$");
-        event.setCancelled((boolean) Args[0]);
+        event.setCancelled((boolean) args[0]);
         return false;
     }
 }

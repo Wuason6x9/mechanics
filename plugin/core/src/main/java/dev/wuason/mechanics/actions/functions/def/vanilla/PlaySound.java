@@ -54,11 +54,11 @@ public class PlaySound extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
-        Player player = (Player) Args[0];
-        String sound = (String) Args[1];
-        float volume = (float) Args[2];
-        float pitch = (float) Args[3];
+    public boolean execute(Action action, Object... args) {
+        Player player = (Player) args[0];
+        String sound = (String) args[1];
+        float volume = (float) args[2];
+        float pitch = (float) args[3];
         player.playSound(Sound.sound(Key.key(sound), Sound.Source.MASTER, volume, pitch));
         return false;
     }

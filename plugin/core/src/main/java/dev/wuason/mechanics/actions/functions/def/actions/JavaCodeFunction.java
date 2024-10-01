@@ -35,13 +35,12 @@ public class JavaCodeFunction extends Function {
                 })
                         .build()
                 , PROPERTIES);
-
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
+    public boolean execute(Action action, Object... args) {
 
-        String code = (String) Args[0];
+        String code = (String) args[0];
 
         action.runCode(code);
 

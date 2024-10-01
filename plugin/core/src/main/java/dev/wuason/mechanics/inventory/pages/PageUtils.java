@@ -1,4 +1,4 @@
-package dev.wuason.mechanics.inventory.addons.pages;
+package dev.wuason.mechanics.inventory.pages;
 
 public class PageUtils {
     public static int getMaxPage(int size, int itemsPerPage) {

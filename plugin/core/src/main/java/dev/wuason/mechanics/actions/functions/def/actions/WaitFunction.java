@@ -27,11 +27,11 @@ public class WaitFunction extends Function {
     }
 
     @Override
-    public boolean execute(Action action, Object... Args) {
+    public boolean execute(Action action, Object... args) {
 
         Bukkit.getScheduler().runTaskLater((Plugin)action.getCore(), () -> {
             action.executeNext();
-        }, (Long) Args[0]);
+        }, (Long) args[0]);
 
         return true;
     }

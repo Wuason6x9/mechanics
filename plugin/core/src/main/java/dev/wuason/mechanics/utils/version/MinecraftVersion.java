@@ -1,23 +1,30 @@
 package dev.wuason.mechanics.utils.version;
 
+import dev.wuason.mechanics.Mechanics;
+import dev.wuason.mechanics.nms.NMSManager;
+import dev.wuason.mechanics.nms.wrappers.VersionWrapper;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.logging.Level;
 
 public enum MinecraftVersion {
-    v1_18_2(2, NMSVersion.v1_18_R2),
-    v1_19(3, NMSVersion.v1_19_R1),
-    v1_19_1(4, NMSVersion.v1_19_R1),
-    v1_19_2(5, NMSVersion.v1_19_R1),
-    v1_19_3(6, NMSVersion.v1_19_R2),
-    v1_19_4(7, NMSVersion.v1_19_R3),
-    v1_20(8, NMSVersion.v1_20_R1),
-    v1_20_1(9, NMSVersion.v1_20_R1),
-    v1_20_2(10, NMSVersion.v1_20_R2),
-    v1_20_3(11, NMSVersion.v1_20_R3),
-    v1_20_4(12, NMSVersion.v1_20_R3),
-    v1_20_5(13, NMSVersion.v1_20_R4),
-    v1_20_6(14, NMSVersion.v1_20_R4),
-    v1_21(15, NMSVersion.v1_21_R1),
-    v1_21_1(16, NMSVersion.v1_21_R1),
+    V1_18_2(2, NMSVersion.V1_18_R2),
+    V1_19(3, NMSVersion.V1_19_R1),
+    V1_19_1(4, NMSVersion.V1_19_R1),
+    V1_19_2(5, NMSVersion.V1_19_R1),
+    V1_19_3(6, NMSVersion.V1_19_R2),
+    V1_19_4(7, NMSVersion.V1_19_R3),
+    V1_20(8, NMSVersion.V1_20_R1),
+    V1_20_1(9, NMSVersion.V1_20_R1),
+    V1_20_2(10, NMSVersion.V1_20_R2),
+    V1_20_3(11, NMSVersion.V1_20_R3),
+    V1_20_4(12, NMSVersion.V1_20_R3),
+    V1_20_5(13, NMSVersion.V1_20_R4),
+    V1_20_6(14, NMSVersion.V1_20_R4),
+    V1_21(15, NMSVersion.V1_21_R1),
+    V1_21_1(16, NMSVersion.V1_21_R1),
     UNSUPPORTED(-1, NMSVersion.UNSUPPORTED);
 
     private static MinecraftVersion serverVersionSelected = null;
@@ -43,7 +50,7 @@ public enum MinecraftVersion {
     }
 
     public String getVersionName() {
-        return name().replace("v", "").replace("_", ".");
+        return name().replace("V", "").replace("_", ".");
     }
 
     /**
@@ -66,6 +73,14 @@ public enum MinecraftVersion {
         return versionNumber < otherVersion.versionNumber;
     }
 
+    public boolean isGreaterThan(MinecraftVersion otherVersion) {
+        return versionNumber > otherVersion.versionNumber;
+    }
+
+    public boolean isAtMost(MinecraftVersion otherVersion) {
+        return versionNumber <= otherVersion.versionNumber;
+    }
+
     /**
      * Converts a version string to a ServerVersion enum constant.
      *
@@ -74,7 +89,7 @@ public enum MinecraftVersion {
      */
     public static MinecraftVersion fromString(String version) {
         try {
-            return valueOf("v" + version.replace(".", "_"));
+            return valueOf("V" + version.replace(".", "_"));
         } catch (IllegalArgumentException e) {
             return UNSUPPORTED;
         }
@@ -109,15 +124,15 @@ public enum MinecraftVersion {
     }
 
     public enum NMSVersion {
-        v1_18_R2(0),
-        v1_19_R1(1),
-        v1_19_R2(2),
-        v1_19_R3(3),
-        v1_20_R1(4),
-        v1_20_R2(5),
-        v1_20_R3(6),
-        v1_20_R4(7),
-        v1_21_R1(8),
+        V1_18_R2(0),
+        V1_19_R1(1),
+        V1_19_R2(2),
+        V1_19_R3(3),
+        V1_20_R1(4),
+        V1_20_R2(5),
+        V1_20_R3(6),
+        V1_20_R4(7),
+        V1_21_R1(8),
         UNSUPPORTED(-1);
 
         private final int version;
@@ -126,8 +141,28 @@ public enum MinecraftVersion {
             this.version = version;
         }
 
+        public boolean isSupported() {
+            return this != UNSUPPORTED;
+        }
+
+        public boolean isAtLeast(NMSVersion otherVersion) {
+            return version >= otherVersion.version;
+        }
+
+        public boolean isLessThan(NMSVersion otherVersion) {
+            return version < otherVersion.version;
+        }
+
+        public boolean isGreaterThan(NMSVersion otherVersion) {
+            return version > otherVersion.version;
+        }
+
+        public boolean isAtMost(NMSVersion otherVersion) {
+            return version <= otherVersion.version;
+        }
+
         public String getVersionName() {
-            return name().replace("v", "");
+            return name().replace("V", "");
         }
 
         public int getVersion() {

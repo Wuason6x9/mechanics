@@ -1,11 +1,7 @@
-package dev.wuason.mechanics.inventory.addons.pages;
+package dev.wuason.mechanics.inventory.items.def.pages;
 
-import dev.wuason.mechanics.inventory.InvCustom;
 import dev.wuason.mechanics.inventory.items.ItemInterface;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
 
 public class PageButton extends ItemInterface {
 

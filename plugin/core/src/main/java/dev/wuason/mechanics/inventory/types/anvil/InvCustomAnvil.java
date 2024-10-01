@@ -17,7 +17,6 @@ import java.util.function.BiConsumer;
 public class InvCustomAnvil extends InvCustom implements AnvilInventoryHolder {
     private VersionWrapper.AnvilInventoryCustom anvilInventoryCustom;
     private String renameText = "";
-    private BukkitTask bukkitTask = null;
     private List<BiConsumer<String, String>> renameTextAsyncListeners = new ArrayList<>();
 
     public InvCustomAnvil(String title, Player player) {
@@ -45,7 +44,6 @@ public class InvCustomAnvil extends InvCustom implements AnvilInventoryHolder {
     }
 
     //methods
-
     @Deprecated
     @Override
     public void open(Player player) {
@@ -64,13 +62,13 @@ public class InvCustomAnvil extends InvCustom implements AnvilInventoryHolder {
         return anvilInventoryCustom.getInventory();
     }
 
-    public void setMenuAnvilOptions() {
+    public final void setMenuAnvilOptions() {
         anvilInventoryCustom.setMaxRepairCost(0);
         anvilInventoryCustom.setRepairItemCountCost(0);
         anvilInventoryCustom.setCheckReachable(false);
     }
 
-    public String getRenameText() {
+    public final String getRenameText() {
         return getAnvilInventoryInstance().getRenameText() == null ? "" : getAnvilInventoryInstance().getRenameText();
     }
 

@@ -1,4 +1,6 @@
-package dev.wuason.mechanics.inventory.addons.pages;
+package dev.wuason.mechanics.inventory.pages;
+
+import dev.wuason.mechanics.inventory.items.def.pages.PageButton;
 
 public interface Pageable {
 
@@ -16,8 +18,8 @@ public interface Pageable {
 
     public void updatePage();
 
-    public void nextPage();
+    public boolean nextPage();
 
-    public void previousPage();
+    public boolean previousPage();
 
 }
