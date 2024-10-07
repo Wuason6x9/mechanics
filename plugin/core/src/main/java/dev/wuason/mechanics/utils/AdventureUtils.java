@@ -26,6 +26,39 @@ public class AdventureUtils {
     public static String PREFIX = "<dark_gray>[<gold>$NAME<dark_gray>] -> <white>";
 
     /**
+     * Converts a legacy text string into a modern Adventure Component.
+     *
+     * @param text The legacy text string to convert.
+     * @return The converted Adventure Component.
+     */
+    public static String fromLegacyText(String text) {
+        return text
+                .replace("&0", "<black>")
+                .replace("&1", "<dark_blue>")
+                .replace("&2", "<dark_green>")
+                .replace("&3", "<dark_aqua>")
+                .replace("&4", "<dark_red>")
+                .replace("&5", "<dark_purple>")
+                .replace("&6", "<gold>")
+                .replace("&7", "<gray>")
+                .replace("&8", "<dark_gray>")
+                .replace("&9", "<blue>")
+                .replace("&a", "<green>")
+                .replace("&b", "<aqua>")
+                .replace("&c", "<red>")
+                .replace("&d", "<light_purple>")
+                .replace("&e", "<yellow>")
+                .replace("&f", "<white>")
+                .replace("&k", "<obfuscated>")
+                .replace("&l", "<bold>")
+                .replace("&m", "<strikethrough>")
+                .replace("&n", "<underline>")
+                .replace("&o", "<italic>")
+                .replace("&r", "<reset>");
+    }
+
+
+    /**
      * Sends a message to the console.
      *
      * @param text The text of the message to send. Must not be null.
