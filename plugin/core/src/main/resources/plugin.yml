@@ -24,3 +24,4 @@ softdepend:
   - HuskTowns
 libraries:
   - "org.apache.httpcomponents:httpclient:4.5.14"
+  - "org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-depchain:3.3.1"

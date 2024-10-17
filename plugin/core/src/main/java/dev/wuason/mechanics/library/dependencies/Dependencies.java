@@ -77,6 +77,10 @@ public class Dependencies {
             Remap.of("com:saicone:rtag", "dev:wuason:libs:saicone:rtag")
     );
 
+    public static final Dependency HTTP_CLIENT = new Dependency("org:apache:httpcomponents", "httpclient", "4:5:14",
+            Remap.of("org:apache", "dev:wuason:libs:apache")
+    );
+
 
     static {
         addDependency(
@@ -96,7 +100,8 @@ public class Dependencies {
                 RTAG,
                 RTAG_BLOCK,
                 RTAG_ENTITY,
-                RTAG_ITEM
+                RTAG_ITEM,
+                HTTP_CLIENT
         );
     }
 

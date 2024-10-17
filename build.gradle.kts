@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import java.util.concurrent.Executors
 
 plugins {
     id("java")
@@ -8,7 +7,7 @@ plugins {
     id("org.gradle.maven-publish")
 }
 
-val LIBS = listOf(
+val libs = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
     "de.tr7zw:item-nbt-api:2.13.1", //FOR REMOVING
@@ -97,7 +96,7 @@ subprojects {
 
         dependencies {
             //libs
-            for (lib in LIBS) {
+            for (lib in libs) {
                 compileOnly(lib)
             }
         }
@@ -149,7 +148,7 @@ project(":lib") {
     }
 
     dependencies {
-        for (lib in LIBS) {
+        for (lib in libs) {
             implementation(lib)
         }
         implementation(project(":plugin"))
@@ -184,7 +183,7 @@ project(":plugin:core") {
         compileOnly(project(":plugin:compatibilities:common"))
 
         //libs
-        for (lib in LIBS) {
+        for (lib in libs) {
             compileOnly(lib)
         }
 
