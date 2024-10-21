@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import kotlin.text.set
 
 plugins {
     id("java")
@@ -10,7 +11,7 @@ plugins {
 val libs = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.13.1", //FOR REMOVING
+    "de.tr7zw:item-nbt-api:2.13.1", //FOR REMOVAL
     "org.apache.commons:commons-lang3:3.14.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "com.github.oraxen:protectionlib:1.5.1",
@@ -22,9 +23,29 @@ val libs = listOf(
     "com.saicone.rtag:rtag:1.5.5",
     "com.saicone.rtag:rtag-block:1.5.5",
     "com.saicone.rtag:rtag-entity:1.5.5",
-    "com.saicone.rtag:rtag-item:1.5.5"
+    "com.saicone.rtag:rtag-item:1.5.5",
+    //annotations jetbrains
+    "org.jetbrains:annotations:26.0.1",
 )
 
+val relocateMap = mapOf(
+    "dev.dejvokep.boostedyaml" to "dev.wuason.libs.boostedyaml",
+    "dev.jorel.commandapi" to "dev.wuason.libs.commandapi",
+    "de.tr7zw.changeme.nbtapi" to "dev.wuason.libs.nbtapi",
+    "io.th0rgal.protectionlib" to "dev.wuason.libs.protectionlib",
+    "bsh" to "dev.wuason.libs.bsh",
+    "org.apache.commons" to "dev.wuason.libs.apache.commons",
+    "dev.wuason.mechanics.invmechanic" to "dev.wuason.libs.invmechaniclib",
+    "com.google.gson" to "dev.wuason.libs.google.gson",
+    "com.google.errorprone" to "dev.wuason.libs.google.errorprone",
+    "com.jeff_media.morepersistentdatatypes" to "dev.wuason.libs.jeffmedia.morepersistentdatatypes",
+    "com.jeff_media.customblockdata" to "dev.wuason.libs.jeffmedia.customblockdata",
+    "com.saicone.rtag" to "dev.wuason.libs.saicone.rtag",
+    "org.jetbrains" to "dev.wuason.libs.jetbrains",
+    "org.intellij" to "dev.wuason.libs.intellij"
+)
+
+val mainClassApp = "dev.wuason.mechanics.app.Main"
 
 allprojects {
 
@@ -97,33 +118,8 @@ subprojects {
         dependencies {
             //libs
             for (lib in libs) {
-                compileOnly(lib)
+                implementation(lib)
             }
-        }
-    }
-
-    if (project.path in arrayOf(":plugin", ":lib")) {
-
-        tasks.withType<ShadowJar> {
-            destinationDirectory.set(file("$rootDir/target"))
-            archiveBaseName.set("${rootProject.name}-${rootProject.version}" + if (project.name == "plugin") "" else "-lib")
-            archiveClassifier.set("")
-            archiveVersion.set("")
-            manifest {
-                attributes["Main-Class"] = "dev.wuason.mechanics.app.Main"
-            }
-            relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
-            relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
-            relocate("de.tr7zw.changeme.nbtapi", "dev.wuason.libs.nbtapi")
-            relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
-            relocate("bsh", "dev.wuason.libs.bsh")
-            relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
-            relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
-            relocate("com.google.gson", "dev.wuason.libs.google.gson")
-            relocate("com.google.errorprone", "dev.wuason.libs.google.errorprone")
-            relocate("com.jeff_media.morepersistentdatatypes", "dev.wuason.libs.jeffmedia.morepersistentdatatypes")
-            relocate("com.jeff_media.customblockdata", "dev.wuason.libs.jeffmedia.customblockdata")
-            relocate("com.saicone.rtag", "dev.wuason.libs.saicone.rtag")
         }
     }
 
@@ -135,29 +131,8 @@ subprojects {
 
 }
 
-project(":lib") {
-    publishing {
-        publications {
-            create<MavenPublication>("mavenJava") {
-                groupId = rootProject.group.toString()
-                artifactId = rootProject.name
-                version = rootProject.version.toString()
-                artifact(tasks.shadowJar)
-            }
-        }
-    }
-
-    dependencies {
-        for (lib in libs) {
-            implementation(lib)
-        }
-        implementation(project(":plugin"))
-    }
-}
-
 project(":plugin") {
     dependencies {
-        implementation(project(":App"))
         implementation(project(":plugin:core"))
         implementation(project(":plugin:compatibilities"))
         rootProject.subprojects.filter { it.path.contains(":nms:v") }.forEach {
@@ -169,23 +144,15 @@ project(":plugin") {
 project(":plugin:core") {
     dependencies {
 
-        //PlaceholderAPI
-        compileOnly("me.clip:placeholderapi:2.11.3")
+        compileOnly("me.clip:placeholderapi:2.11.6")//PlaceholderAPI
 
-        //WorldGuard
-        compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
+        compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")//WorldGuard
 
-        //ASM
-        compileOnly("org.ow2.asm:asm-commons:9.7")
+        compileOnly("org.ow2.asm:asm-commons:9.7")//ASM
         compileOnly("org.ow2.asm:asm:9.7")
 
         compileOnly(project(":plugin:compatibilities"))
         compileOnly(project(":plugin:compatibilities:common"))
-
-        //libs
-        for (lib in libs) {
-            compileOnly(lib)
-        }
 
         compileOnly("org.apache.httpcomponents:httpclient:4.5.14")
 
@@ -241,8 +208,70 @@ project(":plugin:compatibilities") {
     }
 }
 
+dependencies {
+    implementation(project(":App"))
+    implementation(project(":plugin"))
+}
 
-tasks.build {
-    dependsOn(tasks.getByPath(":plugin:shadowJar"))
-    dependsOn(tasks.getByPath(":lib:shadowJar"))
+val libJar = tasks.register<ShadowJar>("libJar") {
+    dependsOn(tasks.shadowJar)
+
+    description = "Creates a shadowed jar with all dependencies"
+    group = "build"
+
+    configurations = listOf(project.configurations["runtimeClasspath"])
+
+    destinationDirectory.set(file("$rootDir/target"))
+    archiveBaseName.set("${rootProject.name}-${rootProject.version}")
+    archiveClassifier.set("lib")
+    archiveVersion.set("")
+
+    manifest {
+        attributes["Main-Class"] = mainClassApp
+    }
+
+    relocateMap.forEach { (from, to) ->
+        relocate(from, to)
+    }
+}
+
+tasks {
+
+    shadowJar {
+        destinationDirectory.set(file("$rootDir/target"))
+        archiveBaseName.set("${rootProject.name}-${rootProject.version}")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+
+        manifest {
+            attributes["Main-Class"] = mainClassApp
+        }
+
+        relocateMap.forEach { (from, to) ->
+            relocate(from, to)
+        }
+
+        project(":plugin:core").configurations.runtimeClasspath.get().resolvedConfiguration.firstLevelModuleDependencies.forEach { module ->
+            if (module.name in libs && "yaml" !in module.name) {
+                module.allModuleArtifacts.forEach { artifact ->
+                    exclude(artifact.file.name)
+                }
+            }
+        }
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = rootProject.group.toString()
+            artifactId = rootProject.name
+            version = rootProject.version.toString()
+            artifact(libJar)
+        }
+    }
 }

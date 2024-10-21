@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 include(
-    ":App", ":lib",
+    ":App",
     ":plugin",
     ":plugin:compatibilities",
     ":plugin:compatibilities:common",
