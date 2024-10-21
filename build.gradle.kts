@@ -24,8 +24,6 @@ val libs = listOf(
     "com.saicone.rtag:rtag-block:1.5.5",
     "com.saicone.rtag:rtag-entity:1.5.5",
     "com.saicone.rtag:rtag-item:1.5.5",
-    //annotations jetbrains
-    "org.jetbrains:annotations:26.0.1",
 )
 
 val relocateMap = mapOf(
@@ -252,7 +250,7 @@ tasks {
         }
 
         project(":plugin:core").configurations.runtimeClasspath.get().resolvedConfiguration.firstLevelModuleDependencies.forEach { module ->
-            if (module.name in libs && "yaml" !in module.name) {
+            if (module.name in libs) {
                 module.allModuleArtifacts.forEach { artifact ->
                     exclude(artifact.file.name)
                 }
@@ -261,7 +259,7 @@ tasks {
     }
 
     build {
-        dependsOn(shadowJar)
+        dependsOn(libJar)
     }
 }
 
