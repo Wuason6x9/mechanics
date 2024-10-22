@@ -11,11 +11,28 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 public class SpigotUtils {
+    /**
+     * The base URL for the Spiget API used to interact with the service endpoints.
+     */
     private final static String BASE_URL = "https://api.spiget.org/v2";
+    /**
+     * URL for retrieving the latest version of a resource.
+     * The `{resource}` placeholder should be replaced with the resource ID.
+     */
     private final static String LATEST_VERSION_URL = BASE_URL + "/resources/{resource}/versions/latest";
+    /**
+     * The URL endpoint used for checking the status of the API.
+     * This is constructed by appending "/status" to the BASE_URL.
+     */
     private final static String STATUS = BASE_URL + "/status";
 
 
+    /**
+     * Retrieves the latest version string for a specified resource ID.
+     *
+     * @param id The unique identifier of the resource.
+     * @return The latest version string of the resource or null if the resource is not found or if an error occurs.
+     */
     public static String getLastVersionByResourceId(int id) {
         if(!isOnline()) return null;
         HttpGet httpGet = new HttpGet(LATEST_VERSION_URL.replace("{resource}", String.valueOf(id)));
@@ -35,6 +52,11 @@ public class SpigotUtils {
 
     }
 
+    /**
+     * Checks the online status of the API by sending a GET request to the status URL.
+     *
+     * @return true if the API is online (HTTP status code 200), false otherwise.
+     */
     public static boolean isOnline() {
         HttpGet httpGet = new HttpGet(STATUS);
         try(CloseableHttpClient httpClient = HttpClients.createDefault()) {

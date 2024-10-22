@@ -365,6 +365,12 @@ public class Utils {
 
     }
 
+    /**
+     * Converts a list of string representations of numbers and ranges into an ArrayList of integers.
+     *
+     * @param arrayList a list of strings, each representing a number or a range in the format "start-end"
+     * @return an ArrayList of integers parsed from the input list
+     */
     public static ArrayList<Integer> configFill(List<String> arrayList){
 
         ArrayList<Integer> arrayListNumbers = new ArrayList<>();

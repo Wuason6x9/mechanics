@@ -39,11 +39,9 @@ val relocateMap = mapOf(
     "com.jeff_media.morepersistentdatatypes" to "dev.wuason.libs.jeffmedia.morepersistentdatatypes",
     "com.jeff_media.customblockdata" to "dev.wuason.libs.jeffmedia.customblockdata",
     "com.saicone.rtag" to "dev.wuason.libs.saicone.rtag",
-    "org.jetbrains" to "dev.wuason.libs.jetbrains",
-    "org.intellij" to "dev.wuason.libs.intellij"
+    //"org.jetbrains" to "dev.wuason.libs.jetbrains",
+    //"org.intellij" to "dev.wuason.libs.intellij"
 )
-
-val mainClassApp = "dev.wuason.mechanics.app.Main"
 
 allprojects {
 
@@ -83,6 +81,10 @@ allprojects {
         filesMatching("**/plugin.yml") {
             expand(vars)
         }
+    }
+
+    dependencies {
+        implementation("org.jetbrains:annotations:26.0.1")
     }
 }
 
@@ -219,13 +221,13 @@ val libJar = tasks.register<ShadowJar>("libJar") {
 
     configurations = listOf(project.configurations["runtimeClasspath"])
 
-    destinationDirectory.set(file("$rootDir/target"))
+    destinationDirectory.set(file("$rootDir/${rootProject.properties.get("targetDir")}"))
     archiveBaseName.set("${rootProject.name}-${rootProject.version}")
     archiveClassifier.set("lib")
     archiveVersion.set("")
 
     manifest {
-        attributes["Main-Class"] = mainClassApp
+        attributes["Main-Class"] = rootProject.properties.get("mainClassApp")
     }
 
     relocateMap.forEach { (from, to) ->
@@ -236,13 +238,13 @@ val libJar = tasks.register<ShadowJar>("libJar") {
 tasks {
 
     shadowJar {
-        destinationDirectory.set(file("$rootDir/target"))
+        destinationDirectory.set(file("$rootDir/${rootProject.properties.get("targetDir")}"))
         archiveBaseName.set("${rootProject.name}-${rootProject.version}")
         archiveClassifier.set("")
         archiveVersion.set("")
 
         manifest {
-            attributes["Main-Class"] = mainClassApp
+            attributes["Main-Class"] = rootProject.properties.get("mainClassApp")
         }
 
         relocateMap.forEach { (from, to) ->
