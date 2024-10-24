@@ -39,8 +39,6 @@ val relocateMap = mapOf(
     "com.jeff_media.morepersistentdatatypes" to "dev.wuason.libs.jeffmedia.morepersistentdatatypes",
     "com.jeff_media.customblockdata" to "dev.wuason.libs.jeffmedia.customblockdata",
     "com.saicone.rtag" to "dev.wuason.libs.saicone.rtag",
-    //"org.jetbrains" to "dev.wuason.libs.jetbrains",
-    //"org.intellij" to "dev.wuason.libs.intellij"
 )
 
 allprojects {
@@ -97,8 +95,8 @@ subprojects {
     //apply default version
     if (project.path in arrayOf(
             ":plugin:core",
-            ":plugin:compatibilities:common",
-            ":plugin:compatibilities"
+            ":plugin:adapter:common",
+            ":plugin:adapter"
         )
     ) {
         dependencies {
@@ -106,7 +104,7 @@ subprojects {
         }
     }
 
-    if (project.path in arrayOf(":plugin:compatibilities", ":plugin:compatibilities:common", ":plugin:core")) {
+    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common", ":plugin:item_builder")) {
         java {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
@@ -114,6 +112,9 @@ subprojects {
                 languageVersion.set(JavaLanguageVersion.of(17))
             }
         }
+    }
+
+    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common", ":plugin:core", ":plugin:item_builder")) {
 
         dependencies {
             //libs
@@ -133,8 +134,8 @@ subprojects {
 
 project(":plugin") {
     dependencies {
+        implementation(project(":plugin:adapter"))
         implementation(project(":plugin:core"))
-        implementation(project(":plugin:compatibilities"))
         rootProject.subprojects.filter { it.path.contains(":nms:v") }.forEach {
             implementation(project(it.path, configuration = "reobf"))
         }
@@ -142,6 +143,13 @@ project(":plugin") {
 }
 
 project(":plugin:core") {
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
     dependencies {
 
         compileOnly("me.clip:placeholderapi:2.11.6")//PlaceholderAPI
@@ -151,8 +159,8 @@ project(":plugin:core") {
         compileOnly("org.ow2.asm:asm-commons:9.7")//ASM
         compileOnly("org.ow2.asm:asm:9.7")
 
-        compileOnly(project(":plugin:compatibilities"))
-        compileOnly(project(":plugin:compatibilities:common"))
+        compileOnly(project(":plugin:adapter"))
+        compileOnly(project(":plugin:adapter:common"))
 
         compileOnly("org.apache.httpcomponents:httpclient:4.5.14")
 
@@ -160,10 +168,10 @@ project(":plugin:core") {
 
 }
 
-// COMPATIBILITIES PROJECTS
-project(":plugin:compatibilities:oraxen2") {
+// adapter PROJECTS
+project(":plugin:adapter:oraxen2") {
     dependencies {
-        compileOnly(project(":plugin:compatibilities:common"))
+        compileOnly(project(":plugin:adapter:common"))
         compileOnly(fileTree("libs") { include("*.jar") })
         compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
         compileOnly("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
@@ -181,30 +189,25 @@ project(":plugin:compatibilities:oraxen2") {
     }
 }
 
-project(":plugin:compatibilities") {
+project(":plugin:adapter") {
     dependencies {
 
-        implementation(project(":plugin:compatibilities:common"))
-        implementation(project(":plugin:compatibilities:oraxen2"))
+        implementation(project(":plugin:adapter:common"))
+        implementation(project(":plugin:adapter:oraxen2"))
 
         compileOnly(fileTree("libs") { include("*.jar") })
 
         //for storagemechanic TODO: SHEDULED FOR REMOVAL (THIS IS PROVISIONAL)
         compileOnly("com.github.Wuason6x9:mechanics:1.0.1.12a")
-
         //Oraxen
         compileOnly("com.github.oraxen:oraxen:1.159.0")
-
         //LoneDev
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.5.0b")
-
         //Mythic
         compileOnly("io.lumine:Mythic-Dist:5.3.5")
         compileOnly("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
-
         //Phoneix
         compileOnly("net.Indyuce:MMOItems-API:6.9.4-SNAPSHOT")
-
     }
 }
 
@@ -215,42 +218,33 @@ dependencies {
 
 val libJar = tasks.register<ShadowJar>("libJar") {
     dependsOn(tasks.shadowJar)
-
     description = "Creates a shadowed jar with all dependencies"
     group = "build"
-
     configurations = listOf(project.configurations["runtimeClasspath"])
-
     destinationDirectory.set(file("$rootDir/${rootProject.properties.get("targetDir")}"))
     archiveBaseName.set("${rootProject.name}-${rootProject.version}")
     archiveClassifier.set("lib")
     archiveVersion.set("")
-
     manifest {
         attributes["Main-Class"] = rootProject.properties.get("mainClassApp")
     }
-
     relocateMap.forEach { (from, to) ->
         relocate(from, to)
     }
 }
 
 tasks {
-
     shadowJar {
         destinationDirectory.set(file("$rootDir/${rootProject.properties.get("targetDir")}"))
         archiveBaseName.set("${rootProject.name}-${rootProject.version}")
         archiveClassifier.set("")
         archiveVersion.set("")
-
         manifest {
             attributes["Main-Class"] = rootProject.properties.get("mainClassApp")
         }
-
         relocateMap.forEach { (from, to) ->
             relocate(from, to)
         }
-
         project(":plugin:core").configurations.runtimeClasspath.get().resolvedConfiguration.firstLevelModuleDependencies.forEach { module ->
             if (module.name in libs) {
                 module.allModuleArtifacts.forEach { artifact ->
@@ -259,11 +253,12 @@ tasks {
             }
         }
     }
-
     build {
         dependsOn(libJar)
     }
 }
+
+
 
 publishing {
     publications {

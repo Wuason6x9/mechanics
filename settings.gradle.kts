@@ -10,9 +10,9 @@ pluginManagement {
 include(
     ":App",
     ":plugin",
-    ":plugin:compatibilities",
-    ":plugin:compatibilities:common",
-    ":plugin:compatibilities:oraxen2",
+    ":plugin:adapter",
+    ":plugin:adapter:common",
+    ":plugin:adapter:oraxen2",
     ":plugin:core",
     ":nms:v1_18_R2",
     ":nms:v1_19_R1",

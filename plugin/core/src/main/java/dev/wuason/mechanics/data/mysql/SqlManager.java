@@ -216,10 +216,8 @@ public class SqlManager {
 
     public void dropTable(String tableName) {
         try {
-            // Preparamos la sentencia SQL
             String sql = "DROP TABLE IF EXISTS " + tableName;
 
-            // Ejecutamos la sentencia SQL
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.executeUpdate();
             }
