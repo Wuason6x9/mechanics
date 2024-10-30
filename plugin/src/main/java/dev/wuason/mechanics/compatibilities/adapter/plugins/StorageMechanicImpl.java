@@ -50,6 +50,7 @@ public class StorageMechanicImpl extends ImplementationAdapter {
 
     @Override
     public boolean existItemAdapter(String id) {
+        if(!isEnabled()) return false;
         return StorageMechanic.getInstance().getManagers().getCustomItemsManager().customItemExists(id);
     }
 

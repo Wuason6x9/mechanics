@@ -63,7 +63,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.1.13c"
+    project.version = "1.0.1.13d"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -131,7 +131,7 @@ allprojects {
             //LoneDev
             compileOnly("com.github.LoneDev6:API-ItemsAdder:3.5.0b")
             //PlaceholderAPI
-            compileOnly("me.clip:placeholderapi:2.11.3")
+            compileOnly("me.clip:placeholderapi:2.11.6")
             //WorldGuard
             compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
             //Mythic
