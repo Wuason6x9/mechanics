@@ -94,7 +94,6 @@ subprojects {
 
     //apply default version
     if (project.path in arrayOf(
-            ":plugin:core",
             ":plugin:adapter:common",
             ":plugin:adapter"
         )
@@ -104,7 +103,7 @@ subprojects {
         }
     }
 
-    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common", ":plugin:item_builder")) {
+    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common")) {
         java {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
@@ -114,7 +113,7 @@ subprojects {
         }
     }
 
-    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common", ":plugin:core", ":plugin:item_builder")) {
+    if (project.path in arrayOf(":plugin:adapter", ":plugin:adapter:common", ":plugin:core")) {
 
         dependencies {
             //libs
@@ -147,23 +146,18 @@ project(":plugin:core") {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
     dependencies {
-
+        compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
         compileOnly("me.clip:placeholderapi:2.11.6")//PlaceholderAPI
-
         compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")//WorldGuard
-
         compileOnly("org.ow2.asm:asm-commons:9.7")//ASM
         compileOnly("org.ow2.asm:asm:9.7")
-
         compileOnly(project(":plugin:adapter"))
         compileOnly(project(":plugin:adapter:common"))
-
         compileOnly("org.apache.httpcomponents:httpclient:4.5.14")
-
     }
 
 }
@@ -173,7 +167,7 @@ project(":plugin:adapter:oraxen2") {
     dependencies {
         compileOnly(project(":plugin:adapter:common"))
         compileOnly(fileTree("libs") { include("*.jar") })
-        compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
         compileOnly("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
         compileOnly("io.lumine:Mythic-Dist:5.3.5")
         compileOnly("io.lumine:MythicCrucible:1.7.0-20230723.171823-33")

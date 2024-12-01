@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+//import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -508,10 +509,10 @@ public class ItemBuilder {
      */
     public ItemBuilder setGlowing(boolean glowing) {
         if (glowing) {
-            this.meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+            this.meta.addEnchant(Enchantment.FROST_WALKER, 1, true);
             this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         } else {
-            this.meta.removeEnchant(Enchantment.ARROW_INFINITE);
+            this.meta.removeEnchant(Enchantment.FROST_WALKER);
             this.meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
@@ -543,16 +544,19 @@ public class ItemBuilder {
         return this;
     }
 
-    /**
-     * Sets the localized name of the item.
-     *
-     * @param name the localized name to set for the item
-     * @return the ItemBuilderMechanic object with the updated localized name
-     */
-    public ItemBuilder setLocalizedName(String name) {
-        this.meta.setLocalizedName(name);
+/*    public ItemBuilder setFoodNutrition(int nutrition) {
+        if (meta instanceof FoodComponent food) {
+            food.setNutrition(nutrition);
+        }
         return this;
     }
+
+    public ItemBuilder setFoodSaturation(float saturation) {
+        if (meta instanceof FoodComponent food) {
+            food.setSaturation(saturation);
+        }
+        return this;
+    }*/
 
     /**
      * Sets the color of a leather armor item.
