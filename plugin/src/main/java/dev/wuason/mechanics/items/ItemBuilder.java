@@ -3,7 +3,7 @@ package dev.wuason.mechanics.items;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
+import dev.wuason.adapter.Adapter;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.VersionDetector;
 import net.kyori.adventure.text.Component;
@@ -56,9 +56,7 @@ public class ItemBuilder {
     public ItemBuilder(String adapterId, int amount) {
         this.item = Adapter.getItemStack(adapterId);
         if (this.item == null) {
-            if (!Adapter.isValidAdapterId(adapterId)) {
-                throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
-            }
+            throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
         }
         this.item.setAmount(amount);
         this.meta = this.item.getItemMeta();
@@ -105,12 +103,11 @@ public class ItemBuilder {
     }
 
     public ItemBuilder adapter(String adapterId) {
-        this.item = Adapter.getItemStack(adapterId);
-        if (this.item == null) {
-            if (!Adapter.isValidAdapterId(adapterId)) {
-                throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
-            }
+        ItemStack temp = Adapter.getItemStack(adapterId);
+        if (temp == null) {
+            throw new IllegalArgumentException("Adapter with id " + adapterId + " is not valid");
         }
+        this.item = temp;
         this.meta = this.item.getItemMeta();
         return this;
     }

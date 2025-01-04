@@ -1,6 +1,6 @@
 package dev.wuason.mechanics.configuration.inventories;
 
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
+import dev.wuason.adapter.Adapter;
 import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.utils.AdventureUtils;

@@ -14,22 +14,21 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "9.5.3",
+    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "9.7.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "9.5.3",
+    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "9.7.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.13.2",
+    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.14.1",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
     public static final Dependency PROTECTION_LIB = new Dependency("com:github:oraxen", "protectionlib", "1.5.1",
             Remap.of("io:th0rgal:protectionlib", "dev:wuason:libs:protectionlib")
     );
-
 
     public static final Dependency ASM = new Dependency("org:ow2:asm", "asm", "9.7",
             Remap.of("org:ow2:asm", "dev:wuason:libs:asm")
@@ -51,13 +50,18 @@ public class Dependencies {
             Remap.of("com:google:errorprone", "dev:wuason:libs:google:errorprone")
     );
 
-    public static final Dependency MORE_PERSISTENT_DATA_TYPES = new Dependency("com.jeff-media", "MorePersistentDataTypes", "2.4.0",
+    public static final Dependency MORE_PERSISTENT_DATA_TYPES = new Dependency("com:jeff-media", "MorePersistentDataTypes", "2.4.0",
             Remap.of("com:jeff_media:morepersistentdatatypes", "dev:wuason:libs:jeffmedia:morepersistentdatatypes")
     );
 
-    public static final Dependency CUSTOM_BLOCK_DATA = new Dependency("com.jeff-media", "custom-block-data", "2.2.2",
+    public static final Dependency CUSTOM_BLOCK_DATA = new Dependency("com:jeff-media", "custom-block-data", "2.2.2",
             Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
     );
+
+    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.3",
+            Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
+    );
+
 
 
     static {
@@ -72,7 +76,10 @@ public class Dependencies {
                 ASM_COMMONS,
                 APACHE_COMMONS,
                 GSON,
-                GOOGLE_ERROR_PRONE_ANNOTATIONS
+                GOOGLE_ERROR_PRONE_ANNOTATIONS,
+                MORE_PERSISTENT_DATA_TYPES,
+                CUSTOM_BLOCK_DATA,
+                ADAPTER
         );
     }
 

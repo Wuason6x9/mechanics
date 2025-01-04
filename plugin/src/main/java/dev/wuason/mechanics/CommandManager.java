@@ -3,8 +3,7 @@ package dev.wuason.mechanics;
 import de.tr7zw.changeme.nbtapi.NBT;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
-import dev.wuason.mechanics.items.ItemBuilder;
+import dev.wuason.adapter.Adapter;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
@@ -90,7 +89,7 @@ public class CommandManager {
                         .withArguments(new IntegerArgument("amount").setOptional(true))
                         .executes((sender, args) -> {
                             String id = (String) args.get(0);
-                            if (!Adapter.isValidAdapterId(id)) return;
+                            if (!Adapter.exists(id)) return;
                             ItemStack itemStack = Adapter.getItemStack(id);
                             int amount = (int) args.getOrDefault(1, 1);
                             if (amount > 64 || amount < 1) amount = 64;
@@ -107,7 +106,7 @@ public class CommandManager {
                             Collection<Player> players = (Collection<Player>) args.get(0);
                             if (players.isEmpty()) return;
                             String id = (String) args.get(1);
-                            if (!Adapter.isValidAdapterId(id)) return;
+                            if (!Adapter.exists(id)) return;
                             ItemStack itemStack = Adapter.getItemStack(id);
                             int amount = (int) args.getOrDefault(2, 1);
                             if (amount > 64 || amount < 1) amount = 64;
@@ -134,29 +133,14 @@ public class CommandManager {
                             }
                         })
                 )
-                .withSubcommands(new CommandAPICommand("getComputedId")
+                .withSubcommands(new CommandAPICommand("getAdapterIdAdvanced")
                         .withArguments(new BooleanArgument("sendToConsole").setOptional(true))
                         .executes((sender, args) -> {
                             Player player = (Player) sender;
                             if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR))
                                 return;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            String adapterId = Adapter.computeAdapterIdByItemStack(itemStack);
-                            AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'> <click:copy_to_clipboard:%s> %s </click> </hover>", adapterId, adapterId));
-                            boolean sendToConsole = (boolean) args.getOrDefault(0, false);
-                            if (sendToConsole) {
-                                AdventureUtils.sendMessagePluginConsole("<gold>id: <aqua>" + adapterId);
-                            }
-                        })
-                )
-                .withSubcommands(new CommandAPICommand("getAdapterIdBasic")
-                        .withArguments(new BooleanArgument("sendToConsole").setOptional(true))
-                        .executes((sender, args) -> {
-                            Player player = (Player) sender;
-                            if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType().equals(Material.AIR))
-                                return;
-                            ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            String adapterId = Adapter.getAdapterIdBasic(itemStack);
+                            String adapterId = Adapter.getAdvancedAdapterId(itemStack);
                             AdventureUtils.sendMessage(player, String.format("<gold>id: <aqua> <hover:show_text:'<red>click to copy the clipboard'><click:copy_to_clipboard:%s>%s</click>", adapterId, adapterId));
                             boolean sendToConsole = (boolean) args.getOrDefault(0, false);
                             if (sendToConsole) {

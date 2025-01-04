@@ -4,9 +4,6 @@ import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
 import dev.wuason.mechanics.actions.args.ArgumentProperties;
 import dev.wuason.mechanics.actions.vars.GlobalVar;
-import dev.wuason.storagemechanic.storages.Storage;
-
-import java.util.Locale;
 
 public class VarArg extends Argument {
     public VarArg(String line, Object[] args) {

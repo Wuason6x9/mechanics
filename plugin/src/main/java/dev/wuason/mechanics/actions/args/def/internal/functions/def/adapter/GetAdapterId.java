@@ -1,12 +1,11 @@
 package dev.wuason.mechanics.actions.args.def.internal.functions.def.adapter;
 
+import dev.wuason.adapter.Adapter;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternal;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgument;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgumentProperties;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalProperties;
-import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

@@ -35,6 +35,7 @@ public class LibraryResolver {
         }
         this.dependencyManager = DependencyManager.create(addon, classLoader);
         this.onResolveAndInjected = new ArrayList<>();
+        this.type = type;
     }
 
     public LibraryResolver addDependencies(Dependency... dependencies) {

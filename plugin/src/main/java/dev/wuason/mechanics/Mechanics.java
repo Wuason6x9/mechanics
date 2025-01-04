@@ -3,6 +3,7 @@ package dev.wuason.mechanics;
 import com.jeff_media.customblockdata.CustomBlockData;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.wuason.adapter.Adapter;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.library.LibraryResolver;
 import dev.wuason.mechanics.library.classpath.MechanicClassLoader;
@@ -58,6 +59,7 @@ public final class Mechanics extends MechanicAddon {
         AdventureUtils.sendMessagePluginConsole("<gold>Server version: <aqua>" + VersionDetector.getServerVersion().getVersionName());
         AdventureUtils.sendMessagePluginConsole("<gold>Mechanics loaded: <aqua>" + Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin instanceof MechanicAddon && !(plugin instanceof Mechanics)).map(Plugin::getName).toList().toString().replace("[", "").replace("]", ""));
         //load managers
+        Adapter.init(this);
         metrics();
         CommandAPI.onEnable();
         ProtectionLib.init(this);
@@ -103,7 +105,8 @@ public final class Mechanics extends MechanicAddon {
                         Dependencies.GSON,
                         Dependencies.GOOGLE_ERROR_PRONE_ANNOTATIONS,
                         Dependencies.MORE_PERSISTENT_DATA_TYPES,
-                        Dependencies.CUSTOM_BLOCK_DATA
+                        Dependencies.CUSTOM_BLOCK_DATA,
+                        Dependencies.ADAPTER
                 )
                 .addRepositories(
                         Repos.INVESDWIN,

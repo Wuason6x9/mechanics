@@ -1,7 +1,7 @@
 package dev.wuason.mechanics.utils;
 
+import dev.wuason.adapter.Adapter;
 import dev.wuason.mechanics.Mechanics;
-import dev.wuason.mechanics.compatibilities.adapter.Adapter;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
