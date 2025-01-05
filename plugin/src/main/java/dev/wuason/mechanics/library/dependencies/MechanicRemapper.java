@@ -30,13 +30,11 @@ public class MechanicRemapper extends Remapper {
 
     @Override
     public String map(final String key) {
-        /*if(key.contains("dejvokep")) {
-            System.out.println("Mapping: " + key + " to " + mapping.get(key));
-        }*/
         for(Map.Entry<String, String> entry : mapping.entrySet()) {
             if(key.contains(entry.getKey())) {
-                String value = key.replace(entry.getKey(), entry.getValue());
-                return value;
+                return key.replace(entry.getKey(), entry.getValue());
+            } else if (key.contains(entry.getKey().replace("/", "."))) {
+                return key.replace(entry.getKey().replace("/", "."), entry.getValue().replace("/", "."));
             }
         }
         return super.map(key);
