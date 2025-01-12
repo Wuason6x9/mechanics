@@ -58,7 +58,7 @@ public class Dependencies {
             Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
     );
 
-    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0",
+    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.2",
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
     );
 

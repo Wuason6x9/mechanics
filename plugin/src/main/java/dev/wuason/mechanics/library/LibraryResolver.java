@@ -1,5 +1,6 @@
 package dev.wuason.mechanics.library;
 
+import dev.wuason.adapter.AdapterData;
 import dev.wuason.mechanics.library.dependencies.Dependency;
 import dev.wuason.mechanics.library.dependencies.DependencyManager;
 import dev.wuason.mechanics.library.dependencies.DependencyResolved;
