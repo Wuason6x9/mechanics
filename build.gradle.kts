@@ -60,8 +60,7 @@ val LIBS = listOf(
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.3"
-
+    "com.github.Wuason6x9:Adapter:1.0.4"
 )
 
 
