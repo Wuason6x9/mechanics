@@ -55,7 +55,7 @@ val LIBS = listOf(
     "org.apache.commons:commons-lang3:3.14.0",
     "de.tr7zw:item-nbt-api:2.14.1",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    "com.github.oraxen:protectionlib:1.5.1",
+    "io.th0rgal:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:9.7.0",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
@@ -67,7 +67,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3"
+    project.version = "1.0.3.1"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -86,6 +86,8 @@ allprojects {
         maven("https://maven.enginehub.org/repo/")
         maven("https://nexus.frengor.com/repository/public/")
         maven("https://invesdwin.de/repo/invesdwin-oss/") //bsh
+        maven("https://repo.nexomc.com/releases")
+        maven("https://repo.oraxen.com/releases")
     }
 
     if (project.name in listOf("plugin", "lib")) {

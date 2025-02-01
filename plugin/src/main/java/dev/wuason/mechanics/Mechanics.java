@@ -111,7 +111,9 @@ public final class Mechanics extends MechanicAddon {
                 .addRepositories(
                         Repos.INVESDWIN,
                         Repos.JITPACK,
-                        Repos.CODEMC
+                        Repos.CODEMC,
+                        Repos.ORAXEN_RELEASES,
+                        Repos.NEXO_RELEASES
                 ).addDefaultRepositories();
         this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));

@@ -26,7 +26,7 @@ public class Dependencies {
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
-    public static final Dependency PROTECTION_LIB = new Dependency("com:github:oraxen", "protectionlib", "1.5.1",
+    public static final Dependency PROTECTION_LIB = new Dependency("io:th0rgal", "protectionlib", "1.5.1",
             Remap.of("io:th0rgal:protectionlib", "dev:wuason:libs:protectionlib")
     );
 

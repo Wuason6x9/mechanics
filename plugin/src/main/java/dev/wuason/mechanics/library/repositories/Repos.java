@@ -9,4 +9,6 @@ public class Repos {
     public static final Repository JITPACK = new Repository("Jitpack", "https://jitpack.io/");
     public static final Repository INVESDWIN = new Repository("Invesdwin", "https://invesdwin.de/repo/invesdwin-oss/");
     public static final Repository CODEMC = new Repository("CodeMC", "https://repo.codemc.io/repository/maven-public/");
+    public static final Repository NEXO_RELEASES = new Repository("CodeMC", "https://repo.nexomc.com/releases");
+    public static final Repository ORAXEN_RELEASES = new Repository("CodeMC", "https://repo.oraxen.com/releases");
 }
