@@ -4,7 +4,7 @@ import java.util.concurrent.Executors
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.11" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16" apply false
     id("org.gradle.maven-publish")
 }
 
@@ -41,6 +41,7 @@ val MC_VERSIONS = mapOf(
     //"1.21.2" to MCVersion("1.21.2", "1_21_R1", 21, 13),
     "1.21.3" to MCVersion("1.21.3", "1_21_R2", 21, 14),
     "1.21.4" to MCVersion("1.21.4", "1_21_R3", 21, 15),
+    "1.21.5" to MCVersion("1.21.5", "1_21_R4", 21, 16),
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
@@ -53,21 +54,21 @@ for ((_, mcVersion) in MC_VERSIONS) {
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.14.1",
+    "de.tr7zw:item-nbt-api:2.15.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "io.th0rgal:protectionlib:1.5.1",
-    "dev.jorel:commandapi-bukkit-shade:9.7.0",
+    "dev.jorel:commandapi-bukkit-shade:10.0.0",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.4"
+    "com.github.Wuason6x9:Adapter:1.0.5"
 )
 
 
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.1"
+    project.version = "1.0.3.3"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -180,6 +181,8 @@ allprojects {
         val vrs = NMS_MAP[project.name]!!
         project.extra.set("mcVersion", vrs)
         project.extra.set("apiVersion", vrs.getApiVersion())
+        project.group = "dev.wuason.nms.${vrs.nmsVersion}"
+        project.version = rootProject.version
 
         dependencies {
             compileOnly(project(":NMS:NMS_COMMON"))

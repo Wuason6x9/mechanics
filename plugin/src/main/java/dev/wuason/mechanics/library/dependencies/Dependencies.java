@@ -14,15 +14,15 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "9.7.0",
+    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.0.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "9.7.0",
+    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.0.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.14.1",
+    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.0",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
@@ -58,7 +58,7 @@ public class Dependencies {
             Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
     );
 
-    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.4",
+    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.5",
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
     );
 

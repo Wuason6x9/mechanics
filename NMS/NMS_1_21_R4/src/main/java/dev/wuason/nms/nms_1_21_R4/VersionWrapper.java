@@ -1,4 +1,4 @@
-package dev.wuason.nms.nms_1_21_R2;
+package dev.wuason.nms.nms_1_21_R4;
 
 import dev.wuason.nms.wrappers.DataInfo;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,11 +20,12 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
-import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
@@ -95,14 +96,13 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 private CraftAnvilView bukkitEntity;
 
                 @Override
-                public CraftAnvilView getBukkitView() {
+                public @NotNull CraftAnvilView getBukkitView() {
                     if (this.bukkitEntity != null) {
                         return this.bukkitEntity;
                     }
 
                     org.bukkit.craftbukkit.inventory.CraftInventoryAnvil inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryAnvil(
-                            this.access.getLocation(), this.inputSlots, this.resultSlots)
-                    {
+                            this.access.getLocation(), this.inputSlots, this.resultSlots) {
                         @Override
                         public InventoryHolder getHolder() {
                             return holder;
@@ -125,7 +125,6 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
 
         }
 
-        @Override
         public void open(String title) {
             CraftEventFactory.callInventoryOpenEvent(serverPlayer, anvilMenu);
             ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL, Component.literal(title));
@@ -248,11 +247,11 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         advancementsToGrant.put(id.get(), advancementProgress);
         ClientboundUpdateAdvancementsPacket packet = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>() {{
             add(new AdvancementHolder(id.get(), advancement));
-        }}, new HashSet<>(), advancementsToGrant);
+        }}, new HashSet<>(), advancementsToGrant, true);
         serverPlayer.connection.send(packet);
         ClientboundUpdateAdvancementsPacket packet2 = new ClientboundUpdateAdvancementsPacket(false, new ArrayList<>(), new HashSet<>() {{
             add(id.get());
-        }}, new HashMap<>());
+        }}, new HashMap<>(), true);
         serverPlayer.connection.send(packet2);
     }
 
@@ -321,7 +320,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         return (((CraftServer) Bukkit.getServer())).getHandle();
     }
 
-    public Object getDedicatedServer(){
+    public Object getDedicatedServer() {
         DedicatedServer dedicatedServer = ((DedicatedPlayerList) getServerHandle()).getServer();
         return dedicatedServer;
     }

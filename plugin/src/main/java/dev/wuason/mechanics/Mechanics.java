@@ -1,12 +1,10 @@
 package dev.wuason.mechanics;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.wuason.adapter.Adapter;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.library.LibraryResolver;
-import dev.wuason.mechanics.library.classpath.MechanicClassLoader;
 import dev.wuason.mechanics.library.dependencies.*;
 import dev.wuason.mechanics.library.repositories.Repos;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
@@ -15,6 +13,10 @@ import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.nms.wrappers.NMSManager;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
@@ -68,6 +70,16 @@ public final class Mechanics extends MechanicAddon {
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         getLogger().info("Mechanics plugin ok!");
+
+
+        Bukkit.getPluginManager().registerEvents(
+                new Listener() {
+                    @EventHandler
+                    public void onOpen(InventoryCloseEvent event) {
+                        System.out.println("Close inventory: " + event.getInventory().getType());
+                    }
+                }, this
+        );
 
     }
 

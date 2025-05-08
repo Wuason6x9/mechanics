@@ -4,19 +4,25 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import dev.wuason.adapter.Adapter;
+import dev.wuason.mechanics.invmechanic.types.InvCustomAnvil;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.AdventureUtils;
 import dev.wuason.mechanics.utils.StorageUtils;
+import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.nms.wrappers.NMSManager;
 import dev.wuason.nms.wrappers.VersionWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class CommandManager {
     private Mechanics core;
@@ -53,15 +59,14 @@ public class CommandManager {
                 )
                 .withSubcommands(new CommandAPICommand("getNBT")
                         .executesPlayer((player, commandArguments) -> {
-                            ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            if (itemStack == null || itemStack.getType().isAir()) return;
 
-                            player.sendMessage(NBT.itemStackToNBT(itemStack).toString());
 
                         })
                 )
                 .withSubcommands(new CommandAPICommand("test")
+                        .withPermission("mechanics.command.debug.test")
                         .executes((sender, args) -> {
+
                         })
                 )
                 .withSubcommands(new CommandAPICommand("miniMessageFormatToJson")

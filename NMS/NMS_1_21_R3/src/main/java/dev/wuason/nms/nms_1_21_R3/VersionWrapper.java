@@ -17,13 +17,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
@@ -92,7 +96,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 private CraftAnvilView bukkitEntity;
 
                 @Override
-                public CraftAnvilView getBukkitView() {
+                public @NotNull CraftAnvilView getBukkitView() {
                     if (this.bukkitEntity != null) {
                         return this.bukkitEntity;
                     }
@@ -124,6 +128,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
 
         @Override
         public void open(String title) {
+            CraftEventFactory.callInventoryOpenEvent(serverPlayer, anvilMenu);
             ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL, Component.literal(title));
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
@@ -132,6 +137,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
 
         @Override
         public void open() {
+            CraftEventFactory.callInventoryOpenEvent(serverPlayer, anvilMenu);
             ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(anvilMenu.containerId, MenuType.ANVIL, anvilMenu.getTitle());
             serverPlayer.connection.send(packet);
             serverPlayer.containerMenu = anvilMenu;
@@ -156,6 +162,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
                 }
             };
             anvilMenu.setTitle(this.anvilMenu.getTitle());
+            CraftEventFactory.callInventoryOpenEvent(serverPlayer, anvilMenu);
             ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(invId, MenuType.ANVIL, anvilMenu.getTitle());
             srvPlayer.connection.send(packet);
             srvPlayer.containerMenu = anvilMenu;
@@ -270,9 +277,11 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     @Override
     public void openSing(Player player, String[] defLines, Consumer<String[]> onSend) {
         ServerPlayer serverPlayer = (ServerPlayer) ((CraftPlayer) player).getHandle();
-        Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY() - 7, player.getLocation().getBlockZ());
+        Location loc = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
         BlockPos blockPos = new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        SignBlockEntity signBlock = new SignBlockEntity(blockPos, null);
+
+        SignBlockEntity signBlock = new SignBlockEntity(blockPos, Blocks.OAK_SIGN.defaultBlockState());
+
         Component[] signTexts = new Component[4];
         for (int i = 0; i < 4; i++) {
             if (defLines[i] == null) {
@@ -284,12 +293,14 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         SignText signText = new SignText(signTexts, signTexts, DyeColor.BLACK, false);
         signBlock.setText(signText, true);
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
+        signBlock.setLevel(serverPlayer.serverLevel());
         serverPlayer.connection.send(signBlock.getUpdatePacket());
+        signBlock.setLevel(null);
         serverPlayer.connection.send(new ClientboundOpenSignEditorPacket(blockPos, true));
         ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
         pipeline.addBefore("packet_handler", DataInfo.NAMESPACE_SIGN, new ChannelInboundHandlerAdapter() {
                     @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                    public void channelRead(@NotNull ChannelHandlerContext ctx, @NotNull Object msg) throws Exception {
                         if (msg instanceof ServerboundSignUpdatePacket packet) {
                             onSend.accept(packet.getLines());
                             player.sendBlockChange(loc, loc.getBlock().getBlockData());
