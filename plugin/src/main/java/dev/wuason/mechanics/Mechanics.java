@@ -71,16 +71,6 @@ public final class Mechanics extends MechanicAddon {
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
         getLogger().info("Mechanics plugin ok!");
 
-
-        Bukkit.getPluginManager().registerEvents(
-                new Listener() {
-                    @EventHandler
-                    public void onOpen(InventoryCloseEvent event) {
-                        System.out.println("Close inventory: " + event.getInventory().getType());
-                    }
-                }, this
-        );
-
     }
 
     @Override
