@@ -7,6 +7,8 @@ import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +18,13 @@ import java.util.Map;
 public class ExecuteAction extends Function {
 
 
+    private static final Logger log = LoggerFactory.getLogger(ExecuteAction.class);
+
     public ExecuteAction() {
         super("executeAction",
                 new FunctionArgument.Builder()
                         .addArgument(0, "action", (s, action, objects) -> {
-                            if(action.getActionManager().isActionConfigRegistered(s)) throw new RuntimeException("Action " + s + " not registered");
+                            if(!action.getActionManager().isActionConfigRegistered(s)) throw new RuntimeException("Action " + s + " not registered");
                             return action.getActionManager().getActionConfig(s);
                         })
                         .addArgument(1, "vars", (s, action, objects) -> {
