@@ -4,7 +4,7 @@ import java.util.concurrent.Executors
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply false
     id("org.gradle.maven-publish")
 }
 
@@ -57,7 +57,7 @@ val LIBS = listOf(
     "de.tr7zw:item-nbt-api:2.15.0",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "io.th0rgal:protectionlib:1.5.1",
-    "dev.jorel:commandapi-bukkit-shade:10.0.0",
+    "dev.jorel:commandapi-bukkit-shade:10.0.1",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
@@ -68,7 +68,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.5"
+    project.version = "1.0.3.6"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
