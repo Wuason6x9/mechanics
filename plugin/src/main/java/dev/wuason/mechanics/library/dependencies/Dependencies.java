@@ -62,11 +62,11 @@ public class Dependencies {
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
     );
 
-    public static final Dependency CraftEngineBukkit = new Dependency("net.momirealms:craft-engine-bukkit", "CraftEngineBukkit", "0.0.59",
+    public static final Dependency CRAFTENGINEBUKKIT = new Dependency("net.momirealms:craft-engine-bukkit", "CraftEngineBukkit", "0.0.59",
             Remap.of("net.momirealms:craft-engine-bukkit", "dev:wuason:libs:craftengine-bukkit")
     );
 
-    public static final Dependency CraftEngineCore = new Dependency("net.momirealms:craft-engine-core", "CraftEngineCore", "0.0.59",
+    public static final Dependency CRAFTENGINECORE = new Dependency("net.momirealms:craft-engine-core", "CraftEngineCore", "0.0.59",
             Remap.of("net.momirealms:craft-engine-core", "dev:wuason:libs:craftengine-core")
     );
 
@@ -87,7 +87,9 @@ public class Dependencies {
                 GOOGLE_ERROR_PRONE_ANNOTATIONS,
                 MORE_PERSISTENT_DATA_TYPES,
                 CUSTOM_BLOCK_DATA,
-                ADAPTER
+                ADAPTER,
+                CRAFTENGINEBUKKIT,
+                CRAFTENGINECORE
         );
     }
 
