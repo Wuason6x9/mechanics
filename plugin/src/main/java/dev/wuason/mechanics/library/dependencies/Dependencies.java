@@ -14,11 +14,11 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.0.1",
+    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.1.1",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.0.1",
+    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.1",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
@@ -60,6 +60,14 @@ public class Dependencies {
 
     public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.5",
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
+    );
+
+    public static final Dependency CraftEngineBukkit = new Dependency("net.momirealms:craft-engine-bukkit", "CraftEngineBukkit", "0.0.59",
+            Remap.of("net.momirealms:craft-engine-bukkit", "dev:wuason:libs:craftengine-bukkit")
+    );
+
+    public static final Dependency CraftEngineCore = new Dependency("net.momirealms:craft-engine-core", "CraftEngineCore", "0.0.59",
+            Remap.of("net.momirealms:craft-engine-core", "dev:wuason:libs:craftengine-core")
     );
 
 

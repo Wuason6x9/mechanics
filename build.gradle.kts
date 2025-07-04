@@ -63,6 +63,7 @@ val LIBS = listOf(
     "com.jeff-media:custom-block-data:2.2.2",
     "com.github.Wuason6x9:Adapter:1.0.5",
 
+    "net.momirealms:craft-engine-bukkit:0.0.59",
     "net.momirealms:craft-engine-core:0.0.59"
 )
 
