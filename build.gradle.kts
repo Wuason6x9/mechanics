@@ -61,7 +61,9 @@ val LIBS = listOf(
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.5"
+    "com.github.Wuason6x9:Adapter:1.0.5",
+
+    "net.momirealms:craft-engine-core:0.0.59"
 )
 
 
@@ -89,6 +91,8 @@ allprojects {
         maven("https://invesdwin.de/repo/invesdwin-oss/") //bsh
         maven("https://repo.nexomc.com/releases")
         maven("https://repo.oraxen.com/releases")
+
+        maven("https://repo.momirealms.net/releases/")
     }
 
     if (project.name in listOf("plugin", "lib")) {
