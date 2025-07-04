@@ -71,7 +71,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.6"
+    project.version = "1.0.3.7"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
