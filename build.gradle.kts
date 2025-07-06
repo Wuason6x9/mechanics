@@ -42,8 +42,8 @@ val MC_VERSIONS = mapOf(
     "1.21.3" to MCVersion("1.21.3", "1_21_R2", 21, 14),
     "1.21.4" to MCVersion("1.21.4", "1_21_R3", 21, 15),
     "1.21.5" to MCVersion("1.21.5", "1_21_R4", 21, 16),
-    "1.21.6" to MCVersion("1.21.6", "1_21_R4", 21, 16),
-    "1.21.7" to MCVersion("1.21.7", "1_21_R4", 21, 16)
+    "1.21.6" to MCVersion("1.21.6", "1_21_R5", 21, 16),
+    "1.21.7" to MCVersion("1.21.7", "1_21_R5", 21, 16)
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
