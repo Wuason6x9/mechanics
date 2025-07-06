@@ -10,6 +10,7 @@ softdepend:
   - PlaceholderAPI
   - ItemsAdder
   - Oraxen
+  - CraftEngine
   - MythicMobs
   - MMOItems
   - CustomItems

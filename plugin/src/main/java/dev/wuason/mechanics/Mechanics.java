@@ -44,6 +44,12 @@ public final class Mechanics extends MechanicAddon {
     @Override
     public void onLoad() {
         loadLibraries();
+        try {
+            Class.forName("net.minecraft.core.RegistryAccess");
+            Bukkit.getLogger().info("✅ RegistryAccess existe -> Mojang mappings detectados");
+        } catch (ClassNotFoundException ignored) {
+            Bukkit.getLogger().warning("⚠️ RegistryAccess NO encontrada");
+        }
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
     }
 

@@ -1,13 +1,14 @@
-package dev.wuason.nms.nms_1_21_R4;
+package dev.wuason.nms.nms_1_21_R5;
 
 import dev.wuason.nms.wrappers.DataInfo;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
+import io.papermc.paper.adventure.PaperAdventure;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
@@ -23,14 +24,9 @@ import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.bukkit.craftbukkit.inventory.CraftInventoryAnvil;
-import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.inventory.view.CraftAnvilView;
 import org.bukkit.entity.Player;
@@ -68,13 +64,17 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
     @Override
     public Object getTextComponent(String json) {
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
-        return Component.Serializer.fromJson(json, craftServer.getHandle().getServer().registryAccess());
+        //return Component.Serializer.fromJson(json, craftServer.getHandle().getServer().registryAccess());
+        net.kyori.adventure.text.Component adventureComponent = GsonComponentSerializer.gson().deserialize(json);
+        return io.papermc.paper.adventure.PaperAdventure.asVanilla(adventureComponent);
     }
 
     @Override
     public String getJsonFromComponent(Object component) {
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
-        return Component.Serializer.toJson((Component) component, craftServer.getHandle().getServer().registryAccess());
+        //return Component.Serializer.toJson((Component) component, craftServer.getHandle().getServer().registryAccess());
+        net.kyori.adventure.text.Component adventureComponent = io.papermc.paper.adventure.PaperAdventure.asAdventure((net.minecraft.network.chat.Component) component);
+        return GsonComponentSerializer.gson().serialize(adventureComponent);
     }
 
     public class AnvilInventoryCustom implements dev.wuason.nms.wrappers.VersionWrapper.AnvilInventoryCustom {
@@ -225,8 +225,19 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         if (icon != null) {
             iconNMS = CraftItemStack.asNMSCopy(icon);
         }
-        CraftServer craftServer = (CraftServer) Bukkit.getServer();
-        Optional<DisplayInfo> displayInfo = Optional.of(new DisplayInfo(iconNMS, Component.Serializer.fromJson(titleJson, craftServer.getServer().registryAccess()), Component.literal("."), Optional.empty(), AdvancementType.valueOf(toastType.toString()), true, false, true));
+
+        net.kyori.adventure.text.Component adv = GsonComponentSerializer.gson().deserialize(titleJson);
+        Component nmsComponent = PaperAdventure.asVanilla(adv);
+
+        Optional<DisplayInfo> displayInfo = Optional.of(new DisplayInfo(
+                iconNMS,
+                nmsComponent,
+                Component.literal("."),
+                Optional.empty(),
+                AdvancementType.valueOf(toastType.toString()),
+                true, false, true
+        ));
+
         AdvancementRewards advancementRewards = AdvancementRewards.EMPTY;
         Optional<ResourceLocation> id = Optional.of(ResourceLocation.fromNamespaceAndPath(namespace, path));
         Criterion<ImpossibleTrigger.TriggerInstance> impossibleTrigger = new Criterion<>(new ImpossibleTrigger(), new ImpossibleTrigger.TriggerInstance());
@@ -260,8 +271,13 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
         MenuType<?> menuType = serverPlayer.containerMenu.getType();
         int invId = serverPlayer.containerMenu.containerId;
-        CraftServer craftServer = (CraftServer) Bukkit.getServer();
-        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId, menuType, Component.Serializer.fromJson(jsonTitle, craftServer.getServer().registryAccess()));
+        //CraftServer craftServer = (CraftServer) Bukkit.getServer();
+
+        net.kyori.adventure.text.Component adv = GsonComponentSerializer.gson().deserialize(jsonTitle);
+        net.minecraft.network.chat.Component title = io.papermc.paper.adventure.PaperAdventure.asVanilla(adv);
+
+        ClientboundOpenScreenPacket packetOpen = new ClientboundOpenScreenPacket(invId, menuType, title);
+
         serverPlayer.connection.send(packetOpen);
         serverPlayer.initMenu(serverPlayer.containerMenu);
     }
@@ -291,7 +307,7 @@ public class VersionWrapper implements dev.wuason.nms.wrappers.VersionWrapper {
         SignText signText = new SignText(signTexts, signTexts, DyeColor.BLACK, false);
         signBlock.setText(signText, true);
         player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
-        signBlock.setLevel(serverPlayer.serverLevel());
+        signBlock.setLevel(serverPlayer.level());
         serverPlayer.connection.send(signBlock.getUpdatePacket());
         signBlock.setLevel(null);
         serverPlayer.connection.send(new ClientboundOpenSignEditorPacket(blockPos, true));
