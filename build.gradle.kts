@@ -60,6 +60,7 @@ val LIBS = listOf(
     "org.apache-extras.beanshell:bsh:2.1.1",
     "io.th0rgal:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:10.1.1",
+    //"dev.jorel:commandapi-bukkit-plugin-mojang-mapped:10.1.1",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
