@@ -14,11 +14,11 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.1.1",
+    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.1.2",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.1",
+    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.2",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
