@@ -42,9 +42,9 @@ val MC_VERSIONS = mapOf(
     "1.21.3" to MCVersion("1.21.3", "1_21_R2", 21, 14),
     "1.21.4" to MCVersion("1.21.4", "1_21_R3", 21, 15),
     "1.21.5" to MCVersion("1.21.5", "1_21_R4", 21, 16),
-    "1.21.6" to MCVersion("1.21.6", "1_21_R5", 21, 16),
-    "1.21.7" to MCVersion("1.21.7", "1_21_R5", 21, 16),
-    "1.21.8" to MCVersion("1.21.8", "1_21_R5", 21, 16),
+    "1.21.6" to MCVersion("1.21.6", "1_21_R5", 21, 17),
+    "1.21.7" to MCVersion("1.21.7", "1_21_R5", 21, 18),
+    "1.21.8" to MCVersion("1.21.8", "1_21_R5", 21, 19),
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
@@ -57,7 +57,7 @@ for ((_, mcVersion) in MC_VERSIONS) {
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.15.0",
+    "de.tr7zw:item-nbt-api:2.15.1",
     "org.apache-extras.beanshell:bsh:2.1.1",
     "io.th0rgal:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:10.1.2",
@@ -65,7 +65,7 @@ val LIBS = listOf(
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.6"
+    "com.github.Wuason6x9:Adapter:1.0.6.1"
 )
 
 
