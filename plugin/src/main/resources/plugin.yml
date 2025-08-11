@@ -23,5 +23,6 @@ softdepend:
   - PlotSquared
   - CrashClaim
   - HuskTowns
+  - CraftEngine
 libraries:
   - "org.apache.httpcomponents:httpclient:4.5.14"
