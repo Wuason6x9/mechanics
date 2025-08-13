@@ -26,9 +26,9 @@ public class Dependencies {
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
-    public static final Dependency PROTECTION_LIB = new Dependency("io:th0rgal", "protectionlib", "1.5.1",
+    /*public static final Dependency PROTECTION_LIB = new Dependency("io:th0rgal", "protectionlib", "1.5.1",
             Remap.of("io:th0rgal:protectionlib", "dev:wuason:libs:protectionlib")
-    );
+    );*/
 
     public static final Dependency ASM = new Dependency("org:ow2:asm", "asm", "9.7",
             Remap.of("org:ow2:asm", "dev:wuason:libs:asm")
@@ -71,7 +71,7 @@ public class Dependencies {
                 COMMAND_API,
                 COMMAND_API_MOJANG_MAPPED,
                 NBT_API,
-                PROTECTION_LIB,
+                //PROTECTION_LIB,
                 ASM,
                 ASM_COMMONS,
                 APACHE_COMMONS,

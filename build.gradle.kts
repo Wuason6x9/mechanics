@@ -59,7 +59,7 @@ val LIBS = listOf(
     "org.apache.commons:commons-lang3:3.14.0",
     "de.tr7zw:item-nbt-api:2.15.1",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    "io.th0rgal:protectionlib:1.5.1",
+    //"io.th0rgal:protectionlib:1.5.1",
     "dev.jorel:commandapi-bukkit-shade:10.1.2",
     //"dev.jorel:commandapi-bukkit-plugin-mojang-mapped:10.1.1",
     "com.google.code.gson:gson:2.11.0",
@@ -72,7 +72,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.7"
+    project.version = "1.0.3.8"
 
     apply(plugin = "java")
     apply(plugin = "org.gradle.maven-publish")
@@ -106,7 +106,7 @@ allprojects {
             relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
             relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
             relocate("de.tr7zw.changeme.nbtapi","dev.wuason.libs.nbtapi")
-            relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
+            //relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")

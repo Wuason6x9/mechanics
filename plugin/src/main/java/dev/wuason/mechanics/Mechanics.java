@@ -11,7 +11,6 @@ import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.*;
 import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.nms.wrappers.NMSManager;
-import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -64,7 +63,6 @@ public final class Mechanics extends MechanicAddon {
         Adapter.init(this);
         metrics();
         CommandAPI.onEnable();
-        ProtectionLib.init(this);
         this.manager = new Manager(this);
         this.manager.load();
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
@@ -102,7 +100,7 @@ public final class Mechanics extends MechanicAddon {
                         Dependencies.BOOSTED_YAML,
                         Dependencies.BEAN_SHELL,
                         Dependencies.NBT_API,
-                        Dependencies.PROTECTION_LIB,
+                        //Dependencies.PROTECTION_LIB,
                         Dependencies.APACHE_COMMONS,
                         Dependencies.GSON,
                         Dependencies.GOOGLE_ERROR_PRONE_ANNOTATIONS,
