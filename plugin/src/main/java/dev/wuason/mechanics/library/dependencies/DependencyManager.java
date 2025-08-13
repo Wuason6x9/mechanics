@@ -10,8 +10,16 @@ import dev.wuason.mechanics.mechanics.MechanicAddon;
 
 import java.io.*;
 import java.net.URLClassLoader;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.jar.JarFile;
 
 public class DependencyManager {
 
@@ -194,7 +202,7 @@ public class DependencyManager {
         if (dependency.getJarFile() != null) {
             resolved = new DependencyResolved(dependency, dependency.getJarFile(), this, System.currentTimeMillis() - start);
         }
-        else if (jar.exists()) {
+        else if (verifyJarFile(jar)) {
             resolved = new DependencyResolved(dependency, jar, this, System.currentTimeMillis() - start);
         }
         else {
@@ -218,21 +226,53 @@ public class DependencyManager {
         return Collections.emptyList();
     }
 
+    private boolean verifyJarFile(File jarFile) {
+        try {
+            if (!jarFile.exists() || !jarFile.isFile() || !jarFile.canRead() || jarFile.length() == 0) {
+                return false;
+            }
+
+            try (JarFile jar = new JarFile(jarFile)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
     private File saveDependency(InputStream inputStream, Repository.DownloadType type, Dependency dependency) throws IOException {
-        BufferedInputStream in = new BufferedInputStream(inputStream);
-        File file = getJarFileLocally(dependency);
-        file.getParentFile().mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        byte[] dataBuffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-            fileOutputStream.write(dataBuffer, 0, bytesRead);
+        File targetFile = getJarFileLocally(dependency);
+        File parent = targetFile.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
         }
-        fileOutputStream.close();
-        in.close();
-        return getJarFileLocally(dependency);
+
+        File tmpFile = new File(targetFile.getParentFile(), targetFile.getName() + ".part");
+
+        Path tmpPath = tmpFile.toPath();
+        Path targetPath = targetFile.toPath();
+
+        try (ReadableByteChannel inChannel = Channels.newChannel(inputStream);
+             FileChannel outChannel = FileChannel.open(
+                     tmpPath,
+                     StandardOpenOption.CREATE,
+                     StandardOpenOption.TRUNCATE_EXISTING,
+                     StandardOpenOption.WRITE)) {
+
+            long transferred = 0;
+            while (transferred < Long.MAX_VALUE) {
+                long n = outChannel.transferFrom(inChannel, transferred, 16 * 1024 * 1024); // trozos de 16MB
+                if (n <= 0) break;
+                transferred += n;
+            }
+            outChannel.force(true);
+        }
+
+        Files.move(tmpPath, targetPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        return targetFile;
     }
+
 
 
     public MechanicAddon getCore() {
