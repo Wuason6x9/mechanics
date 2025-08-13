@@ -16,13 +16,32 @@ softdepend:
   - CustomItems
   - ExecutableBlocks
   - ExecutableItems
-  - Towny
-  - WorldGuard
-  - Factions
+  - CraftEngine
+  - BentoBox
+  - CrashClaim
+  - Dominion
+  - FabledSkyBlock
+  - FactionsUUID
+  - GriefDefender
+  - GriefPrevention
+  - hClaims
+  - HuskClaims
+  - HuskTowns
+  - IridiumSkyBlock
+  - KingdomsX
+  - Landlord
   - Lands
   - PlotSquared
-  - CrashClaim
-  - HuskTowns
-  - CraftEngine
+  - PreciousStones
+  - ProtectionStones
+  - RedProtect
+  - Residence
+  - SaberFactions
+  - SuperiorSkyBlock
+  - Towny
+  - UltimateClaims
+  - UltimateClans
+  - WorldGuard
+  - XClaim
 libraries:
   - "org.apache.httpcomponents:httpclient:4.5.14"

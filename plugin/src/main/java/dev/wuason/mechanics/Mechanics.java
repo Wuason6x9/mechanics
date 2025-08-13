@@ -11,6 +11,7 @@ import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.*;
 import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.nms.wrappers.NMSManager;
+import net.momirealms.antigrieflib.AntiGriefLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +32,7 @@ public final class Mechanics extends MechanicAddon {
     private NMSManager NMSManager;
     private LibraryResolver libraryResolver;
     public static final int SPIGOT_ID = 111934;
+    private AntiGriefLib antiGriefLib;
 
     public Mechanics() {
         super("Mechanics");
@@ -100,7 +102,7 @@ public final class Mechanics extends MechanicAddon {
                         Dependencies.BOOSTED_YAML,
                         Dependencies.BEAN_SHELL,
                         Dependencies.NBT_API,
-                        //Dependencies.PROTECTION_LIB,
+                        Dependencies.ANTI_GRIEF,
                         Dependencies.APACHE_COMMONS,
                         Dependencies.GSON,
                         Dependencies.GOOGLE_ERROR_PRONE_ANNOTATIONS,
@@ -112,8 +114,7 @@ public final class Mechanics extends MechanicAddon {
                         Repos.INVESDWIN,
                         Repos.JITPACK,
                         Repos.CODEMC,
-                        Repos.ORAXEN_RELEASES,
-                        Repos.NEXO_RELEASES
+                        Repos.MOMIREALMS
                 ).addDefaultRepositories();
         this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
@@ -219,6 +220,16 @@ public final class Mechanics extends MechanicAddon {
      */
     public NMSManager getServerNmsVersion() {
         return NMSManager;
+    }
+
+    public AntiGriefLib getAntiGriefLib() {
+        if (this.antiGriefLib == null) {
+            this.antiGriefLib = AntiGriefLib.builder(this)
+                    .ignoreOP(true)
+                    .silentLogs(false)
+                    .build();
+        }
+        return this.antiGriefLib;
     }
 
 }

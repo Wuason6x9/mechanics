@@ -65,7 +65,8 @@ val LIBS = listOf(
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.6.1"
+    "com.github.Wuason6x9:Adapter:1.0.6.1",
+    "net.momirealms:antigrieflib:0.16"
 )
 
 
@@ -93,6 +94,7 @@ allprojects {
         maven("https://invesdwin.de/repo/invesdwin-oss/") //bsh
         maven("https://repo.nexomc.com/releases")
         maven("https://repo.oraxen.com/releases")
+        maven("https://repo.momirealms.net/releases/")
     }
 
     if (project.name in listOf("plugin", "lib")) {
@@ -106,7 +108,7 @@ allprojects {
             relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
             relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
             relocate("de.tr7zw.changeme.nbtapi","dev.wuason.libs.nbtapi")
-            //relocate("io.th0rgal.protectionlib", "dev.wuason.libs.protectionlib")
+            relocate("net.momirealms.antigrieflib", "dev.wuason.libs.antigrieflib")
             relocate("bsh", "dev.wuason.libs.bsh")
             relocate("org.apache.commons", "dev.wuason.libs.apache.commons")
             relocate("dev.wuason.mechanics.invmechanic", "dev.wuason.libs.invmechaniclib")
