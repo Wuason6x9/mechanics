@@ -1,8 +1,6 @@
 package dev.wuason.mechanics.actions.args.def.internal.functions;
 
 import dev.wuason.mechanics.actions.Action;
-import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
-import dev.wuason.mechanics.actions.functions.FunctionArgument;
 
 import java.util.HashMap;
 import java.util.Locale;

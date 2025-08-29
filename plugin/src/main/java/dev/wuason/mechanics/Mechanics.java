@@ -5,7 +5,7 @@ import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.wuason.adapter.Adapter;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.library.LibraryResolver;
-import dev.wuason.mechanics.library.dependencies.*;
+import dev.wuason.mechanics.library.dependencies.Dependencies;
 import dev.wuason.mechanics.library.repositories.Repos;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 import dev.wuason.mechanics.utils.*;
@@ -13,16 +13,11 @@ import dev.wuason.nms.utils.VersionNMS;
 import dev.wuason.nms.wrappers.NMSManager;
 import net.momirealms.antigrieflib.AntiGriefLib;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class Mechanics extends MechanicAddon {
@@ -114,7 +109,8 @@ public final class Mechanics extends MechanicAddon {
                         Repos.INVESDWIN,
                         Repos.JITPACK,
                         Repos.CODEMC,
-                        Repos.MOMIREALMS
+                        Repos.MOMIREALMS,
+                        Repos.TECHMC
                 ).addDefaultRepositories();
         this.libraryResolver.onResolveAndInjected(dependencyResolved -> {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));

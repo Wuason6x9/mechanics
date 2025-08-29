@@ -3,7 +3,6 @@ package dev.wuason.mechanics.utils;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class AdvancedUtils {
     public static Unsafe getUnsafe() {

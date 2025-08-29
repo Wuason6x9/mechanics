@@ -2,7 +2,6 @@ package dev.wuason.mechanics.actions.config;
 
 import dev.wuason.mechanics.actions.args.Argument;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class VarListConfig<T extends Class<? extends Argument>> {

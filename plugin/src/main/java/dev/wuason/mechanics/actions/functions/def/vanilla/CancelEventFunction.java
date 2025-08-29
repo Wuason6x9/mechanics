@@ -6,8 +6,6 @@ import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import org.bukkit.event.Cancellable;
 
-import java.util.Map;
-
 public class CancelEventFunction extends Function {
     public CancelEventFunction() {
         super("cancelEvent",

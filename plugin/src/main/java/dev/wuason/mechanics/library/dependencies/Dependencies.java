@@ -1,6 +1,8 @@
 package dev.wuason.mechanics.library.dependencies;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class Dependencies {
 
@@ -58,7 +60,7 @@ public class Dependencies {
             Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
     );
 
-    public static final Dependency ADAPTER = new Dependency("com:github:Wuason6x9", "Adapter", "1.0.6.1",
+    public static final Dependency ADAPTER = new Dependency("dev:wuason", "adapter", "1.0.6.2",
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
     );
 
@@ -71,7 +73,6 @@ public class Dependencies {
                 COMMAND_API,
                 COMMAND_API_MOJANG_MAPPED,
                 NBT_API,
-                //PROTECTION_LIB,
                 ANTI_GRIEF,
                 ASM,
                 ASM_COMMONS,

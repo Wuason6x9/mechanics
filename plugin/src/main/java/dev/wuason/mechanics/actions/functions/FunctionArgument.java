@@ -2,13 +2,12 @@ package dev.wuason.mechanics.actions.functions;
 
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.utils.ArgumentUtils;
-import org.apache.commons.lang3.IntegerRange;
-import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public abstract class FunctionArgument {

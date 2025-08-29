@@ -1,6 +1,5 @@
 package dev.wuason.mechanics.actions.config;
 
-import dev.wuason.mechanics.actions.events.EventAction;
 import dev.wuason.mechanics.actions.executators.Executor;
 import dev.wuason.mechanics.actions.executators.Run;
 

@@ -1,9 +1,9 @@
 package dev.wuason.mechanics.invmechanic.types.pages.content.normal.items;
 
-import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.PreviousPageEvent;
 import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.InvCustomPagesContent;
+import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.PreviousPageEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

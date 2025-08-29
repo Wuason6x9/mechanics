@@ -1,9 +1,9 @@
 package dev.wuason.mechanics.invmechanic.types.pages.content.multiple;
 
 import dev.wuason.mechanics.invmechanic.items.ItemInterface;
+import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.items.NextPageItem;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.items.PreviousPageItem;
-import dev.wuason.mechanics.invmechanic.types.InvCustom;
 
 import java.util.ArrayList;
 import java.util.HashMap;

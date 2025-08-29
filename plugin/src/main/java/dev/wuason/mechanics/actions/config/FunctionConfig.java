@@ -2,8 +2,6 @@ package dev.wuason.mechanics.actions.config;
 
 import dev.wuason.mechanics.actions.functions.Function;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class FunctionConfig {

@@ -1,19 +1,15 @@
 package dev.wuason.mechanics.actions.functions.def.vanilla;
 
-import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import dev.wuason.mechanics.utils.PlayerUtils;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 public class PlaySound extends Function {
 

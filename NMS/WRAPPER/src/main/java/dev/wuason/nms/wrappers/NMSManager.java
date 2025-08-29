@@ -1,6 +1,5 @@
 package dev.wuason.nms.wrappers;
 
-import dev.wuason.mechanics.utils.VersionDetector;
 import dev.wuason.nms.utils.VersionNMS;
 
 import java.lang.reflect.InvocationTargetException;

@@ -2,8 +2,8 @@ package dev.wuason.mechanics.actions.functions;
 
 import dev.wuason.mechanics.actions.Action;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 

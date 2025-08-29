@@ -3,13 +3,10 @@ package dev.wuason.mechanics.actions.functions.def.actions;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.functions.Function;
 import dev.wuason.mechanics.actions.functions.FunctionArgument;
-import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class JavaCodeFunction extends Function {
 

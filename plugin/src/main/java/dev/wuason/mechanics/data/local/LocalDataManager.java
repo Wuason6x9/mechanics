@@ -1,11 +1,8 @@
 package dev.wuason.mechanics.data.local;
 
-import com.sk89q.worldedit.util.YAMLConfiguration;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.data.Data;
 import dev.wuason.mechanics.utils.Utils;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;

@@ -1,6 +1,5 @@
 package dev.wuason.mechanics.actions.args.def;
 
-import bsh.EvalError;
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.args.Argument;
 import dev.wuason.mechanics.actions.args.ArgumentProperties;

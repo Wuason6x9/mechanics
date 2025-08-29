@@ -1,13 +1,12 @@
 package dev.wuason.mechanics.library;
 
-import dev.wuason.adapter.AdapterData;
 import dev.wuason.mechanics.library.dependencies.Dependency;
 import dev.wuason.mechanics.library.dependencies.DependencyManager;
 import dev.wuason.mechanics.library.dependencies.DependencyResolved;
 import dev.wuason.mechanics.library.repositories.Repository;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 
-import java.io.*;
+import java.io.File;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;

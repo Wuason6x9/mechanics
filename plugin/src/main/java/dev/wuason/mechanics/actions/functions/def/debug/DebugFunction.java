@@ -6,7 +6,6 @@ import dev.wuason.mechanics.actions.functions.FunctionArgument;
 import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
 import dev.wuason.mechanics.actions.functions.FunctionProperties;
 import dev.wuason.mechanics.utils.AdventureUtils;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 

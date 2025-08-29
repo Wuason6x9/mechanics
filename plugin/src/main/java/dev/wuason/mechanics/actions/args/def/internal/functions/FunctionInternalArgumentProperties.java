@@ -1,7 +1,5 @@
 package dev.wuason.mechanics.actions.args.def.internal.functions;
 
-import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
-
 public class FunctionInternalArgumentProperties {
     private boolean processArg;
     private boolean processArgSearchArgs;

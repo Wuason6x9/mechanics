@@ -2,15 +2,11 @@ package dev.wuason.mechanics.items.config_builder;
 
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import dev.wuason.mechanics.items.ItemBuilder;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 

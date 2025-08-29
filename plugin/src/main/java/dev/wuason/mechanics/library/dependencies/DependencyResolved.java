@@ -1,7 +1,6 @@
 package dev.wuason.mechanics.library.dependencies;
 
 import java.io.File;
-import java.util.Arrays;
 
 public class DependencyResolved {
     private final Dependency dependency;

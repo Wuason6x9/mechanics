@@ -5,11 +5,8 @@ import dev.wuason.mechanics.actions.args.def.internal.functions.def.adapter.GetA
 import dev.wuason.mechanics.actions.args.def.internal.functions.def.adapter.GetItemStackByAdapter;
 import dev.wuason.mechanics.actions.args.def.internal.functions.def.math.Chance;
 import dev.wuason.mechanics.actions.args.def.internal.functions.def.math.RandomNumber;
-import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.function.Consumer;
 
 public class FunctionsInternal {

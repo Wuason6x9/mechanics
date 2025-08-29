@@ -5,7 +5,6 @@ import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternal
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgument;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalArgumentProperties;
 import dev.wuason.mechanics.actions.args.def.internal.functions.FunctionInternalProperties;
-import dev.wuason.mechanics.actions.config.FunctionInternalConfig;
 import dev.wuason.mechanics.actions.utils.ActionConfigUtils;
 
 import java.util.HashMap;

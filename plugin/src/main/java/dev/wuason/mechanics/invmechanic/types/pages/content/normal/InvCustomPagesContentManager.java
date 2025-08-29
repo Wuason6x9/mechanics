@@ -2,14 +2,14 @@ package dev.wuason.mechanics.invmechanic.types.pages.content.normal;
 
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.invmechanic.events.CloseEvent;
+import dev.wuason.mechanics.invmechanic.items.ItemInterface;
+import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.ContentClickEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.NextPageEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.OpenPageEvent;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.events.PreviousPageEvent;
-import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.items.NextPageItem;
 import dev.wuason.mechanics.invmechanic.types.pages.content.normal.items.PreviousPageItem;
-import dev.wuason.mechanics.invmechanic.types.InvCustom;
 import dev.wuason.mechanics.items.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

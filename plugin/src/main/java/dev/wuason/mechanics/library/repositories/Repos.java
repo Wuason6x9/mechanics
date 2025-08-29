@@ -12,4 +12,5 @@ public class Repos {
     public static final Repository NEXO_RELEASES = new Repository("CodeMC", "https://repo.nexomc.com/releases");
     public static final Repository ORAXEN_RELEASES = new Repository("CodeMC", "https://repo.oraxen.com/releases");
     public static final Repository MOMIREALMS = new Repository("MomiRealms", "https://repo.momirealms.net/releases/");
+    public static final Repository TECHMC = new Repository("TechMC", "https://repo.techmc.es/releases/");
 }

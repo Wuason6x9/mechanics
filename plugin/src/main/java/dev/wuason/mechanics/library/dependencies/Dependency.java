@@ -1,6 +1,6 @@
 package dev.wuason.mechanics.library.dependencies;
 
-import java.io.*;
+import java.io.File;
 import java.util.HashMap;
 
 public class Dependency {

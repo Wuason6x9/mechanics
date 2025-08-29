@@ -2,7 +2,6 @@ package dev.wuason.mechanics.actions.events.defbukkit;
 
 import dev.wuason.mechanics.actions.Action;
 import dev.wuason.mechanics.actions.events.EventBukkit;
-import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Locale;

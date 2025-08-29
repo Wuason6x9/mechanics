@@ -5,7 +5,6 @@ import dev.wuason.mechanics.actions.args.Argument;
 import dev.wuason.mechanics.actions.args.ArgumentProperties;
 import dev.wuason.mechanics.actions.args.Arguments;
 import dev.wuason.mechanics.actions.config.ArgumentConfig;
-import dev.wuason.mechanics.utils.MathUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;

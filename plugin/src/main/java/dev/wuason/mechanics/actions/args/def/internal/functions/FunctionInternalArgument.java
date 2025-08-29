@@ -1,8 +1,6 @@
 package dev.wuason.mechanics.actions.args.def.internal.functions;
 
 import dev.wuason.mechanics.actions.Action;
-import dev.wuason.mechanics.actions.functions.FunctionArgument;
-import dev.wuason.mechanics.actions.functions.FunctionArgumentProperties;
 import dev.wuason.mechanics.actions.utils.ArgumentUtils;
 import org.apache.commons.lang3.function.TriFunction;
 

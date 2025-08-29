@@ -1,7 +1,6 @@
 package dev.wuason.nms.utils;
 
 import dev.wuason.mechanics.utils.VersionDetector;
-import org.bukkit.Bukkit;
 
 public class VersionNMS {
 

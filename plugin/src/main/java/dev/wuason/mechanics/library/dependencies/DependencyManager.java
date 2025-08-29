@@ -1,6 +1,5 @@
 package dev.wuason.mechanics.library.dependencies;
 
-import dev.wuason.adapter.AdapterData;
 import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.library.classpath.ClassLoaderInjector;
 import dev.wuason.mechanics.library.classpath.MechanicClassLoader;
@@ -8,7 +7,9 @@ import dev.wuason.mechanics.library.repositories.Repos;
 import dev.wuason.mechanics.library.repositories.Repository;
 import dev.wuason.mechanics.mechanics.MechanicAddon;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLClassLoader;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;

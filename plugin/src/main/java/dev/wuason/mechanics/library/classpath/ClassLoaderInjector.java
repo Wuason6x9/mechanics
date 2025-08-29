@@ -1,19 +1,11 @@
 package dev.wuason.mechanics.library.classpath;
 
-import dev.wuason.mechanics.Mechanics;
 import dev.wuason.mechanics.utils.AdvancedUtils;
-import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.plugin.java.PluginClassLoader;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Collection;
 
 public class ClassLoaderInjector { //java 9+ only

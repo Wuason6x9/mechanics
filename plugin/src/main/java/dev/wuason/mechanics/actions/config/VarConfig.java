@@ -1,7 +1,5 @@
 package dev.wuason.mechanics.actions.config;
 
-import dev.wuason.mechanics.actions.args.Argument;
-
 public class VarConfig {
     private final String var;
     private final ArgumentConfig argument;

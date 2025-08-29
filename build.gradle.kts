@@ -1,11 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import java.util.concurrent.Executors
+import io.papermc.paperweight.util.capitalized
 
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply false
-    id("org.gradle.maven-publish")
+    id("maven-publish")
 }
 
 class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
@@ -65,7 +65,7 @@ val LIBS = listOf(
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "com.github.Wuason6x9:Adapter:1.0.6.1",
+    "dev.wuason:adapter:1.0.6.2",
     "net.momirealms:antigrieflib:0.16"
 )
 
@@ -73,10 +73,10 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.8"
+    project.version = "1.0.3.9"
 
     apply(plugin = "java")
-    apply(plugin = "org.gradle.maven-publish")
+    apply(plugin = "maven-publish")
     apply(plugin = "io.github.goooler.shadow")
 
     repositories {
@@ -95,6 +95,7 @@ allprojects {
         maven("https://repo.nexomc.com/releases")
         maven("https://repo.oraxen.com/releases")
         maven("https://repo.momirealms.net/releases/")
+        maven("https://repo.techmc.es/releases/")
     }
 
     if (project.name in listOf("plugin", "lib")) {
@@ -206,12 +207,11 @@ allprojects {
     //prevent errors
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-
     }
 
     //replace text in all plugin.yml
     tasks.withType<ProcessResources> {
-        val vars = mapOf("version" to rootProject.version, "name" to rootProject.name)
+        val vars = mapOf("version" to rootProject.version, "name" to "Mechanics")
         inputs.properties(vars)
         filesMatching("**/plugin.yml") {
             expand(vars)
@@ -252,12 +252,32 @@ subprojects {
 
     if (project.name == "lib") {
         publishing {
+            repositories {
+                maven {
+                    url = uri("https://repo.techmc.es/releases")
+                    credentials(PasswordCredentials::class) {
+                        username = System.getenv("REPO_USERNAME")
+                        password = System.getenv("REPO_PASSWORD")
+                    }
+                }
+            }
             publications {
                 create<MavenPublication>("mavenJava") {
                     groupId = rootProject.group.toString()
                     artifactId = rootProject.name
                     version = rootProject.version.toString()
                     artifact(tasks.shadowJar)
+                    pom {
+                        name = "Mechanics API"
+                        url = "https://github.com/Wuason6x9/Mechanics/"
+                        licenses {
+                            license {
+                                name = "GNU General Public License v3.0"
+                                url = "https://www.gnu.org/licenses/gpl-3.0.html"
+                                distribution = "repo"
+                            }
+                        }
+                    }
                 }
             }
         }

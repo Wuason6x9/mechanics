@@ -1,10 +1,10 @@
 package dev.wuason.mechanics.invmechanic.types.pages.content.multiple.items;
 
-import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.events.PreviousPageMultipleEvent;
 import dev.wuason.mechanics.invmechanic.items.ItemInterface;
 import dev.wuason.mechanics.invmechanic.types.InvCustom;
-import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.PageCustomInfo;
 import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.InvCustomPagesContentMultiple;
+import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.PageCustomInfo;
+import dev.wuason.mechanics.invmechanic.types.pages.content.multiple.events.PreviousPageMultipleEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
