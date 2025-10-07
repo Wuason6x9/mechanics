@@ -3,8 +3,8 @@ import io.papermc.paperweight.util.capitalized
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.7"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply false
+    id("com.gradleup.shadow") version "9.2.2"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
     id("maven-publish")
 }
 
@@ -45,6 +45,7 @@ val MC_VERSIONS = mapOf(
     "1.21.6" to MCVersion("1.21.6", "1_21_R5", 21, 17),
     "1.21.7" to MCVersion("1.21.7", "1_21_R5", 21, 18),
     "1.21.8" to MCVersion("1.21.8", "1_21_R5", 21, 19),
+    "1.21.9" to MCVersion("1.21.9", "1_21_R6", 21, 20),
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
@@ -73,11 +74,11 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.3.9"
+    project.version = "1.0.4"
 
     apply(plugin = "java")
     apply(plugin = "maven-publish")
-    apply(plugin = "io.github.goooler.shadow")
+    apply(plugin = "com.gradleup.shadow")
 
     repositories {
         mavenCentral()
@@ -99,7 +100,7 @@ allprojects {
     }
 
     if (project.name in listOf("plugin", "lib")) {
-        apply(plugin = "io.github.goooler.shadow")
+        apply(plugin = "com.gradleup.shadow")
 
         tasks.withType<ShadowJar> {
             destinationDirectory.set(file("$rootDir/target"))
@@ -132,7 +133,7 @@ allprojects {
 
     //plugin module
     if(project.name == "plugin") {
-        apply(plugin = "io.github.goooler.shadow")
+        apply(plugin = "com.gradleup.shadow")
         dependencies {
             //NMS
             implementation(project(":NMS:WRAPPER"))

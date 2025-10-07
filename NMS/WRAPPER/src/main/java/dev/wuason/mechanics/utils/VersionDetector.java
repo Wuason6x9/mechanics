@@ -30,6 +30,7 @@ public class VersionDetector {
         v1_21_6(21),
         v1_21_7(22),
         v1_21_8(23),
+        v1_21_9(24),
         UNSUPPORTED(-1);
 
         private final int versionNumber;

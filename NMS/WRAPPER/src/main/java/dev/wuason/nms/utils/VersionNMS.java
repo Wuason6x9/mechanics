@@ -55,6 +55,9 @@ public class VersionNMS {
                 VersionDetector.ServerVersion.v1_21_7,
                 VersionDetector.ServerVersion.v1_21_8
         }),
+        v1_21_R6(new VersionDetector.ServerVersion[] {
+                VersionDetector.ServerVersion.v1_21_9
+        }),
         UNSUPPORTED(new VersionDetector.ServerVersion[] {VersionDetector.ServerVersion.UNSUPPORTED});
 
         private final VersionDetector.ServerVersion[] versions;
