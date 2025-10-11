@@ -16,15 +16,11 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API = new Dependency("dev:jorel", "commandapi-bukkit-shade", "10.1.2",
+    public static final Dependency COMMAND_API_PAPER = new Dependency("dev:jorel", "commandapi-paper-shade", "11.0.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency COMMAND_API_MOJANG_MAPPED = new Dependency("dev:jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.2",
-            Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
-    );
-
-    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.1",
+    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.2",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
@@ -70,8 +66,6 @@ public class Dependencies {
         addDependency(
                 BOOSTED_YAML,
                 BEAN_SHELL,
-                COMMAND_API,
-                COMMAND_API_MOJANG_MAPPED,
                 NBT_API,
                 ANTI_GRIEF,
                 ASM,
@@ -81,7 +75,8 @@ public class Dependencies {
                 GOOGLE_ERROR_PRONE_ANNOTATIONS,
                 MORE_PERSISTENT_DATA_TYPES,
                 CUSTOM_BLOCK_DATA,
-                ADAPTER
+                ADAPTER,
+                COMMAND_API_PAPER
         );
     }
 

@@ -41,7 +41,7 @@ public class CommandManager {
         command.withSubcommands(new CommandAPICommand("debug")
                 .withPermission("mechanics.command.debug")
                 .withSubcommands(new CommandAPICommand("sendToastPlayer")
-                        .withArguments(new PlayerArgument("player"))
+                        .withArguments(new EntitySelectorArgument.OnePlayer("player"))
                         .withArguments(new GreedyStringArgument("message"))
                         .executes((sender, args) -> {
                             Player player = (Player) args.get(0);

@@ -504,10 +504,10 @@ public class ItemBuilder {
      */
     public ItemBuilder setGlowing(boolean glowing) {
         if (glowing) {
-            this.meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+            this.meta.addEnchant(Enchantment.AQUA_AFFINITY, 1, true);
             this.meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         } else {
-            this.meta.removeEnchant(Enchantment.ARROW_INFINITE);
+            this.meta.removeEnchant(Enchantment.AQUA_AFFINITY);
             this.meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
@@ -536,17 +536,6 @@ public class ItemBuilder {
      */
     public ItemBuilder setCustomModelData(int data) {
         this.meta.setCustomModelData(data);
-        return this;
-    }
-
-    /**
-     * Sets the localized name of the item.
-     *
-     * @param name the localized name to set for the item
-     * @return the ItemBuilderMechanic object with the updated localized name
-     */
-    public ItemBuilder setLocalizedName(String name) {
-        this.meta.setLocalizedName(name);
         return this;
     }
 

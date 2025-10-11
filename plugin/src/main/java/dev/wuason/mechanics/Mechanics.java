@@ -1,7 +1,7 @@
 package dev.wuason.mechanics;
 
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.wuason.adapter.Adapter;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.library.LibraryResolver;
@@ -40,7 +40,7 @@ public final class Mechanics extends MechanicAddon {
     @Override
     public void onLoad() {
         loadLibraries();
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
+        CommandAPI.onLoad(new CommandAPIPaperConfig(this).silentLogs(true));
     }
 
     @Override
@@ -117,9 +117,7 @@ public final class Mechanics extends MechanicAddon {
         });
 
 
-        if (VersionDetector.getServerVersion().isLessThan(VersionDetector.ServerVersion.v1_20_5))
-            this.libraryResolver.addDependencies(Dependencies.COMMAND_API);
-        else this.libraryResolver.addDependencies(Dependencies.COMMAND_API_MOJANG_MAPPED);
+        this.libraryResolver.addDependencies(Dependencies.COMMAND_API_PAPER);
 
         this.libraryResolver.build().resolve(); //resolves all
 

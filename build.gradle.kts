@@ -24,16 +24,16 @@ class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, v
 }
 
 val MC_VERSIONS = mapOf(
-    "1.18.2" to MCVersion("1.18.2", "1_18_R2", 17, 0),
-    "1.19" to MCVersion("1.19", "1_19_R1", 17, 1),
-    "1.19.1" to MCVersion("1.19.1", "1_19_R1", 17, 2),
-    "1.19.2" to MCVersion("1.19.2", "1_19_R1", 17, 3),
-    "1.19.3" to MCVersion("1.19.3", "1_19_R2", 17, 4),
-    "1.19.4" to MCVersion("1.19.4", "1_19_R3", 17, 5),
-    "1.20" to MCVersion("1.20", "1_20_R1", 17, 6),
-    "1.20.1" to MCVersion("1.20.1", "1_20_R1", 17, 7),
-    "1.20.2" to MCVersion("1.20.2", "1_20_R2", 17, 8),
-    "1.20.4" to MCVersion("1.20.4", "1_20_R3", 17, 9),
+    "1.18.2" to MCVersion("1.18.2", "1_18_R2", 21, 0),
+    "1.19" to MCVersion("1.19", "1_19_R1", 21, 1),
+    "1.19.1" to MCVersion("1.19.1", "1_19_R1", 21, 2),
+    "1.19.2" to MCVersion("1.19.2", "1_19_R1", 21, 3),
+    "1.19.3" to MCVersion("1.19.3", "1_19_R2", 21, 4),
+    "1.19.4" to MCVersion("1.19.4", "1_19_R3", 21, 5),
+    "1.20" to MCVersion("1.20", "1_20_R1", 21, 6),
+    "1.20.1" to MCVersion("1.20.1", "1_20_R1", 21, 7),
+    "1.20.2" to MCVersion("1.20.2", "1_20_R2", 21, 8),
+    "1.20.4" to MCVersion("1.20.4", "1_20_R3", 21, 9),
     "1.20.5" to MCVersion("1.20.5", "1_20_R4", 21, 10),
     "1.20.6" to MCVersion("1.20.6", "1_20_R4", 21, 11),
     "1.21" to MCVersion("1.21", "1_21_R1", 21, 12),
@@ -50,7 +50,7 @@ val MC_VERSIONS = mapOf(
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
-val DEF_VERSION = MC_VERSIONS["1.18.2"]!!
+val DEF_VERSION = MC_VERSIONS["1.21.6"]!!
 
 for ((_, mcVersion) in MC_VERSIONS) {
     NMS_MAP["NMS_${mcVersion.nmsVersion}"] = mcVersion
@@ -59,10 +59,9 @@ for ((_, mcVersion) in MC_VERSIONS) {
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.15.1",
+    "de.tr7zw:item-nbt-api:2.15.2",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    //"io.th0rgal:protectionlib:1.5.1",
-    "dev.jorel:commandapi-bukkit-shade:10.1.2",
+    "dev.jorel:commandapi-paper-shade:11.0.0",
     //"dev.jorel:commandapi-bukkit-plugin-mojang-mapped:10.1.1",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
@@ -236,10 +235,10 @@ allprojects {
     else {
 
         java {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(17))
+                languageVersion.set(JavaLanguageVersion.of(21))
             }
         }
     }
