@@ -47,6 +47,7 @@ val MC_VERSIONS = mapOf(
     "1.21.8" to MCVersion("1.21.8", "1_21_R5", 21, 19),
     "1.21.9" to MCVersion("1.21.9", "1_21_R6", 21, 20),
     "1.21.10" to MCVersion("1.21.10", "1_21_R6", 21, 21),
+    "1.21.11" to MCVersion("1.21.11", "1_21_R7", 21, 22)
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
@@ -59,9 +60,9 @@ for ((_, mcVersion) in MC_VERSIONS) {
 val LIBS = listOf(
     "dev.dejvokep:boosted-yaml:1.3.6",
     "org.apache.commons:commons-lang3:3.14.0",
-    "de.tr7zw:item-nbt-api:2.15.2",
+    "de.tr7zw:item-nbt-api:2.15.5",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    "dev.jorel:commandapi-paper-shade:11.0.0",
+    "dev.jorel:commandapi-paper-shade:11.1.0",
     //"dev.jorel:commandapi-bukkit-plugin-mojang-mapped:10.1.1",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
@@ -74,7 +75,7 @@ val LIBS = listOf(
 allprojects {
 
     project.group = "dev.wuason"
-    project.version = "1.0.4.1"
+    project.version = "1.0.4.2"
 
     apply(plugin = "java")
     apply(plugin = "maven-publish")

@@ -16,11 +16,11 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API_PAPER = new Dependency("dev:jorel", "commandapi-paper-shade", "11.0.0",
+    public static final Dependency COMMAND_API_PAPER = new Dependency("dev:jorel", "commandapi-paper-shade", "11.1.0",
             Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
     );
 
-    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.2",
+    public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.5",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
 
