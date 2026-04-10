@@ -1,7 +1,5 @@
 package dev.wuason.mechanics;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.wuason.adapter.Adapter;
 import dev.wuason.libs.bstats.Metrics;
 import dev.wuason.mechanics.library.LibraryResolver;
@@ -40,7 +38,6 @@ public final class Mechanics extends MechanicAddon {
     @Override
     public void onLoad() {
         loadLibraries();
-        CommandAPI.onLoad(new CommandAPIPaperConfig(this).silentLogs(true));
     }
 
     @Override
@@ -59,7 +56,6 @@ public final class Mechanics extends MechanicAddon {
         //load managers
         Adapter.init(this);
         metrics();
-        CommandAPI.onEnable();
         this.manager = new Manager(this);
         this.manager.load();
         AdventureUtils.sendMessagePluginConsole("<gray>-----------------------------------------------------------");
@@ -73,7 +69,6 @@ public final class Mechanics extends MechanicAddon {
 
         if (manager == null) return;
         manager.stop();
-        CommandAPI.onDisable();
 
     }
 
@@ -116,8 +111,6 @@ public final class Mechanics extends MechanicAddon {
             getLogger().info("Resolved " + dependencyResolved.getDependency().getArtifactId() + " in " + dependencyResolved.getResolveTime() + "ms" + (dependencyResolved.getRemapTime() > 0 ? " and remapped in " + dependencyResolved.getRemapTime() + "ms" : ""));
         });
 
-
-        this.libraryResolver.addDependencies(Dependencies.COMMAND_API_PAPER);
 
         this.libraryResolver.build().resolve(); //resolves all
 

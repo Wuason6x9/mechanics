@@ -26,4 +26,6 @@ include(
     ":NMS:NMS_1_21_R5",
     ":NMS:NMS_1_21_R6",
     ":NMS:NMS_1_21_R7",
+    ":NMS:NMS_26_1",
+    ":NMS:NMS_26_1_1",
 )

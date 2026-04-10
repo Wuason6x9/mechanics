@@ -1,14 +1,23 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.papermc.paperweight.util.capitalized
+import org.gradle.api.attributes.AttributeCompatibilityRule
+import org.gradle.api.attributes.CompatibilityCheckDetails
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+class JvmCompatibilityRule : AttributeCompatibilityRule<Int> {
+    override fun execute(details: CompatibilityCheckDetails<Int>) {
+        details.compatible()
+    }
+}
 
 plugins {
     id("java")
     id("com.gradleup.shadow") version "9.2.2"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" apply false
     id("maven-publish")
 }
 
-class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0) {
+class MCVersion(val vsr: String, val nmsVersion: String, val javaVersion: Int, val order: Int = 0, val vReobf: Boolean = true) {
     fun getApiVersion(): String {
         return "${vsr}-R0.1-SNAPSHOT"
     }
@@ -47,7 +56,9 @@ val MC_VERSIONS = mapOf(
     "1.21.8" to MCVersion("1.21.8", "1_21_R5", 21, 19),
     "1.21.9" to MCVersion("1.21.9", "1_21_R6", 21, 20),
     "1.21.10" to MCVersion("1.21.10", "1_21_R6", 21, 21),
-    "1.21.11" to MCVersion("1.21.11", "1_21_R7", 21, 22)
+    "1.21.11" to MCVersion("1.21.11", "1_21_R7", 21, 22),
+    "26.1" to MCVersion("26.1", "26_1", 25, 23, false),
+    "26.1.1" to MCVersion("26.1.1", "26_1_1", 25, 24, false)
 )
 
 val NMS_MAP = mutableMapOf<String, MCVersion>()
@@ -62,20 +73,24 @@ val LIBS = listOf(
     "org.apache.commons:commons-lang3:3.14.0",
     "de.tr7zw:item-nbt-api:2.15.5",
     "org.apache-extras.beanshell:bsh:2.1.1",
-    "dev.jorel:commandapi-paper-shade:11.1.0",
-    //"dev.jorel:commandapi-bukkit-plugin-mojang-mapped:10.1.1",
     "com.google.code.gson:gson:2.11.0",
     "com.jeff-media:MorePersistentDataTypes:2.4.0",
     "com.jeff-media:custom-block-data:2.2.2",
-    "dev.wuason:adapter:1.0.6.2",
+    "dev.wuason:adapter:1.0.6.3",
     "net.momirealms:antigrieflib:0.16"
 )
 
 
 allprojects {
 
+    dependencies.attributesSchema {
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE) {
+            compatibilityRules.add(JvmCompatibilityRule::class.java)
+        }
+    }
+
     project.group = "dev.wuason"
-    project.version = "1.0.4.2"
+    project.version = "1.0.4.3"
 
     apply(plugin = "java")
     apply(plugin = "maven-publish")
@@ -99,6 +114,8 @@ allprojects {
         maven("https://repo.momirealms.net/releases/")
         maven("https://repo.techmc.es/releases/")
     }
+    
+    
 
     if (project.name in listOf("plugin", "lib")) {
         apply(plugin = "com.gradleup.shadow")
@@ -109,7 +126,6 @@ allprojects {
             archiveClassifier.set("")
             archiveVersion.set("")
             relocate("dev.dejvokep.boostedyaml", "dev.wuason.libs.boostedyaml")
-            relocate("dev.jorel.commandapi", "dev.wuason.libs.commandapi")
             relocate("de.tr7zw.changeme.nbtapi","dev.wuason.libs.nbtapi")
             relocate("net.momirealms.antigrieflib", "dev.wuason.libs.antigrieflib")
             relocate("bsh", "dev.wuason.libs.bsh")
@@ -174,13 +190,24 @@ allprojects {
             implementation(project(":NMS:NMS_COMMON"))
 
             for (nms in NMS_MAP.keys) {
-                implementation(project(":NMS:$nms", configuration = "reobf"))
+                val vrs = NMS_MAP.getValue(nms)
+                implementation(project(":NMS:$nms", configuration = "reobf".takeIf { vrs.vReobf }))
+
             }
         }
 
         tasks {
+            withType<JavaCompile> {
+                dependsOn(":NMS:NMS_COMMON:shadowJar")
+                for (nms in NMS_MAP.keys) {
+                    dependsOn(":NMS:$nms:shadowJar")
+                }
+            }
             withType<ShadowJar> {
                 dependsOn(":NMS:NMS_COMMON:shadowJar")
+                for (nms in NMS_MAP.keys) {
+                    dependsOn(":NMS:$nms:shadowJar")
+                }
             }
         }
     }
@@ -197,9 +224,11 @@ allprojects {
             compileOnly(project(":NMS:NMS_COMMON"))
         }
 
-        tasks {
-            jar {
-                dependsOn(named("reobfJar"))
+        if (vrs.vReobf) {
+            tasks {
+                jar {
+                    dependsOn(named("reobfJar"))
+                }
             }
         }
 

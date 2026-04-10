@@ -2,6 +2,9 @@ package dev.wuason.mechanics.utils;
 
 import org.bukkit.Bukkit;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class VersionDetector {
 
     private static ServerVersion serverVersion = null;
@@ -33,6 +36,9 @@ public class VersionDetector {
         v1_21_9(24),
         v1_21_10(25),
         v1_21_11(26),
+        v26_1(27),
+        v26_1_1(28),
+        v26_1_2(29),
         UNSUPPORTED(-1);
 
         private final int versionNumber;
@@ -98,9 +104,13 @@ public class VersionDetector {
      *
      * @return The server version.
      */
+
+    private static Pattern VERSIONING_PATTERN = Pattern.compile("^(\\d+(?:\\.\\d+)*)");
     public static ServerVersion getServerVersion() {
         if (serverVersion == null) {
-            String versionName = Bukkit.getBukkitVersion().split("-")[0];
+            String bukkitVersion = Bukkit.getBukkitVersion();
+            Matcher matcher = VERSIONING_PATTERN.matcher(bukkitVersion);
+            String versionName = matcher.find() ? matcher.group(1) : bukkitVersion.split("-")[0];
             serverVersion = ServerVersion.fromString(versionName);
         }
         return serverVersion;

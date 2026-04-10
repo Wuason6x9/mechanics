@@ -16,10 +16,6 @@ public class Dependencies {
             Remap.of(Texts.BEAN_SHELL, "dev:wuason:libs:" + Texts.BEAN_SHELL)
     );
 
-    public static final Dependency COMMAND_API_PAPER = new Dependency("dev:jorel", "commandapi-paper-shade", "11.1.0",
-            Remap.of("dev:jorel:commandapi", "dev:wuason:libs:commandapi")
-    );
-
     public static final Dependency NBT_API = new Dependency("de:tr7zw", "item-nbt-api", "2.15.5",
             Remap.of("de:tr7zw:changeme:nbtapi", "dev:wuason:libs:nbtapi")
     );
@@ -56,7 +52,7 @@ public class Dependencies {
             Remap.of("com:jeff_media:customblockdata", "dev:wuason:libs:jeffmedia:customblockdata")
     );
 
-    public static final Dependency ADAPTER = new Dependency("dev:wuason", "adapter", "1.0.6.2",
+    public static final Dependency ADAPTER = new Dependency("dev:wuason", "adapter", "1.0.6.3",
             Remap.of("dev:wuason:adapter", "dev:wuason:libs:adapter")
     );
 
@@ -75,8 +71,7 @@ public class Dependencies {
                 GOOGLE_ERROR_PRONE_ANNOTATIONS,
                 MORE_PERSISTENT_DATA_TYPES,
                 CUSTOM_BLOCK_DATA,
-                ADAPTER,
-                COMMAND_API_PAPER
+                ADAPTER
         );
     }
 
